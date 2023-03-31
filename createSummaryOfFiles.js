@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const chokidar = require('chokidar');
 require('dotenv').config()
 
 
@@ -61,10 +62,29 @@ Output the context of this file. Help what the code does. Include what is necess
   }
 };
 
-const main = async () => {
-    const projectPath = process.argv[2] || process.cwd();
-    await processDirectory(projectPath);
-    console.log('Process completed.');
-};
+async function main() {
+  const directoryPath = process.argv[2] || process.cwd();
+
+  // Process the initial directory
+  await processDirectory(directoryPath);
+
+  // Watch for file changes in the directory
+  const watcher = chokidar.watch(directoryPath, {
+    ignored: /node_modules|helpers/,
+    persistent: true,
+    ignoreInitial: true,
+  });
+
+  // Process the modified file
+  watcher.on('change', async (filePath) => {
+    if (path.extname(filePath) === '.js') {
+      console.log(`File modified: ${filePath}`);
+      await processFile(filePath);
+      // console.log(`Summary updated for ${filePath}`);
+    }
+  });
+
+  console.log('Watching for file changes...');
+}
 
 main();

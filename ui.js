@@ -1,38 +1,72 @@
 const fs = require('fs');
 const readline = require('readline');
-
+const fg = require('fast-glob');
+const { callGPT } = require('./gpt');
+const chalk = require('chalk');
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
-function readAllSummaries() {
-  // This function reads all summary files and returns an array of summaries
-  // Here, we assume that summary files have the extension .ai.txt
-  return new Promise((resolve, reject) => {
-    glob("**/*.ai.txt", (err, files) => {
-      if (err) {
-        reject(err);
-      } else {
-        const summaries = files.map(file => fs.readFileSync(file, 'utf-8'));
-        resolve(summaries);
+async function readAllSummaries() {
+  console.log("getting files");
+  const ignorePattern = 'node_modules/**/*';
+  try {
+    const files = await fg("**/*.ai.txt", { ignore: ignorePattern });
+    console.log("Files found:", files);
+
+    if (files.length === 0) {
+      console.log("No matching files found.");
+      return [];
+    }
+
+    const summaries = [];
+    for (const file of files) {
+      try {
+        const summary = fs.readFileSync(file, 'utf-8');
+        summaries.push(summary);
+      } catch (error) {
+        console.error("Error reading file:", file, error);
       }
+    }
+
+    return summaries;
+  } catch (err) {
+    console.error("Error in fast-glob:", err);
+    throw err;
+  }
+}
+
+async function suggestChanges(task) {
+  const summaries = await readAllSummaries();
+  console.log("Got summaries");
+  const prompt = `
+    You are a software developer. Solve the TASK. Here the context of the current codebase:
+    ---
+    ${summaries}
+    ---
+    TASK: ${task}
+  `;
+  console.log("calling gpt");
+  const reply = await callGPT(prompt);
+  return reply;
+}
+
+function question(prompt) {
+  return new Promise((resolve) => {
+    rl.question(chalk.green(prompt), (answer) => {
+      resolve(answer);
     });
   });
 }
 
-async function suggestChanges() {
-  const summaries = await readAllSummaries();
-  // Use AI or any other logic to analyze summaries and provide suggestions
-  // For now, we'll just print the summaries
-  console.log('Summaries:', summaries);
+async function main() {
+  const task = await question('What is the task you want to implement? ');
+  const solution = await suggestChanges(task);
+  console.log(chalk.yellow('\nSuggested changes:'));
+  console.log(chalk.gray(solution));
+  rl.close();
 }
 
-rl.question('What is the task you want to implement? ', task => {
-  console.log(`You want to implement: ${task}`);
-  rl.close();
-
-  // Call the suggestChanges function to analyze summaries and provide suggestions
-  suggestChanges();
-});
+main();
