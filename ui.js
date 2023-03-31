@@ -42,13 +42,13 @@ async function suggestChanges(task) {
   const summaries = await readAllSummaries();
   console.log("Got summaries");
   const prompt = `
-    You are a software developer. Solve the TASK. Here the context of the current codebase:
+    You are a software developer with 10 years of experience. You were asked to solve the TASK. For context, here is a summary of the current codebase:
     ---
     ${summaries}
     ---
-    TASK: ${task}
+    Your TASK: ${task}
   `;
-  console.log("calling gpt");
+//   console.log("calling gpt");
   const reply = await callGPT(prompt);
   return reply;
 }

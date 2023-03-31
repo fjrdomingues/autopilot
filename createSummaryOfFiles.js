@@ -30,7 +30,7 @@ const processFile = async (filePath) => {
 \`\`\`
 ${fileContent}
 \`\`\`
-Output the context of this file. Help what the code does. Include what is necessary to understand the app to then assist the developer in coding the application. Don't be verbose. Include:
+Output the context of this file. Help what the code does. Include what is necessary to understand the app to then assist the developer in coding the application. Having repeating yourself. Include:
 - Functions with params and a description of what they do.
 - Relevant variables
 - Linked files/modules
@@ -55,7 +55,10 @@ Output the context of this file. Help what the code does. Include what is necess
         // Save new comment
         const summaryPath = path.join(path.dirname(filePath), path.basename(filePath, '.js') + '.ai.txt');
         fs.writeFileSync(summaryPath, output);
-        console.log(`Updated ${filePath}`);
+        const timestamp = new Date().toISOString();
+        const hour = timestamp.match(/\d\d:\d\d/);
+
+        console.log(`${hour}: Updated ${filePath}`);
     }
   } catch (error) {
     console.error(`Error processing file: ${filePath}`, error);
@@ -66,7 +69,7 @@ async function main() {
   const directoryPath = process.argv[2] || process.cwd();
 
   // Process the initial directory
-  await processDirectory(directoryPath);
+  // await processDirectory(directoryPath);
 
   // Watch for file changes in the directory
   const watcher = chokidar.watch(directoryPath, {
