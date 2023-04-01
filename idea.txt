@@ -1,0 +1,17 @@
+Ideas:
+An AI app that assists a software developer in creating code on existing projects.
+
+How it works:
+The app uses AI to create summaries of all relevant files and uses the summaries to find what files and functions are relevant.
+The app has some agency and has the ability to go from the general understanding on how the app works into the functions that are relevant for a certain task.
+
+Architecture:
+CreateSummaries:
+1- Read all relevant files in the project (first version uses .js files)
+2- Create a summary (using GPT AI API) that represents a mental model for each file. This is done to save tokens and will later be used to understand what are the relevant files for a TASK
+3- The app saves the summary next to each file with a .ai.txt extension
+doTask:
+1- The app takes into account the TASK and all the summary files (.ai.txt)
+2- Then uses GPT AI API to understand what files and functions are relevant to the task
+3- Then sends the relevant functions to the GPT AI API and asks for the necessary changes to do the TASK
+3- The user will then apply the suggested changes manually.

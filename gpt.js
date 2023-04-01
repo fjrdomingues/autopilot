@@ -9,10 +9,10 @@ const callGPT = async (prompt) => {
     // console.log("Prompt size is:", wordCount(prompt)*1.333)
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
-        // model: 'gpt-4',
+        // model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
+        temperature: 0.2,
       }, {
         headers: {
           'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ const callGPT = async (prompt) => {
       return output
 
     } catch (error) {
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
