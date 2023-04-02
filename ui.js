@@ -1,10 +1,10 @@
+// This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
+
 const fs = require('fs');
 const readline = require('readline');
 const fg = require('fast-glob');
 const { callGPT } = require('./gpt');
 const chalk = require('chalk');
-const wordCount = require('word-count');
-const acorn = require('acorn');
 const path = require('path');
 
 const rl = readline.createInterface({
@@ -12,34 +12,37 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-async function getRelevantFunctions(task, summaries) {
+async function getRelevantFiles(task, summaries) {
   const prompt = `
-    You are a software developer with 10 years of experience. You were asked to solve the TASK. For context, here is a summary of the current codebase:
+    Codebase Summary:
     ---
     ${summaries}
     ---
     Your TASK: ${task}
-    What functions from the source code do you need access to in order to complete the TASK? Please list them in an array like described below (JSON)
+    Identify the main files in the codebase that are relevant to your TASK.
+    For each file explain also what is relevant in this file to complete the TASK.
+    Use the following format:
     \`\`\`
-    array = [{"name": "functionName1", "path": "path/to/file1"}, {"name": "functionName2", "path": "path/to/file2"}]
+    [{"path": "<insert file name and path>", "context": "<insert context>"},{"path": "<insert file and path>", "context": "<insert context>"}]
     \`\`\`
   `;
 
-  const reply = await callGPT(prompt);
-  return reply;
+  const reply = await callGPT(prompt, "gpt-3.5-turbo");
+  const parsedReply = parseArray(reply)
+  return parsedReply;
 }
 
 async function suggestChanges(task, functionSourceCode) {
 
   const prompt = `
-    You are a software developer with 10 years of experience. You were asked to solve the TASK. For context, here is the source code of the relevant functions:
+    You are a software developer with 10 years of experience. You were asked to solve the TASK. For context, here is the relevant source code:
     ---
     ${functionSourceCode}
     ---
     Your TASK: ${task}
   `;
 
-  const reply = await callGPT(prompt);
+  const reply = await callGPT(prompt, "gpt-4");
 
   // Add a celebration emoji after finishing the task
   const celebrationEmoji = '🎉';
@@ -85,7 +88,7 @@ function question(prompt) {
   });
 }
 
-function parseFunctionNames(gptReply) {
+function parseArray(gptReply) {
   const regex = /\[([^\]]+)\]/;
   const match = gptReply.match(regex);
 
@@ -97,35 +100,6 @@ function parseFunctionNames(gptReply) {
   return [];
 }
 
-function getFunctionSourceCode(functionName, fileContent) {
-  const ast = acorn.parse(fileContent, { ecmaVersion: 'latest', sourceType: 'module' });
-  let functionSourceCode = '';
-
-  function walkNode(node) {
-    if (
-      (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') &&
-      node.id && node.id.name === functionName
-    ) {
-      functionSourceCode = fileContent.substring(node.start, node.end);
-    } else {
-      for (const key in node) {
-        const value = node[key];
-        if (typeof value === 'object' && value !== null) {
-          walkNode(value);
-        }
-      }
-    }
-  }
-
-  walkNode(ast);
-
-  if (functionSourceCode) {
-    return functionSourceCode;
-  } else {
-    console.error(`Error: Function "${functionName}" not found in the given content.`);
-    return '';
-  }
-}
 
 function saveOutput(task, solution) {
  // Save the solution to a file in the "suggestions" folder
@@ -138,23 +112,26 @@ function saveOutput(task, solution) {
  }
 
  // Write the suggestion to the file
- fs.writeFileSync(path.join(suggestionsDir, fileName), task, '\n', solution);
+ fs.writeFileSync(path.join(suggestionsDir, fileName), `# TASK \n ${task}\n# SOLUTION\n${solution}`);
 }
 
 
-function getSourceCodeForFunctions(functions) {
-  let sourceCode = '';
-  for (const functionObj of functions) {
-    const { name, path: filePath } = functionObj;
-    console.log(chalk.yellow("Files loop: "), filePath, name)
-    const fileContent = fs.readFileSync(path.resolve(__dirname, filePath), 'utf8');
-    const functionSourceCode = getFunctionSourceCode(name, fileContent);
-    console.log(functionSourceCode)
-    sourceCode += `// ${filePath}\n${functionSourceCode}\n\n`;
-  }
+async function getRelevantContextForFile(task, file) {
+  const prompt = `
+    You are a software developer. You were asked to solve a TASK and you have been gathering context of the codebase. You selected the following files:
+    ${file.path}
+    \`\`\`
+    ${file.code}
+    \`\`\`
+    This file is relevant because ${file.context}
+    Your TASK: ${task}
+    Extract the relevant source code from this file to complete the TASK.
+  `;
 
-  return sourceCode;
+  const reply = await callGPT(prompt, "gpt-3.5-turbo");
+  return reply;
 }
+
 
 async function main() {
   const task = await question('What is the task you want to implement? ');
@@ -162,27 +139,24 @@ async function main() {
   // Read all summaries (Gets context of all files and project)
   // TODO: add context of project structure
   const summaries = await readAllSummaries();
-  // console.log("Got Summaries:", summaries)
 
-  
+  //uses GPT AI API to ask what files are relevant to the task and why
+  const relevantFiles = await getRelevantFiles(task, summaries);
+  console.log("Relevant Files are: ", relevantFiles)
 
-  // Get the relevant functions from the summaries
-  const relevantFunctionsGPT = await getRelevantFunctions(task, summaries);
-  // console.log('Got Relevant functions:', relevantFunctionsGPT)
-  
-  // Parse output from GPT into an array of functions
-  const parsedFunctions = parseFunctionNames(relevantFunctionsGPT);
-  console.log('Parsed functions to array:', parsedFunctions)
-  
-  const functionSourceCode = await getSourceCodeForFunctions(parsedFunctions);
-  // Get source code from functions
-  // const functionSourceCode = await getFunctionSourceCode(relevantFunctions);
-  console.log("Source code:", functionSourceCode)
-  
-  // Suggest changes based on the relevant functions and their source code
-  const solution = await suggestChanges(task, functionSourceCode);
-  
-  saveOutput(task, solution)
+  // Using the previous reply, the app gets the source code of each relevant file and sends each to GPT to get the relevant context
+  let tempOutput = '';
+  for (const file of relevantFiles) {
+    const pathToFile = file.path
+    const fileContent = fs.readFileSync(path.resolve(__dirname, pathToFile), 'utf8');
+    file.code = fileContent
+    const relevantContext = await getRelevantContextForFile(task, file) ;
+    tempOutput += `// ${pathToFile}\n${relevantContext}\n\n`;
+  }
+
+  //Sends the saved output to GPT and ask for the necessary changes to do the TASK
+  const solution = await suggestChanges(task, tempOutput);
+  saveOutput(task, solution);
   
   console.log(chalk.yellow('\nSuggested changes:'));
   console.log(chalk.gray(solution));

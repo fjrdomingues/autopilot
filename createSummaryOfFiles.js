@@ -3,6 +3,7 @@ const path = require('path');
 const axios = require('axios');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
+const { callGPT } = require('./gpt');
 require('dotenv').config()
 
 let totalTokensUsed = 0
@@ -58,35 +59,16 @@ const processFile = async (filePath) => {
 \`\`\`
 ${fileContent}
 \`\`\`
-Task: Create a summary of this file using bullet points. Include:
-- What the file does
-- Name of all functions
-- Most important variables
+Task: Create a summary of this file, what it does and how it contributes to the overall project.
 `
+    const output = await callGPT(prompt)
 
-    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: 'gpt-3.5-turbo',
-      // model: 'gpt-4',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.2,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GPT_4_API_KEY}`
-      }
-    });
-
-    const output =  filePath + '\n' + response.data.choices[0].message.content;
-    const tokens = response.data.usage.total_tokens
-
-    totalTokensUsed += tokens
-    console.log('Total tokens: ', totalTokensUsed, 'Total cost: ', totalTokensUsed*0.002/1000)
-
-    
     if (output) {
         // Save new comment
         const summaryPath = path.join(path.dirname(filePath), path.basename(filePath, '.js') + '.ai.txt');
-        fs.writeFileSync(summaryPath, output);
+        // adds filepath to top of summary
+        const contentToRight = `File Path: ${filePath}\nSummary:\n${output}`
+        fs.writeFileSync(summaryPath, contentToRight);
         const timestamp = new Date().toISOString();
         const hour = timestamp.match(/\d\d:\d\d/);
 

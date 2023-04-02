@@ -1,34 +1,38 @@
-const axios = require('axios');
 const chalk = require('chalk');
 require('dotenv').config()
-// const wordCount = require('word-count');
-const GPT_4_API_KEY = process.env.OPENAI_API_KEY;
+const { Configuration, OpenAIApi } = require("openai");
+let totalTokensUsed = 0
+let defaultModel = "gpt-3.5-turbo"
+// const MODEL = "gpt-4"
 
-const callGPT = async (prompt) => {
-    console.log("calling GPT")
-    // console.log("Prompt size is:", wordCount(prompt)*1.333)
-    try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
-        // model: 'gpt-4',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.2,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GPT_4_API_KEY}`
-        }
-      });
-  
-      const output = response.data.choices[0].message.content;
-      console.log("Got GPT reply. Used ",chalk.yellow(response.data.usage.total_tokens)," tokens")
-      return output
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
-    } catch (error) {
-      console.error(error.response.data);
-    }
-  };
+const callGPT = async (prompt, model) => {
+  const GPTModel = model ? model : defaultModel
+  console.log("Calling GPT. Model: ", GPTModel)
+  // console.log("Prompt size is:", wordCount(prompt)*1.333)
+  try {
+    const completion = await openai.createChatCompletion({
+      model: GPTModel,
+      messages: [{role: "user", content: prompt}],
+    });
 
-  module.exports= {
-    callGPT
+    // log usage
+    totalTokensUsed += completion.data.usage.total_tokens; // increment total tokens used
+    // console.log(`Tokens used: ${completion.data.usage.total_tokens}`);
+    console.log(`Total tokens used: ${chalk.yellow(totalTokensUsed)}`); // log total tokens used
+    // return output
+    return completion.data.choices[0].message.content
+
+  } catch (error) {
+    console.log(error)
+    console.error(error.completion.data);
   }
+};
+
+module.exports= {
+  callGPT
+}
