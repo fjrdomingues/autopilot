@@ -2,6 +2,8 @@
 
 Dev Autopilot, a tool that uses GPT to read a codebase, create context and solve tasks.
 
+![Demo](demo.gif)
+
 What is does and how it works:
 
 ### CreateSummaries script:
