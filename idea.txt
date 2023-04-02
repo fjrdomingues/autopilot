@@ -7,9 +7,9 @@ The app has some agency and has the ability to go from the general understanding
 
 Architecture:
 CreateSummaries:
-1- Read all relevant files in the project (first version uses .js files)
-2- Create a summary (using GPT AI API) that represents a mental model for each file. This is done to save tokens and will later be used to understand what are the relevant files for a TASK
-3- The app saves the summary next to each file with a .ai.txt extension
+- Read all relevant files in the project (first version uses .js files)
+- Create a summary (using GPT AI API) that represents a mental model for each file. This is done to save tokens and will later be used to understand what are the relevant files for a TASK
+- The app saves the summary next to each file with a .ai.txt extension
 ui:
 - The app takes into account the TASK and all the summary files (.ai.txt)
 - Then uses GPT AI API to ask what files are relevant to the task
