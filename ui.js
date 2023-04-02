@@ -7,7 +7,6 @@ const wordCount = require('word-count');
 const acorn = require('acorn');
 const path = require('path');
 
-
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -20,9 +19,9 @@ async function getRelevantFunctions(task, summaries) {
     ${summaries}
     ---
     Your TASK: ${task}
-    What functions from the source code do you need access to in order to complete the TASK? Please list them in an array like described below
+    What functions from the source code do you need access to in order to complete the TASK? Please list them in an array like described below (JSON)
     \`\`\`
-    array = [functionName1, functionName2]
+    array = [{"name": "functionName1", "path": "path/to/file1"}, {"name": "functionName2", "path": "path/to/file2"}]
     \`\`\`
   `;
 
@@ -91,62 +90,41 @@ function parseFunctionNames(gptReply) {
   const match = gptReply.match(regex);
 
   if (match && match[1]) {
-    const functionNames = match[1].split(',').map((name) => name.trim());
-    return functionNames;
+    const functionData = JSON.parse('[' + match[1] + ']');
+    return functionData;
   }
 
   return [];
 }
 
-// uses acorn to parse files and extract the source code for the functions in the array
-async function getFunctionSourceCode(functionNames) {
-  const ignorePattern = ['node_modules/**/*', 'aiDev/**/*'];
-  const files = await fg("**/*.{js,jsx,ts,tsx}", { ignore: ignorePattern });
+function getFunctionSourceCode(functionName, fileContent) {
+  const ast = acorn.parse(fileContent, { ecmaVersion: 'latest', sourceType: 'module' });
   let functionSourceCode = '';
 
-  for (const file of files) {
-    try {
-      const fileContent = fs.readFileSync(file, 'utf-8');
-      const ast = acorn.parse(fileContent, { ecmaVersion: 'latest', sourceType: 'module' });
-
-      const findFunctionNodes = (node) => {
-        if (
-          (node.type === 'FunctionDeclaration' && functionNames.includes(node.id.name)) ||
-          (node.type === 'VariableDeclarator' &&
-            node.init &&
-            node.init.type === 'FunctionExpression' &&
-            functionNames.includes(node.id.name))
-        ) {
-          return fileContent.slice(node.start, node.end);
-        }
-
-        let foundFunction = '';
-        if (node.body) {
-          const bodyNodes = Array.isArray(node.body) ? node.body : node.body.body;
-          if (bodyNodes) {
-            for (const childNode of bodyNodes) {
-              foundFunction = findFunctionNodes(childNode);
-              if (foundFunction) {
-                break;
-              }
-            }
-          }
-        }
-        return foundFunction;
-      };
-
-      for (const functionName of functionNames) {
-        const functionCode = findFunctionNodes(ast);
-        if (functionCode) {
-          functionSourceCode += `File: ${file}\n\n${functionCode}\n\n`;
+  function walkNode(node) {
+    if (
+      (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') &&
+      node.id && node.id.name === functionName
+    ) {
+      functionSourceCode = fileContent.substring(node.start, node.end);
+    } else {
+      for (const key in node) {
+        const value = node[key];
+        if (typeof value === 'object' && value !== null) {
+          walkNode(value);
         }
       }
-    } catch (error) {
-      console.error("Error reading file:", file, error);
     }
   }
 
-  return functionSourceCode;
+  walkNode(ast);
+
+  if (functionSourceCode) {
+    return functionSourceCode;
+  } else {
+    console.error(`Error: Function "${functionName}" not found in the given content.`);
+    return '';
+  }
 }
 
 function saveOutput(task, solution) {
@@ -163,31 +141,49 @@ function saveOutput(task, solution) {
  fs.writeFileSync(path.join(suggestionsDir, fileName), task, '\n', solution);
 }
 
+
+function getSourceCodeForFunctions(functions) {
+  let sourceCode = '';
+  for (const functionObj of functions) {
+    const { name, path: filePath } = functionObj;
+    console.log(chalk.yellow("Files loop: "), filePath, name)
+    const fileContent = fs.readFileSync(path.resolve(__dirname, filePath), 'utf8');
+    const functionSourceCode = getFunctionSourceCode(name, fileContent);
+    console.log(functionSourceCode)
+    sourceCode += `// ${filePath}\n${functionSourceCode}\n\n`;
+  }
+
+  return sourceCode;
+}
+
 async function main() {
   const task = await question('What is the task you want to implement? ');
-  // Read all summaries
+
+  // Read all summaries (Gets context of all files and project)
+  // TODO: add context of project structure
   const summaries = await readAllSummaries();
   // console.log("Got Summaries:", summaries)
 
+  
+
   // Get the relevant functions from the summaries
-  const relevantFunctions = await getRelevantFunctions(task, summaries);
-  console.log('Got Relevant functions:', relevantFunctions)
-
+  const relevantFunctionsGPT = await getRelevantFunctions(task, summaries);
+  // console.log('Got Relevant functions:', relevantFunctionsGPT)
+  
   // Parse output from GPT into an array of functions
-  const parsedFunction = parseFunctionNames(relevantFunctions)
-  console.log('Parsed functions to array:', parsedFunction)
-
+  const parsedFunctions = parseFunctionNames(relevantFunctionsGPT);
+  console.log('Parsed functions to array:', parsedFunctions)
+  
+  const functionSourceCode = await getSourceCodeForFunctions(parsedFunctions);
   // Get source code from functions
-  const functionSourceCode = await getFunctionSourceCode(relevantFunctions);
+  // const functionSourceCode = await getFunctionSourceCode(relevantFunctions);
   console.log("Source code:", functionSourceCode)
   
-  rl.close();
-  return
   // Suggest changes based on the relevant functions and their source code
   const solution = await suggestChanges(task, functionSourceCode);
- 
+  
   saveOutput(task, solution)
-
+  
   console.log(chalk.yellow('\nSuggested changes:'));
   console.log(chalk.gray(solution));
   rl.close();

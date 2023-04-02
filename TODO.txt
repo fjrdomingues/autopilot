@@ -2,3 +2,11 @@
 - add a celebration emoji after finishing a TASK that was requested by the user
 - Output each suggestion provided from GPT into a file in a "suggestions" folder. Save it with a .md extension
 - Move some functions into modules to improve readability
+- Write a README.me file for this project
+
+
+Change the ui.js question from green to yellow
+
+
+Problems:
+- Parser is not getting functions like this: const calculateProjectSize = (dir) => 
