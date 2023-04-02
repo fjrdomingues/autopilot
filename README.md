@@ -1,4 +1,4 @@
-# Dev Autopilot - Using GPT to implement code development tasks.
+# Dev Autopilot - Using GPT to work on entire codebases
 
 Dev Autopilot, a tool that uses GPT to read a codebase, create context and solve tasks.
 
