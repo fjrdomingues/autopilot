@@ -2,14 +2,14 @@
 
 Dev Autopilot, a tool that uses GPT to read a codebase, create context and solve tasks.
 
-How Dev Autopilot Works for Developers:
+What is does and how it works:
 
-CreateSummaries script:
+### CreateSummaries script:
 - Read all relevant files in the project (first version uses .js files)
 - Creates a summary (using GPT AI API) that represents a mental model for each file. This allow the app to work on bigger codebase that wouldn't fit GPT's context window.
 - The app saves the summary next to each file with a .ai.txt extension for later.
 - A watcher keeps updating files that are changed.
-UI script:
+### UI script:
 - The app takes into account the TASK and gets all the summary files (.ai.txt)
 - Then uses GPT AI API to ask what files are relevant to the task, based on the summary of each
 - Then using the previous reply, the app gets the source code of each relevant file and sends each to GPT to get the relevant context
