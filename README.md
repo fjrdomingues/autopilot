@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="banner.png" alt="Autopilot Logo" width="200"/>
+  <img src="public/banner.png" alt="Autopilot Logo" width="200"/>
 </p>
 
 <h1 align="center">Autopilot - Using GPT to Work on Entire Codebases</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="demo.gif" alt="Autopilot Demo" width="800"/>
+  <img src="public/demo.gif" alt="Autopilot Demo" width="800"/>
 </p>
 
 ## Features
