@@ -5,6 +5,7 @@ const chokidar = require('chokidar');
 const wordCount = require('word-count')
 const { callGPT } = require('./modules/gpt');
 const ignoreList = ['node_modules', 'autopilot', 'coverage', 'public', '__tests__'];
+const fileExtensionsToProcess = ['.js', '.tsx', '.ts', '.jsx'];
 require('dotenv').config()
 
 const calculateProjectSize = (dir) => {
@@ -17,7 +18,7 @@ const calculateProjectSize = (dir) => {
 
     if (stats.isDirectory() && !ignoreList.includes(file)) {
       projectSize += calculateProjectSize(filePath);
-    } else if (path.extname(filePath) === '.js' || path.extname(filePath) === '.tsx') {
+    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
       const fileContent = fs.readFileSync(filePath, 'utf8');
       projectSize += fileContent.length;
     }
@@ -36,7 +37,7 @@ const processDirectory = async (dir) => {
 
     if (stats.isDirectory() && !ignoreList.includes(file)) {
       await processDirectory(filePath);
-    } else if (path.extname(filePath) === '.js' || path.extname(filePath) === '.tsx') {
+    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
       const file = fs.readFileSync(filePath, 'utf8')
       console.log(filePath, wordCount(file)*1.33)
       if (wordCount(file)*1.33 > 3500) {
@@ -104,11 +105,7 @@ async function main() {
 
       // Process the modified file
       watcher.on('change', async (filePath) => {
-        if (
-          path.extname(filePath) === '.js' ||
-          path.extname(filePath) === '.ts' ||
-          path.extname(filePath) === '.tsx'
-        ) {
+        if (fileExtensionsToProcess.includes(path.extname(filePath))) {
           console.log(`File modified: ${filePath}`);
           await processFile(filePath);
         }
