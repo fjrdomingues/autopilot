@@ -3,7 +3,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const fg = require('fast-glob');
-const { callGPT } = require('./gpt');
+const { callGPT } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];

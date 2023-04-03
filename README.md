@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="banner.png" alt="Dev Autopilot Logo" width="200"/>
+  <img src="banner.png" alt="Autopilot Logo" width="200"/>
 </p>
 
-<h1 align="center">Dev Autopilot - Using GPT to Work on Entire Codebases</h1>
+<h1 align="center">Autopilot - Using GPT to Work on Entire Codebases</h1>
 
 <p align="center">
-  <strong>Dev Autopilot</strong> is an AI tool that utilizes GPT to read a codebase, create context, and solve tasks that you request.
+  <strong>Autopilot</strong> is an AI tool that utilizes GPT to read a codebase, create context, and solve tasks that you request.
 </p>
 
 <p align="center">
-  <img src="demo.gif" alt="Dev Autopilot Demo" width="800"/>
+  <img src="demo.gif" alt="Autopilot Demo" width="800"/>
 </p>
 
 ## Features
@@ -32,10 +32,13 @@
 
 ## 🛠️ Installation
 
-1. Clone the repository: `git clone https://github.com/user/repo.git`
-2. Navigate to the project directory: `cd repo`
-3. Install dependencies: `npm install`
+1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git` inside of an existing project where you want to use autopilot
+2. Do `cd autopilot` to install dependencies: `npm install`
+3. `cd ..` to go back to the root of the project
 4. Set up an OpenAI API key and update the `.env` file with the key: `OPENAI_API_KEY=<your-api-key>`
+5. Run `node ./autopilot/createSummaryOfFiles.js ./ --all` to create a summary of all files (it will also start a watcher at the end for file changes)
+6. Run `node ./autopilot/ui.js` to input a task and get the AI to give you a solution
+
 
 ## Usage
 
@@ -44,7 +47,7 @@ To use the code summarization tool, follow these steps:
 1. Navigate to the `ui.js` file and run it: `node ui.js`
 2. Follow the prompts to provide the necessary input, including the task to complete and the relevant files
 3. The summarization tool will process the selected files and provide suggestions for the given task
-4. Suggestions will be saved in a `suggestions` folder inside the project directory
+4. Solutions will be saved in a `suggestions` folder inside the project directory. You can view them with a .md viewer tool.
 
 ## Components
 
@@ -54,4 +57,4 @@ To use the code summarization tool, follow these steps:
 
 ## 🤝 Contributing
 
-We welcome contributions! Please submit pull requests to the repository, and ensure your changes align with the project's goals and guidelines. Together, we can make **Dev Autopilot** an even more powerful and efficient tool for developers!
+We welcome contributions! Please submit pull requests to the repository, and ensure your changes align with the project's goals and guidelines. Together, we can make **Autopilot** an even more powerful and efficient tool for developers!
