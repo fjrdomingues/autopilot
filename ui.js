@@ -7,6 +7,7 @@ const { callGPT } = require('./gpt');
 const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];
+const prompts = require('prompts');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -20,7 +21,7 @@ async function getRelevantFiles(task, summaries) {
     ${summaries}
     ---
     Your TASK: ${task}
-    Identify the main files in the codebase that are relevant to your TASK.
+    Identify the main files in the existing codebase that are relevant to your TASK. If you want to create a new file, don't include it in the output.
     For each file explain also what is relevant in this file to complete the TASK.
     Use the following format:
     \`\`\`
@@ -118,23 +119,34 @@ function saveOutput(task, solution) {
 
 async function getRelevantContextForFile(task, file) {
   const prompt = `
-    You are a software developer. You were asked to solve a TASK and you have been gathering context of the codebase. You selected the following files:
+    You are a software developer. You were asked to solve a TASK and you have been gathering context of the codebase. One of the files has the following code:
     ${file.path}
     \`\`\`
     ${file.code}
     \`\`\`
     This file is relevant because ${file.context}
     Your TASK: ${task}
-    Extract the relevant source code from this file to complete the TASK.
+    Output: Identify and output the relevant source code from this file, taking into account the context and TASK. Don't modify the code.
   `;
 
   const reply = await callGPT(prompt, "gpt-3.5-turbo");
   return reply;
 }
 
+async function getTaskInput() {
+  const response = await prompts({
+     type: 'text',
+     name: 'task',
+     message: 'Please enter your TASK (multiline supported):',
+     multiline: true,
+   });
+
+  return response.task;
+}
 
 async function main() {
-  const task = await question('What is the task you want to implement? ');
+  const task = await getTaskInput();
+  console.log("Task:", task)
 
   // Read all summaries (Gets context of all files and project)
   // TODO: add context of project structure
@@ -153,6 +165,7 @@ async function main() {
     const relevantContext = await getRelevantContextForFile(task, file) ;
     tempOutput += `// ${pathToFile}\n${relevantContext}\n\n`;
   }
+  console.log("Extracted code:", tempOutput)
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solution = await suggestChanges(task, tempOutput);

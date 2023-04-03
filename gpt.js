@@ -2,8 +2,10 @@ const chalk = require('chalk');
 require('dotenv').config()
 const { Configuration, OpenAIApi } = require("openai");
 let totalTokensUsed = 0
+let completionTokens = 0
+let promptTokens = 0
+let cost = 0
 let defaultModel = "gpt-3.5-turbo"
-// const MODEL = "gpt-4"
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -20,18 +22,37 @@ const callGPT = async (prompt, model) => {
       messages: [{role: "user", content: prompt}],
     });
 
+    const usage = completion.data.usage
+
     // log usage
-    totalTokensUsed += completion.data.usage.total_tokens; // increment total tokens used
-    // console.log(`Tokens used: ${completion.data.usage.total_tokens}`);
-    console.log(`Total tokens used: ${chalk.yellow(totalTokensUsed)}`); // log total tokens used
+    totalTokensUsed += usage.total_tokens; // increment total tokens used
+    completionTokens += usage.completion_tokens || 0
+    promptTokens += usage.prompt_tokens || 0
+    cost += calculateTokensCost(GPTModel, promptTokens, completionTokens, totalTokensUsed)
+    console.log(`Total tokens used: ${chalk.yellow(totalTokensUsed)}`, `Total Cost: ${chalk.yellow(cost.toFixed(2))}$`) // log total tokens used
+
+
+
     // return output
     return completion.data.choices[0].message.content
 
   } catch (error) {
     console.log(error)
-    console.error(error.completion.data);
   }
 };
+
+const modelCostMap = {
+  "gpt-4": {"promptTokensCost": 0.03, "completionTokensCost": 0.06},
+  "gpt-3.5-turbo": {"tokensCost": 0.002},
+};
+
+function calculateTokensCost(model, promptTokens, completionTokens, totalTokensUsed) {
+  if (model === "gpt-4") {
+    return completionTokens * modelCostMap[model]["completionTokensCost"] / 1000 + promptTokens * modelCostMap[model]["promptTokensCost"] / 1000;
+  } else {
+    return totalTokensUsed * modelCostMap[model]["tokensCost"] / 1000;
+  }
+}
 
 module.exports= {
   callGPT
