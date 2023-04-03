@@ -4,11 +4,8 @@ const axios = require('axios');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
 const { callGPT } = require('./gpt');
+const ignoreList = ['node_modules', 'autopilot', 'coverage', 'public', '__tests__'];
 require('dotenv').config()
-
-let totalTokensUsed = 0
-
-const GPT_4_API_KEY = process.env.OPENAI_API_KEY;
 
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
@@ -18,7 +15,7 @@ const calculateProjectSize = (dir) => {
     const filePath = path.join(dir, file);
     const stats = fs.statSync(filePath);
 
-    if (stats.isDirectory() && file !== 'node_modules' && file !== 'aiDev') {
+    if (stats.isDirectory() && !ignoreList.includes(file)) {
       projectSize += calculateProjectSize(filePath);
     } else if (path.extname(filePath) === '.js' || path.extname(filePath) === '.tsx') {
       const fileContent = fs.readFileSync(filePath, 'utf8');
@@ -37,7 +34,7 @@ const processDirectory = async (dir) => {
     const filePath = path.join(dir, file);
     const stats = fs.statSync(filePath);
 
-    if (stats.isDirectory() && file !== 'node_modules' && file !== 'aiDev') {
+    if (stats.isDirectory() && !ignoreList.includes(file)) {
       await processDirectory(filePath);
     } else if (path.extname(filePath) === '.js' || path.extname(filePath) === '.tsx') {
       const file = fs.readFileSync(filePath, 'utf8')
@@ -100,7 +97,7 @@ async function main() {
 
       // Watch for file changes in the directory
       const watcher = chokidar.watch(directoryPath, {
-        ignored: /node_modules|aiDev|helpers/,
+        ignored: /node_modules|autopilot|helpers/,
         persistent: true,
         ignoreInitial: true,
       });

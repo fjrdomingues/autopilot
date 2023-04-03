@@ -6,6 +6,7 @@ const fg = require('fast-glob');
 const { callGPT } = require('./gpt');
 const chalk = require('chalk');
 const path = require('path');
+const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -53,7 +54,6 @@ async function suggestChanges(task, functionSourceCode) {
 
 async function readAllSummaries() {
   console.log("Getting Summary");
-  const ignorePattern = ['node_modules/**/*', 'aiDev/**/*'];
   try {
     const files = await fg("**/*.ai.txt", { ignore: ignorePattern });
     console.log("Files found:", files);
@@ -148,7 +148,7 @@ async function main() {
   let tempOutput = '';
   for (const file of relevantFiles) {
     const pathToFile = file.path
-    const fileContent = fs.readFileSync(path.resolve(__dirname, pathToFile), 'utf8');
+    const fileContent = fs.readFileSync(pathToFile, 'utf8');
     file.code = fileContent
     const relevantContext = await getRelevantContextForFile(task, file) ;
     tempOutput += `// ${pathToFile}\n${relevantContext}\n\n`;
