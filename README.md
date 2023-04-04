@@ -16,7 +16,7 @@
 
 ### CreateSummaries script:
 
-- 📚 Reads all relevant files in the project (first version supports `.js` files)
+- 📚 Reads all relevant files in the project (you can choose what file extensions you want)
 - 🧠 Creates a summary (using GPT AI API) representing a mental model for each file, allowing the app to work on larger codebases that wouldn't fit GPT's context window
 - 💾 Saves the summary next to each file with a `.ai.txt` extension for later use
 - 👀 A watcher continuously updates files that have been modified
