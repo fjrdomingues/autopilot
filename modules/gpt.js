@@ -6,6 +6,7 @@ let completionTokens = 0
 let promptTokens = 0
 let cost = 0
 let defaultModel = "gpt-3.5-turbo"
+let GPT4Mode = false
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +14,8 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const callGPT = async (prompt, model) => {
-  const GPTModel = model ? model : defaultModel
+  let GPTModel = model ? model : defaultModel
+  if (GPT4Mode) GPTModel = 'gpt-4'
   console.log("Calling GPT. Model: ", GPTModel)
   // console.log("Prompt size is:", wordCount(prompt)*1.333)
   try {
