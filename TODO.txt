@@ -1,5 +1,0 @@
-- Print a summary of project size (of the files found) before starting summarizing all files. The user needs to understand how big the project his before proceeding
-- add a celebration emoji after finishing a TASK that was requested by the user
-- Output each suggestion provided from GPT into a file in a "suggestions" folder. Save it with a .md extension
-- Move some functions into modules to improve readability
-- Write a README.me file for this project

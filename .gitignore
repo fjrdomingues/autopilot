@@ -3,3 +3,5 @@ node_modules
 *.ai.txt
 suggestions
 idea.txt
+docs
+web

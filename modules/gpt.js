@@ -36,7 +36,7 @@ const callGPT = async (prompt, model) => {
     return completion.data.choices[0].message.content
 
   } catch (error) {
-    console.log(error)
+    console.log(error.response)
   }
 };
 

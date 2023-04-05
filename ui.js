@@ -1,18 +1,12 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 
 const fs = require('fs');
-const readline = require('readline');
 const fg = require('fast-glob');
 const { callGPT } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];
 const prompts = require('prompts');
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 async function getRelevantFiles(task, summaries) {
   const prompt = `
@@ -56,7 +50,7 @@ async function suggestChanges(task, functionSourceCode) {
 async function readAllSummaries() {
   console.log("Getting Summary");
   try {
-    const files = await fg("**/*.ai.txt", { ignore: ignorePattern });
+    const files = await fg(`${path.resolve(__dirname)}/**/*.ai.txt`, { ignore: ignorePattern });
     console.log("Files found:", files);
 
     if (files.length === 0) {
@@ -79,14 +73,6 @@ async function readAllSummaries() {
     console.error("Error in fast-glob:", err);
     throw err;
   }
-}
-
-function question(prompt) {
-  return new Promise((resolve) => {
-    rl.question(chalk.green(prompt), (answer) => {
-      resolve(answer);
-    });
-  });
 }
 
 function parseArray(gptReply) {
@@ -150,8 +136,9 @@ async function getTaskInput() {
   return response.task;
 }
 
-async function main() {
-  const task = await getTaskInput();
+async function main(task) {
+  if (!task) task = await getTaskInput()
+  
   console.log("Task:", task)
 
   // Read all summaries (Gets context of all files and project)
@@ -179,7 +166,9 @@ async function main() {
   
   console.log(chalk.yellow('\nSuggested changes:'));
   console.log(chalk.gray(solution));
-  rl.close();
+  return solution
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { main }
