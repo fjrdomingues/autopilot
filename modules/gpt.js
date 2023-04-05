@@ -30,7 +30,7 @@ const callGPT = async (prompt, model) => {
     totalTokensUsed += usage.total_tokens; // increment total tokens used
     completionTokens += usage.completion_tokens || 0
     promptTokens += usage.prompt_tokens || 0
-    cost += calculateTokensCost(GPTModel, promptTokens, completionTokens, totalTokensUsed)
+    cost = calculateTokensCost(GPTModel, promptTokens, completionTokens, totalTokensUsed)
     console.log(`Total tokens used: ${chalk.yellow(totalTokensUsed)}`, `Total Cost: ${chalk.yellow(cost.toFixed(2))}$`) // log total tokens used
 
 
