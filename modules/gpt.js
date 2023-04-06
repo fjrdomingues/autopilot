@@ -1,11 +1,14 @@
 const chalk = require('chalk');
 require('dotenv').config()
 const { Configuration, OpenAIApi } = require("openai");
+const fs = require('fs');
+const path = require('path');
+const { get_encoding } = require('@dqbd/tiktoken');
 let totalTokensUsed = 0
 let completionTokens = 0
 let promptTokens = 0
 let cost = 0
-const { get_encoding } = require('@dqbd/tiktoken');
+const logsFilename = new Date().toISOString()
 
 
 const configuration = new Configuration({
@@ -16,11 +19,12 @@ const openai = new OpenAIApi(configuration);
 const callGPT = async (prompt, model) => {
   if(!model) throw new Error('Model parameter is required')
   console.log("Calling GPT. Model: ", model)
-  // console.log("Prompt size is:", wordCount(prompt)*1.333)
+  log(`Model: ${model}\nPrompt:\n${prompt}`)
   try {
     const completion = await openai.createChatCompletion({
       model: model,
       messages: [{role: "user", content: prompt}],
+      temperature: 0.2
     });
 
     const usage = completion.data.usage
@@ -32,10 +36,10 @@ const callGPT = async (prompt, model) => {
     cost = calculateTokensCost(model, promptTokens, completionTokens, totalTokensUsed)
     console.log(`Total tokens used: ${chalk.yellow(totalTokensUsed)}`, `Total Cost: ${chalk.yellow(cost.toFixed(2))}$`) // log total tokens used
 
-
-
+    const reply = completion.data.choices[0].message.content
+    log("Reply:\n" + reply)
     // return output
-    return completion.data.choices[0].message.content
+    return reply
 
   } catch (error) {
     console.log(error.response)
@@ -63,6 +67,18 @@ function calculateTokensCost(model, promptTokens, completionTokens, totalTokensU
     return totalTokensUsed * modelCostMap[model]["tokensCost"] / 1000;
   }
 }
+
+// Save logs of all GPT calls
+function log(text) {
+  const suggestionsDir = path.join(__dirname, '..' ,'logs');
+  const fileName = `${logsFilename}.txt`;
+  // Ensure folder exists
+  if (!fs.existsSync(suggestionsDir)) {
+    fs.mkdirSync(suggestionsDir);
+  }
+  // Write the suggestion to the file
+  fs.appendFileSync(path.join(suggestionsDir, fileName), `${text} \n\n*******\n\n`);
+ }
 
 module.exports= {
   callGPT,

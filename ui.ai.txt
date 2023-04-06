@@ -1,11 +1,3 @@
 File Path: ui.js
 Summary:
-Summary:
-This file creates a command-line interface (CLI) for a user to input a programming task related to an existing codebase. The interface is designed to work with AI, specifically GPT models, to provide a suggested solution for the task. The main workflow includes the following steps:
-
-1. Takes the user-inputted task and reads all code summaries found in the project.
-2. Sends the task and summaries to GPT, asking which files are relevant to the task and the context behind their relevance.
-3. Retrieves the source code of the relevant files and sends them to GPT, extracting the critical parts of the code for the task.
-4. Asks GPT to suggest changes based on the extracted context and the task, and then save the output(solution) to a file located in the "suggestions" folder.
-
-This file contributes to the overall project by acting as an interface between the user and the AI, which eases the process of identifying necessary changes and solutions for a given task based on the current codebase.
+This file is the user interface for the project and accepts a task from the user related to code. It uses AI to complete the task by reading summaries of all .ai.txt files in the project directory and identifying relevant files using GPT AI API. It then extracts the source code of each relevant file and sends it to GPT to get the necessary changes to complete the task. The output is saved to a .md file in the "suggestions" folder. This file contributes to the overall project by providing a user-friendly interface for users to interact with the AI and complete coding tasks efficiently.

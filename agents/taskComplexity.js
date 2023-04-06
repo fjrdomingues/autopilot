@@ -1,11 +1,5 @@
 const { callGPT } = require('../modules/gpt');
 
-
-
-
-
-
-
 async function taskComplexityAgent(summaries, task) {
     const prompt = 
 ` 
