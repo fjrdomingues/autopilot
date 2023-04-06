@@ -4,7 +4,7 @@ async function taskComplexityAgent(summaries, task) {
     const prompt = 
 ` 
 USER INPUT: ${task}
-YOUR TASK: You are a project manager working in a software developement project. Measure the complexity of doing the USER INPUT and decide if it's critical to breadown the work into less complex JIRA tasks. Based on your assesment output the list of tasks. Tasks will be done by engineers
+YOUR TASK: You are a project manager working in a software development project. Measure the complexity of doing the USER INPUT and decide if it's critical to breakdown the work into less complex JIRA tasks. Based on your assessment output the list of tasks. Tasks will be done by engineers
 CONTEXT: 
 \`\`\`
 ${summaries}
