@@ -71,8 +71,9 @@ Task: Create a diagram explaining what this project and the process
    1. Copy the .env.example file to .env: `cp .env.example .env`
    2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`
    3. Set the path to your code `CODE_DIR=<path-to-your-code>`
-   4. Update `IGNORE_LIST=node_modules,autopilot,coverage,public,__tests__`
-   5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
+   4. If you don't have access to gpt-4, update `UI_ADVANCED_MODEL=gpt-3.5-turbo`
+   5. Update `IGNORE_LIST=node_modules,autopilot,coverage,public,__tests__`
+   6. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
 4. Run `node createSummaryOfFiles.js --all` to create a summary of all files (it will also start a watcher at the end for file changes)
 5. Run `node ui.js` to input a task and get the AI to give you a solution
 

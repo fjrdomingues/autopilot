@@ -26,7 +26,7 @@ async function getRelevantFiles(task, summaries) {
     \`\`\`
   `;
 
-  const reply = await callGPT(prompt, "gpt-3.5-turbo");
+  const reply = await callGPT(prompt, process.env.UI_CHEAP_MODEL);
   const parsedReply = parseArray(reply)
   return parsedReply;
 }
@@ -41,7 +41,7 @@ async function suggestChanges(task, functionSourceCode) {
     Your TASK: ${task}
   `;
 
-  const reply = await callGPT(prompt, "gpt-4");
+  const reply = await callGPT(prompt, process.env.UI_ADVANCED_MODEL);
 
   // Add a celebration emoji after finishing the task
   const celebrationEmoji = '🎉';
@@ -124,7 +124,7 @@ async function getRelevantContextForFile(task, file) {
     Output: Identify and output the relevant source code from this file, taking into account the context and TASK. Don't modify the code.
   `;
 
-  const reply = await callGPT(prompt, "gpt-3.5-turbo");
+  const reply = await callGPT(prompt, process.env.UI_CHEAP_MODEL);
   return reply;
 }
 
