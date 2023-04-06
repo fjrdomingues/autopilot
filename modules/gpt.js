@@ -5,6 +5,8 @@ let totalTokensUsed = 0
 let completionTokens = 0
 let promptTokens = 0
 let cost = 0
+const { get_encoding } = require('@dqbd/tiktoken');
+
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -45,6 +47,14 @@ const modelCostMap = {
   "gpt-3.5-turbo": {"tokensCost": 0.002},
 };
 
+function countTokens(input) {
+  const encoder = get_encoding("cl100k_base")
+  const tokens = encoder.encode(input);
+  const tokenCount = tokens.length;
+  encoder.free();
+  return tokenCount;
+}
+
 function calculateTokensCost(model, promptTokens, completionTokens, totalTokensUsed) {
   if (model === "gpt-4") {
     return completionTokens * modelCostMap[model]["completionTokensCost"] / 1000 + promptTokens * modelCostMap[model]["promptTokensCost"] / 1000;
@@ -55,5 +65,6 @@ function calculateTokensCost(model, promptTokens, completionTokens, totalTokensU
 
 module.exports= {
   callGPT,
-  calculateTokensCost
+  calculateTokensCost,
+  countTokens
 }

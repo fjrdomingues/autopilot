@@ -2,11 +2,14 @@
 
 const fs = require('fs');
 const fg = require('fast-glob');
-const { callGPT } = require('./modules/gpt');
+const { callGPT, countTokens } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];
 const prompts = require('prompts');
+
+// Agents
+const taskComplexityAgent = require('./agents/taskComplexity')
 
 async function getRelevantFiles(task, summaries) {
   const prompt = `
@@ -144,6 +147,14 @@ async function main(task) {
   // Read all summaries (Gets context of all files and project)
   // TODO: add context of project structure
   const summaries = await readAllSummaries();
+
+  console.log("Tokens in Summaries:", countTokens(JSON.stringify(summaries)))
+
+  // A limit to the size of summaries, otherwise they may not fit the context window of gpt3.5
+  if (countTokens(JSON.stringify(summaries)) > 3000) {
+    console.log("Aborting. Summary files combined are too big for the context window of gpt3.5")
+    return
+  }
 
   //uses GPT AI API to ask what files are relevant to the task and why
   const relevantFiles = await getRelevantFiles(task, summaries);

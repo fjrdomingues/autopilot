@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.3",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",
