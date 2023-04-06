@@ -16,7 +16,6 @@ const openai = new OpenAIApi(configuration);
 const callGPT = async (prompt, model) => {
   if(!model) throw new Error('Model parameter is required')
   console.log("Calling GPT. Model: ", model)
-  // console.log("Prompt size is:", wordCount(prompt)*1.333)
   try {
     const completion = await openai.createChatCompletion({
       model: model,
