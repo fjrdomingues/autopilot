@@ -23,7 +23,7 @@ async function getRelevantFiles(task, summaries) {
     Your TASK: ${task}
     Identify the main files in the existing codebase that are relevant to your TASK. If you want to create a new file, don't include it in the output.
     For each file explain also what is relevant in this file to complete the TASK.
-    Use the following format:
+    Use the following JSON format:
     \`\`\`
     [{"path": "<insert file name and path>", "context": "<insert context>"},{"path": "<insert file and path>", "context": "<insert context>"}]
     \`\`\`
