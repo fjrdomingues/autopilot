@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
 const { callGPT } = require('./modules/gpt');
