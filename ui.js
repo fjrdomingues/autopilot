@@ -94,7 +94,13 @@ function parseArray(gptReply) {
   const match = gptReply.match(regex);
 
   if (match && match[1]) {
-    const functionData = JSON.parse('[' + match[1] + ']');
+    var functionData
+    try{
+      functionData = JSON.parse('[' + match[1] + ']');
+    } catch(e) {
+      console.log("Error parsing JSON:", e, "reply:", gptReply)
+      throw e
+    }    
     return functionData;
   }
 
