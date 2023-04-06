@@ -2,7 +2,6 @@ const chalk = require('chalk');
 const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
 const { callGPT, calculateTokensCost } = require('./modules/gpt');
