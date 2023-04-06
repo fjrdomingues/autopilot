@@ -78,7 +78,7 @@ Task: Create a summary of this file, what it does and how it contributes to the 
 };
 
 async function main() {
-  const directoryPath = process.argv[2] || process.cwd();
+  const directoryPath = process.argv[2] || process.env.CODE_DIR;
   const fullAnalysis = process.argv.includes('--all');
 
   // Calculate and display the project size
