@@ -1,10 +1,11 @@
+const chalk = require('chalk');
 const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
-const { callGPT } = require('./modules/gpt');
+const { callGPT, calculateTokensCost } = require('./modules/gpt');
 const ignoreList = process.env.IGNORE_LIST.split(',');
 const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
 require('dotenv').config()
@@ -100,7 +101,10 @@ async function main() {
 
   // Calculate and display the project size
   const projectSize = calculateProjectSize(directoryPath);
-  console.log(`Project size: ~${projectSize/4} tokens`);
+  tokenCount = projectSize/4
+  // TODO: Move module to config
+  cost = calculateTokensCost("gpt-3.5-turbo", 0, 0, tokenCount)
+  console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 
   // Prompt the user to proceed
   const readline = require('readline').createInterface({

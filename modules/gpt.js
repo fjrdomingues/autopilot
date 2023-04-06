@@ -57,5 +57,6 @@ function calculateTokensCost(model, promptTokens, completionTokens, totalTokensU
 }
 
 module.exports= {
-  callGPT
+  callGPT,
+  calculateTokensCost
 }
