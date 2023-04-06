@@ -32,7 +32,7 @@ ${file.code}
 \`\`\`
 `
 
-    const reply = await callGPT(prompt, "gpt-3.5-turbo");
+    const reply = await callGPT(prompt, process.env.CHEAP_MODEL);
     return JSON.parse(reply).output.relevantCode;
   }
 
