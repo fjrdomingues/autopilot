@@ -29,7 +29,7 @@ const calculateProjectSize = (dir) => {
 };
 
 
-const processDirectory = async (dir) => {
+const processDirectory = async (dir, model) => {
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
@@ -37,7 +37,7 @@ const processDirectory = async (dir) => {
     const stats = fs.statSync(filePath);
 
     if (stats.isDirectory() && !ignoreList.includes(file)) {
-      await processDirectory(filePath);
+      await processDirectory(filePath, model);
     } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
       const file = fs.readFileSync(filePath, 'utf8')
       console.log(filePath, wordCount(file)*1.33)
@@ -45,12 +45,12 @@ const processDirectory = async (dir) => {
         console.log('File too BIG')
         continue
       }
-      await processFile(filePath);
+      await processFile(filePath, model);
     }
   }
 };
 
-const processFile = async (filePath) => {
+const processFile = async (filePath, model) => {
   try {
     let fileContent = fs.readFileSync(filePath, 'utf-8');
 
@@ -60,7 +60,7 @@ ${fileContent}
 \`\`\`
 Task: Create a summary of this file, what it does and how it contributes to the overall project.
 `
-    const output = await callGPT(prompt)
+    const output = await callGPT(prompt, model)
 
     if (output) {
         // Save new comment
@@ -91,18 +91,24 @@ async function main() {
     default: false,
     type: 'boolean'
   })
+  .option('model', {
+    alias: 'm',
+    describe: 'The name of the model to generate the analysis summary',
+    default: process.env.SUMMARY_model,
+    type: 'string'
+  })
   .help()
   .alias('help', 'h')
   .argv;
 
   const directoryPath = options.dir;
   const fullAnalysis = options.all;
+  const model = options.model;
 
   // Calculate and display the project size
   const projectSize = calculateProjectSize(directoryPath);
   tokenCount = projectSize/4
-  // TODO: Move module to config
-  cost = calculateTokensCost("gpt-3.5-turbo", 0, 0, tokenCount)
+  cost = calculateTokensCost(model, 0, 0, tokenCount)
   console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 
   // Prompt the user to proceed
@@ -114,7 +120,7 @@ async function main() {
   readline.question('Proceed with summarizing the project? (y/n): ', async (answer) => {
     if (answer.toLowerCase() === 'y') {
       // Process the initial directory
-      if (fullAnalysis) await processDirectory(directoryPath);
+      if (fullAnalysis) await processDirectory(directoryPath, model);
 
       // Watch for file changes in the directory
       const watcher = chokidar.watch(directoryPath, {
@@ -127,7 +133,7 @@ async function main() {
       watcher.on('change', async (filePath) => {
         if (fileExtensionsToProcess.includes(path.extname(filePath))) {
           console.log(`File modified: ${filePath}`);
-          await processFile(filePath);
+          await processFile(filePath, model);
         }
       });
 
