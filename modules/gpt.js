@@ -7,6 +7,10 @@ let promptTokens = 0
 let cost = 0
 const { get_encoding } = require('@dqbd/tiktoken');
 
+const modelCostMap = {
+  "gpt-4": {"promptTokensCost": 0.03, "completionTokensCost": 0.06},
+  "gpt-3.5-turbo": {"tokensCost": 0.002},
+};
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -40,11 +44,6 @@ const callGPT = async (prompt, model) => {
   } catch (error) {
     console.log(error.response)
   }
-};
-
-const modelCostMap = {
-  "gpt-4": {"promptTokensCost": 0.03, "completionTokensCost": 0.06},
-  "gpt-3.5-turbo": {"tokensCost": 0.002},
 };
 
 // counts tokens using tiktoken
