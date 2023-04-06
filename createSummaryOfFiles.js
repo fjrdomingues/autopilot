@@ -115,8 +115,7 @@ async function main() {
     // Calculate and display the project size
     const projectSize = calculateProjectSize(directoryPath);
     tokenCount = countTokens(projectSize)
-    if (model === 'gpt-3.5-turbo') cost = calculateTokensCost(model, null, null, tokenCount)
-    if (model === 'gpt-4') cost = calculateTokensCost(model, tokenCount, null, null)
+    cost = calculateTokensCost(model, tokenCount, null, tokenCount)
     
     console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 
