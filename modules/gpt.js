@@ -5,8 +5,6 @@ let totalTokensUsed = 0
 let completionTokens = 0
 let promptTokens = 0
 let cost = 0
-let defaultModel = "gpt-3.5-turbo"
-let GPT4Mode = false
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -14,13 +12,12 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const callGPT = async (prompt, model) => {
-  let GPTModel = model ? model : defaultModel
-  if (GPT4Mode) GPTModel = 'gpt-4'
-  console.log("Calling GPT. Model: ", GPTModel)
+  if(!model) throw new Error('Model parameter is required')
+  console.log("Calling GPT. Model: ", model)
   // console.log("Prompt size is:", wordCount(prompt)*1.333)
   try {
     const completion = await openai.createChatCompletion({
-      model: GPTModel,
+      model: model,
       messages: [{role: "user", content: prompt}],
     });
 
@@ -30,7 +27,7 @@ const callGPT = async (prompt, model) => {
     totalTokensUsed += usage.total_tokens; // increment total tokens used
     completionTokens += usage.completion_tokens || 0
     promptTokens += usage.prompt_tokens || 0
-    cost = calculateTokensCost(GPTModel, promptTokens, completionTokens, totalTokensUsed)
+    cost = calculateTokensCost(model, promptTokens, completionTokens, totalTokensUsed)
     console.log(`Total tokens used: ${chalk.yellow(totalTokensUsed)}`, `Total Cost: ${chalk.yellow(cost.toFixed(2))}$`) // log total tokens used
 
 
