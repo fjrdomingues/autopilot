@@ -68,9 +68,11 @@ Task: Create a diagram explaining what this project and the process
 1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git` inside of an existing project where you want to use autopilot
 2. Do `cd autopilot` to install dependencies: `npm install`
 3. `cd ..` to go back to the root of the project
-4. Set up an OpenAI API key and update the `.env` file with the key: `OPENAI_API_KEY=<your-api-key>`
-5. Update `const ignoreList = ['node_modules', 'autopilot', 'coverage', 'public', '__tests__']` and 
-`const fileExtensionsToProcess = ['.js', '.tsx', '.ts', '.jsx']` in the file `createSummaryOfFiles.js` to match the files extension that you want AI to analyze.
+4. Create the `.env` file and set up the environment variables:
+  4.1. Copy the .env.example file to .env: `cp .env.example .env` 
+  4.2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`
+  4.3. Update `IGNORE_LIST=node_modules,autopilot,coverage,public,__tests__`
+  4.4. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
 5. Run `node ./autopilot/createSummaryOfFiles.js ./ --all` to create a summary of all files (it will also start a watcher at the end for file changes)
 6. Run `node ./autopilot/ui.js` to input a task and get the AI to give you a solution
 

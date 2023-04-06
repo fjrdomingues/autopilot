@@ -4,8 +4,8 @@ const axios = require('axios');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
 const { callGPT } = require('./modules/gpt');
-const ignoreList = ['node_modules', 'autopilot', 'coverage', 'public', '__tests__'];
-const fileExtensionsToProcess = ['.js', '.tsx', '.ts', '.jsx'];
+const ignoreList = process.env.IGNORE_LIST.split(',');
+const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
 require('dotenv').config()
 
 const calculateProjectSize = (dir) => {
