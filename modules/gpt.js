@@ -47,6 +47,7 @@ const modelCostMap = {
   "gpt-3.5-turbo": {"tokensCost": 0.002},
 };
 
+// counts tokens using tiktoken
 function countTokens(input) {
   const encoder = get_encoding("cl100k_base")
   const tokens = encoder.encode(input);

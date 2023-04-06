@@ -1,6 +1,5 @@
 node_modules
 .env
-*.ai.txt
 suggestions
 idea.txt
 docs

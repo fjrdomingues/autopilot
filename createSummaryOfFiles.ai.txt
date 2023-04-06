@@ -1,0 +1,5 @@
+File Path: createSummaryOfFiles.js
+Summary:
+File Path: example.js
+Summary:
+This file is a command-line utility that automatically generates summaries of code files. It uses GPT-based language models to provide natural language descriptions of the files and their contributions to the overall project. The utility takes input parameters such as the target directory and the GPT model to be used, calculates the project size (in tokens) and the cost of running the GPT models, then proceeds to process each file and create a summary if the user chooses to. It also includes a file watcher that listens to changes in the target directory, and subsequently generates summaries for modified files. This tool assists developers in understanding their codebase and keeps track of the purpose and functionality of each file within the project.

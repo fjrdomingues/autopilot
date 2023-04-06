@@ -151,7 +151,7 @@ async function main(task) {
   console.log("Tokens in Summaries:", countTokens(JSON.stringify(summaries)))
 
   // A limit to the size of summaries, otherwise they may not fit the context window of gpt3.5
-  if (countTokens(JSON.stringify(summaries)) > 3000) {
+  if (countTokens(summaries.toString()) > 3000) {
     console.log("Aborting. Summary files combined are too big for the context window of gpt3.5")
     return
   }

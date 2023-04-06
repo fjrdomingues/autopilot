@@ -1,0 +1,11 @@
+File Path: modules/gpt.js
+Summary:
+This file is a utility module that serves as a helper for making API calls to OpenAI's GPT models. It exports a `callGPT` function, which is used for sending a user prompt to the selected GPT model and retrieving generated text. In addition, it provides functions for calculating the cost of token usage and counting tokens in a given input.
+
+The module first imports required packages and sets up an OpenAIApi instance with configuration derived from an environment variable, which holds the API key. It maintains variables for tracking token usage and cost.
+
+The exported `callGPT` function takes a prompt and a GPT model as parameters, then sends the prompt to the selected model via the OpenAI API. It subsequently updates and logs total tokens used and cost based on the model's pricing.
+
+Furthermore, the module exports a `calculateTokensCost` function which calculates the cost based on the GPT model and the number of tokens used. Another function, `countTokens`, utilizes the `tiktoken` package to count the tokens in a given input.
+
+In summary, this module mainly contributes to the overall project by providing a simple interface for making API calls to OpenAI's GPT models and handling token usage and cost calculations.
