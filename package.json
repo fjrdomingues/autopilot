@@ -16,6 +16,7 @@
     "openai": "^3.2.1",
     "prompts": "^2.4.2",
     "readline-sync": "^1.4.10",
-    "word-count": "^0.2.2"
+    "word-count": "^0.2.2",
+    "yargs": "^17.7.1"
   }
 }

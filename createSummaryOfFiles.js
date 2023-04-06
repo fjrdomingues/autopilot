@@ -1,10 +1,12 @@
+const chalk = require('chalk');
+const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
 const wordCount = require('word-count')
-const { callGPT } = require('./modules/gpt');
-const ignoreList = ['node_modules', 'autopilot', 'coverage', 'public', '__tests__'];
-const fileExtensionsToProcess = ['.js', '.tsx', '.ts', '.jsx'];
+const { callGPT, calculateTokensCost } = require('./modules/gpt');
+const ignoreList = process.env.IGNORE_LIST.split(',');
+const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
 require('dotenv').config()
 
 const calculateProjectSize = (dir) => {
@@ -77,12 +79,31 @@ Task: Create a summary of this file, what it does and how it contributes to the 
 };
 
 async function main() {
-  const directoryPath = process.argv[2] || process.cwd();
-  const fullAnalysis = process.argv.includes('--all');
+  const options = yargs
+  .option('dir', {
+    alias: 'd',
+    describe: 'The path to the directory containing the code files',
+    default: process.env.CODE_DIR,
+    type: 'string'
+  })
+  .option('all', {
+    describe: 'Whether to perform a full analysis of all code files',
+    default: false,
+    type: 'boolean'
+  })
+  .help()
+  .alias('help', 'h')
+  .argv;
+
+  const directoryPath = options.dir;
+  const fullAnalysis = options.all;
 
   // Calculate and display the project size
   const projectSize = calculateProjectSize(directoryPath);
-  console.log(`Project size: ~${projectSize/4} tokens`);
+  tokenCount = projectSize/4
+  // TODO: Move module to config
+  cost = calculateTokensCost("gpt-3.5-turbo", 0, 0, tokenCount)
+  console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 
   // Prompt the user to proceed
   const readline = require('readline').createInterface({
