@@ -20,8 +20,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+function verifyModel(model) {
+  return modelCostMap.hasOwnProperty(model);
+}
+
 const callGPT = async (prompt, model) => {
-  if(!model) throw new Error('Model parameter is required')
+  if (!model) throw new Error('Model parameter is required')
+  if (!verifyModel(model)) {
+    throw new Error('Invalid model');
+  }
+
   console.log("Calling GPT. Model: ", model)
   log(`Model: ${model}\nPrompt:\n${prompt}`)
   try {
