@@ -1,0 +1,10 @@
+File Path: ui.js
+Summary:
+- UI for user to input TASK related to code
+- Uses AI to complete the task
+- Reads all .ai.txt files for context
+- Gets relevant files and their context using GPT AI API
+- Extracts code and sends to GPT for necessary changes
+- Saves output to .md file in "suggestions" folder
+- User can input task through prompts or as argument
+- Handles errors and limitations of GPT3.5 context window

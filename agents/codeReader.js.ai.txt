@@ -1,0 +1,7 @@
+File Path: agents/codeReader.js
+Summary:
+- Function to extract relevant parts of source code for a given task
+- Uses GPT to generate response in JSON format
+- Response includes thoughts, reasoning, criticism, and summary for user
+- Output includes relevant code and reason for selection
+- Code can be parsed by JSON.parse in nodejs

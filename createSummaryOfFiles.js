@@ -54,17 +54,18 @@ const processFile = async (filePath, model) => {
   try {
     let fileContent = fs.readFileSync(filePath, 'utf-8');
 
-    const prompt = `File:
+    const prompt = 
+`File:
 \`\`\`
 ${fileContent}
 \`\`\`
-Task: Create a summary of this file, what it does and how it contributes to the overall project.
+Task: Create a summary of this file. Use as few words as possible while keeping the details. Use bullet points
 `
     const output = await callGPT(prompt, model)
 
     if (output) {
         // Save new comment
-        const summaryPath = path.join(path.dirname(filePath), path.basename(filePath, '.js') + '.ai.txt');
+        const summaryPath = path.join(filePath + '.ai.txt');
         // adds filepath to top of summary
         const contentToRight = `File Path: ${filePath}\nSummary:\n${output}`
         fs.writeFileSync(summaryPath, contentToRight);
