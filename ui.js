@@ -93,7 +93,7 @@ async function main(task) {
   // Using the previous reply, the app gets the source code of each relevant file and sends each to GPT to get the relevant context
   let tempOutput = '';
   for (const file of relevantFiles) {
-    const pathToFile = path.join(__dirname, file.path);
+    const pathToFile = file.path;
     const fileContent = fs.readFileSync(pathToFile, 'utf8');
     file.code = fileContent
     const relevantContext = await agents.codeReader(task, file) ;
