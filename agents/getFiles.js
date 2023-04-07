@@ -1,4 +1,4 @@
-const { callGPT } = require('../modules/gpt');
+const { callGPT, jsonParseWithValidate } = require('../modules/gpt');
 
 async function getRelevantFiles(task, summaries) {
     const prompt = 
@@ -30,7 +30,7 @@ ${summaries}
 <end context>
 `
     const reply = await callGPT(prompt, process.env.CHEAP_MODEL);
-    const parsedReply = JSON.parse(reply)
+    const parsedReply = jsonParseWithValidate(reply)
     return parsedReply.output.relevantFiles;
   }
 
