@@ -5,7 +5,7 @@ const fg = require('fast-glob');
 const { countTokens } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
-const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];
+const ignorePattern = ['node_modules/**/*'];
 const prompts = require('prompts');
 
 // Agents
