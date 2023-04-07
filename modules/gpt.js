@@ -8,7 +8,7 @@ let totalTokensUsed = 0
 let completionTokens = 0
 let promptTokens = 0
 let cost = 0
-const logsFilename = new Date().toISOString()
+const logsFilename = new Date().toISOString().replace(/:/g, '-')
 
 
 const configuration = new Configuration({
