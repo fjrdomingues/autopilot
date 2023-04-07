@@ -7,6 +7,7 @@ const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*', 'autopilot/**/*'];
 const prompts = require('prompts');
+let finalSolution
 
 // Agents
 const agents = require('./agents');
@@ -68,23 +69,39 @@ async function getTaskInput() {
   return response.task;
 }
 
-async function main(task) {
-  if (!task) task = await getTaskInput()
-  if (!task) return "A task is required"
-  
-  console.log("Task:", task)
-
+async function receiveUserTask(userInput) {
+  if (!userInput) userInput = await getTaskInput()
+  if (!userInput) return "A task is required"
+  finalSolution = ""
+  console.log("Task:", userInput)
   // Read all summaries (Gets context of all files and project)
   // TODO: add context of project structure
   const summaries = await readAllSummaries();
-
   console.log("Tokens in Summaries:", countTokens(JSON.stringify(summaries)))
-
+  
   // A limit to the size of summaries, otherwise they may not fit the context window of gpt3.5
   if (countTokens(summaries.toString()) > 3000) {
     console.log("Aborting. Summary files combined are too big for the context window of gpt3.5")
     return
   }
+  
+  // Ask PM if we need to break down the task and proceed with smaller tasks
+  const taskComplexityReport = await agents.taskComplexity(userInput, summaries)
+  console.log('Project Manager:',taskComplexityReport.thoughts.speak)
+  console.log(taskComplexityReport.output.taskList)
+
+  for await (const smallTask of taskComplexityReport.output.taskList) {
+    const output = await doTask(smallTask.taskDescription, summaries)
+    finalSolution += '\n\n' + 'TASK: ' + smallTask.taskDescription + 'Output: ' + output
+  }
+  const solutionPath = saveOutput(userInput, finalSolution);
+  console.log(chalk.green("Solution Ready:", solutionPath));
+
+  return finalSolution
+}
+
+
+async function doTask(task, summaries) {
 
   //uses GPT AI API to ask what files are relevant to the task and why
   const relevantFiles = await agents.getFiles(task, summaries);
@@ -97,18 +114,17 @@ async function main(task) {
     const fileContent = fs.readFileSync(pathToFile, 'utf8');
     file.code = fileContent
     const relevantContext = await agents.codeReader(task, file) ;
-    tempOutput += `// ${pathToFile}\n${JSON.stringify(relevantContext)}\n\n`;
+    tempOutput += `file: ${pathToFile}\ncontent:\n${relevantContext}\n\n`;
   }
   // console.log("Extracted code:", tempOutput)
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solution = await agents.coder(task, tempOutput);
-  const solutionPath = saveOutput(task, solution);
-  
-  console.log(chalk.green("Solution Ready:", solutionPath));
   return solution
 }
 
-if (require.main === module) main();
+if (require.main === module) receiveUserTask();
 
-module.exports = { main }
+module.exports = { 
+  receiveUserTask 
+}
