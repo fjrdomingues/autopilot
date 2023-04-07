@@ -16,7 +16,7 @@ const agents = require('./agents');
 async function readAllSummaries() {
   console.log("Getting Summary");
   try {
-    const files = await fg(path.resolve(__dirname, '**/*.ai.txt'), { ignore: ignorePattern });
+    const files = await fg(path.posix.join(process.env.CODE_DIR, '**/*.ai.txt'), { ignore: ignorePattern });
     console.log("Files found:", files);
 
     if (files.length === 0) {

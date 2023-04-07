@@ -8,16 +8,28 @@ let totalTokensUsed = 0
 let completionTokens = 0
 let promptTokens = 0
 let cost = 0
-const logsFilename = new Date().toISOString()
+const logsFilename = new Date().toISOString().replace(/:/g, '-')
 
+const modelCostMap = {
+  "gpt-4": {"promptTokensCost": 0.03, "completionTokensCost": 0.06},
+  "gpt-3.5-turbo": {"tokensCost": 0.002},
+};
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
+function verifyModel(model) {
+  return modelCostMap.hasOwnProperty(model);
+}
+
 const callGPT = async (prompt, model) => {
-  if(!model) throw new Error('Model parameter is required')
+  if (!model) throw new Error('Model parameter is required')
+  if (!verifyModel(model)) {
+    throw new Error('Invalid model');
+  }
+
   console.log("Calling GPT. Model: ", model)
   log(`Model: ${model}\nPrompt:\n${prompt}`)
   try {
@@ -44,11 +56,6 @@ const callGPT = async (prompt, model) => {
   } catch (error) {
     console.log(error.response)
   }
-};
-
-const modelCostMap = {
-  "gpt-4": {"promptTokensCost": 0.03, "completionTokensCost": 0.06},
-  "gpt-3.5-turbo": {"tokensCost": 0.002},
 };
 
 // counts tokens using tiktoken

@@ -32,8 +32,8 @@ Ensure the response can be parsed by JSON.parse in nodejs
 `
 
 
-    const reply = await callGPT(prompt, "gpt-3.5-turbo");
-    return JSON.parse(reply)
+    const result = await callGPT(prompt, process.env.CHEAP_MODEL)
+    return JSON.parse(result)
 
 }
 

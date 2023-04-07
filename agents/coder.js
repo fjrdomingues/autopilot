@@ -13,7 +13,7 @@ ${sourceCode}
 \`\`\`
 `
   
-    const reply = await callGPT(prompt, "gpt-3.5-turbo");
+    const reply = await callGPT(prompt, process.env.ADVANCED_MODEL);
   
     return reply;
 }

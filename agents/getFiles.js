@@ -29,7 +29,7 @@ CONTEXT:
 ${summaries}
 <end context>
 `
-    const reply = await callGPT(prompt, "gpt-3.5-turbo");
+    const reply = await callGPT(prompt, process.env.CHEAP_MODEL);
     const parsedReply = JSON.parse(reply)
     return parsedReply.output.relevantFiles;
   }
