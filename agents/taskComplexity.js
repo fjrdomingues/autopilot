@@ -1,4 +1,4 @@
-const { callGPT } = require('../modules/gpt');
+const { callGPT, jsonParseWithValidate } = require('../modules/gpt');
 
 async function taskComplexityAgent(summaries, task) {
     const prompt = 
@@ -33,7 +33,7 @@ Ensure the response can be parsed by JSON.parse in nodejs
 
 
     const result = await callGPT(prompt, process.env.CHEAP_MODEL)
-    return JSON.parse(result)
+    return jsonParseWithValidate(result)
 
 }
 
