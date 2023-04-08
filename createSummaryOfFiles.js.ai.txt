@@ -1,0 +1,8 @@
+File Path: createSummaryOfFiles.js
+Summary:
+- This is a Node.js script that uses GPT to create summaries of code files
+- It processes all files in a specified directory and can also watch for changes in the directory
+- It calculates the project size in tokens and estimates the cost of using GPT
+- It prompts the user to confirm before summarizing the entire project
+- It ignores certain directories and file extensions as specified in environment variables
+- It saves the summaries in separate files with the same name as the original file but with a ".ai.txt" extension

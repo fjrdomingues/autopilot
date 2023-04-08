@@ -1,0 +1,11 @@
+File Path: modules/gpt.js
+Summary:
+- Imports necessary packages
+- Defines model cost map for GPT-4 and GPT-3.5 Turbo
+- Creates OpenAI API configuration and instance
+- Defines function to verify model
+- Defines function to call GPT and log usage and cost
+- Defines function to count tokens using tiktoken
+- Defines function to calculate cost based on model and token usage
+- Defines function to save logs of GPT calls
+- Exports functions for external use
