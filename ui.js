@@ -99,6 +99,30 @@ async function main(task) {
   console.log("Solution:", solution);
   const solutionPath = savePatchFile(solution);
 
+  const { exec } = require('child_process');
+  const prompts = require('prompts');
+
+  (async () => {
+    const response = await prompts({
+      type: 'text',
+      name: 'apply',
+      message: 'Do you want to apply the generated patch? Please enter "yes" or "no".',
+    });
+    if (response.apply === 'yes') {
+      exec(`git apply ${solutionPath}`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error applying patch: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+      });
+    }
+  })();
+
   return solution
 }
 
