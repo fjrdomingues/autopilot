@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const fg = require('fast-glob');
-const { countTokens } = require('./modules/gpt');
+const { countTokens, callGPT } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*'];
@@ -40,12 +40,12 @@ async function readAllSummaries() {
   return summaries;
 }
 
-function savePatchFile(patch) {
+function savePatchFile(fileContent, extension) {
   const suggestionsDir = path.join(__dirname, 'suggestions');
-  const fileName = `${Date.now()}.patch`;
+  const fileName = `${Date.now()}.${extension}`;
   const filePath = path.join(suggestionsDir, fileName)
 
-  fs.writeFileSync(filePath, patch);
+  fs.writeFileSync(filePath, fileContent);
   return filePath
 }
 
@@ -96,32 +96,26 @@ async function main(task) {
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solution = await agents.coder(task, tempOutput);
+  const solutionPath = savePatchFile(solution,'patch');
   console.log("Solution:", solution);
-  const solutionPath = savePatchFile(solution);
+  console.log("Solution file:", solutionPath);
 
-  const { exec } = require('child_process');
-  const prompts = require('prompts');
+  script = await callGPT(`
+Read the provided patch file, and rewrite it into a shell script using "sed" commands.
+For each change in the patch file,
+  Create an equivalent "sed" command
+  use the smallest relevant match 
+  use --in-place  
+(code only, don't explain anything), 
+properly escape all strings
+Patch file:
+${solution}`, process.env.CHEAP_MODEL);
+  // Remove ` symbol from the beginning and end of the reply
+  script=script.replace(/`/g, '')
+  const scriptPath = savePatchFile(script,'sh');
 
-  (async () => {
-    const response = await prompts({
-      type: 'text',
-      name: 'apply',
-      message: 'Do you want to apply the generated patch? Please enter "yes" or "no".',
-    });
-    if (response.apply === 'yes') {
-      exec(`git apply ${solutionPath}`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error applying patch: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-      });
-    }
-  })();
+  console.log("Patch script:", script)
+  console.log("Patch file:", scriptPath)
 
   return solution
 }

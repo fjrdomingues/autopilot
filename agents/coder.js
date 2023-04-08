@@ -6,16 +6,15 @@ async function suggestChanges(task, sourceCode) {
 ` 
 USER INPUT: ${task}
 YOUR TASK: You are a senior software developer. Do what is asked in the USER INPUT.
-RESPONSE FORMAT: A valid patch format with a code update based on the USER INPUT. Example format:
+RESPONSE FORMAT: A valid patch format --unified=0, as minimal as possible. Example format:
 "
-diff --git a/[file path] b/[file path]
-index [old file hash]..[new file hash] [mode]
---- a/[file path]
-+++ b/[file path]
-@@ -[old line number],[old line number] +[new line number],[new line number] @@
- [changed lines]
+diff --git a/example_file.txt b/example_file.txt
+index abc123..def456 100644
+@@ -3,1 +3,1 @@
+-This line will be removed in the modified file
++This line is added in the modified file
 "
-Code only. Do not add explanations or comments.
+Code only. Do not add explanations or comments. Do NOT add any before or after lines. No old/original lines. Only the modified lines.
 SOURCE CODE - This is code from the existing codebase of this project:
 \`\`\`
 ${sourceCode}
