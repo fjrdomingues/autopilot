@@ -45,11 +45,6 @@ function saveOutput(task, solution) {
  const suggestionsDir = path.join(__dirname, 'suggestions');
  const fileName = `${Date.now()}.md`;
 
- // Ensure the "suggestions" folder exists
- if (!fs.existsSync(suggestionsDir)) {
-   fs.mkdirSync(suggestionsDir);
- }
-
  // Write the suggestion to the file
  const filePath = path.join(suggestionsDir, fileName)
  fs.writeFileSync(filePath, `# TASK \n ${task}\n# SOLUTION\n\`\`\`json\n${solution}\`\`\``);
