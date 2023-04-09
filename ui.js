@@ -3,24 +3,12 @@
 const fs = require('fs');
 const { countTokens } = require('./modules/gpt');
 const chalk = require('chalk');
-const path = require('path');
 const { getTaskInput } = require('./modules/userInputs');
 const { readAllSummaries } = require('./modules/summaries');
+const { saveOutput } = require('./modules/fsOutput');
 
 // Agents
 const agents = require('./agents');
-
-// Saves output to .md file
-function saveOutput(task, solution) {
- // Save the solution to a file in the "suggestions" folder
- const suggestionsDir = path.join(__dirname, 'suggestions');
- const fileName = `${Date.now()}.md`;
-
- // Write the suggestion to the file
- const filePath = path.join(suggestionsDir, fileName)
- fs.writeFileSync(filePath, `# TASK \n ${task}\n# SOLUTION\n\`\`\`json\n${solution}\`\`\``);
- return filePath
-}
 
 async function main(task) {
   if (!task) task = await getTaskInput()
