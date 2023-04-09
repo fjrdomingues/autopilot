@@ -16,7 +16,7 @@ async function readAllSummaries() {
   var files = [];
   try {
     console.log("Getting Summary");
-    const files = await fg(path.posix.join(process.env.CODE_DIR, '**/*.ai.txt'), { ignore: ignorePattern });
+    files = await fg(path.posix.join(process.env.CODE_DIR, '**/*.ai.txt'), { ignore: ignorePattern });
   } catch (err) {
     console.error("Error in fast-glob:", err);
     throw err;
