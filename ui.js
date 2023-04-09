@@ -1,103 +1,122 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
-
-const fs = require('fs');
-const fg = require('fast-glob');
-const { countTokens } = require('./modules/gpt');
 const chalk = require('chalk');
-const path = require('path');
-const ignorePattern = ['node_modules/**/*'];
-const prompts = require('prompts');
-
-// Agents
+const { countTokens } = require('./modules/gpt');
+const { getTaskInput } = require('./modules/userInputs');
+const { readAllSummaries, getFiles } = require('./modules/summaries');
+const { saveOutput } = require('./modules/fsOutput');
 const agents = require('./agents');
 
 // Gets all .ai.txt files (summaries)
 async function readAllSummaries() {
-  console.log("Getting Summary");
+  var files = [];
   try {
-    const files = await fg(path.posix.join(process.env.CODE_DIR, '**/*.ai.txt'), { ignore: ignorePattern });
-    console.log("Files found:", files);
-
-    if (files.length === 0) {
-      console.log("No matching files found.");
-      return [];
-    }
-
-    let summaries = "";
-    for (const file of files) {
-      try {
-        const summary = fs.readFileSync(file, 'utf-8');
-        summaries += summary + '\n\n';
-      } catch (error) {
-        console.error("Error reading file:", file, error);
-      }
-    }
-    return summaries;
+    console.log("Getting Summary");
+    files = await fg(path.posix.join(process.env.CODE_DIR, '**/*.ai.txt'), { ignore: ignorePattern });
   } catch (err) {
     console.error("Error in fast-glob:", err);
     throw err;
+
+const maxSummaryTokenCount = 3000;
+const yargs = require('yargs');
+
+function validateSummaryTokenCount(summariesTokenCount){
+  if (summariesTokenCount > maxSummaryTokenCount) {
+    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
+    console.log(message)
+    throw new Error(message)
   }
+
+  if (files.length === 0) {
+    console.log("No matching files found. Try running `node createSummaryOfFiles` first.");
+    throw new Error("Can not run without Summaries. Try running `node createSummaryOfFiles` first.");
+  }
+
+  let summaries = "";
+  console.log("Files found:", files);
+  for (const file of files) {
+    try {
+      const summary = fs.readFileSync(file, 'utf-8');
+      summaries += summary + '\n\n';
+    } catch (error) {
+      console.error("Error reading file:", file, error);
+    }
+  }
+  return summaries;
 }
 
-// Saves output to .md file
-function saveOutput(task, solution) {
- // Save the solution to a file in the "suggestions" folder
- const suggestionsDir = path.join(__dirname, 'suggestions');
- const fileName = `${Date.now()}.md`;
-
- // Write the suggestion to the file
- const filePath = path.join(suggestionsDir, fileName)
- fs.writeFileSync(filePath, `# TASK \n ${task}\n# SOLUTION\n\`\`\`json\n${solution}\`\`\``);
- return filePath
+async function runAgent(agentFunction, var1, var2){
+  if (interactive){
+    let answer = '';
+    while (answer !== '1') {
+      res = await agentFunction(var1, var2);
+      console.log("Agent result: ", res);
+  
+      const readline = require('readline');
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+  
+      answer = await new Promise(resolve => {
+        rl.question('Do you want to proceed?\n1. Approve - continue\n2. Retry - Reruns the agent command\n', (answer) => {
+          resolve(answer);
+          rl.close();
+        });
+      });
+      if (answer !== '1' && answer !== '2') {
+        console.log('Invalid input');
+      }
+    };
+  }
+  return res
 }
 
-// Asks user for a task
-async function getTaskInput() {
-  const response = await prompts({
-     type: 'text',
-     name: 'task',
-     message: 'Please enter your TASK (multiline supported):',
-     multiline: true,
-   });
+async function main() {
+  // Summaries fetch and validate
+  const summaries = await readAllSummaries();
+  const summariesTokenCount = countTokens(JSON.stringify(summaries))
+  validateSummaryTokenCount(summariesTokenCount);
+  console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
-  return response.task;
-}
+  const options = yargs
+  .option('task', {
+    alias: 't',
+    describe: 'The task to be completed',
+    default: await getTaskInput(),
+    type: 'string'
+  })
+  .option('interactive', {
+    alias: 'i',
+    describe: 'Whether to run in interactive mode',
+    default: true,
+    type: 'boolean'
+  })
+  .help()
+  .alias('help', 'h')
+  .argv;
+  interactive = options.interactive;
 
-async function main(task) {
+  // Task fetch and validate
+  task = options.task;
   if (!task) task = await getTaskInput()
   if (!task) return "A task is required"
-  
-  console.log("Task:", task)
+  console.log(`Task: ${task}`)
 
-  // Read all summaries (Gets context of all files and project)
-  // TODO: add context of project structure
-  const summaries = await readAllSummaries();
+  // Get files by agent decision
+  relevantFiles = await runAgent(agents.getFiles,task, summaries);
 
-  console.log("Tokens in Summaries:", countTokens(JSON.stringify(summaries)))
+  files = getFiles(relevantFiles)
 
-  // A limit to the size of summaries, otherwise they may not fit the context window of gpt3.5
-  if (countTokens(summaries.toString()) > 3000) {
-    console.log("Aborting. Summary files combined are too big for the context window of gpt3.5")
-    return
-  }
-
-  //uses GPT AI API to ask what files are relevant to the task and why
-  const relevantFiles = await agents.getFiles(task, summaries);
-  console.log("Relevant Files are: ", relevantFiles)
-
-  // Using the previous reply, the app gets the source code of each relevant file and sends each to GPT to get the relevant context
+  // Ask an agent about each file
   let tempOutput = '';
-  for (const file of relevantFiles) {
-    const pathToFile = file.path;
-    const fileContent = fs.readFileSync(pathToFile, 'utf8');
-    file.code = fileContent
-    const relevantContext = await agents.codeReader(task, file) ;
-    tempOutput += `// ${pathToFile}\n${JSON.stringify(relevantContext)}\n\n`;
+  for (const file of files) {
+    const relevantContext = await runAgent(agents.codeReader, task, file) ;
+    tempOutput += `// ${file.path}\n${JSON.stringify(relevantContext)}\n\n`;
   }
-  // console.log("Extracted code:", tempOutput)
+  console.log("Extracted code:", tempOutput)
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solution = await agents.coder(task, tempOutput);
+  const solution = await runAgent(agents.coder, task, tempOutput);
   const solutionPath = saveOutput(task, solution);
   
   console.log(chalk.green("Solution Ready:", solutionPath));

@@ -1,3 +1,0 @@
-File Path: createSummaryOfFiles.js
-Summary:
-This file is the main script for summarizing code files in a directory. It uses the GPT language model to generate summaries of each file, and saves the summaries in separate files with the extension ".ai.txt". The script can be run with various options, including specifying the directory to analyze, the model to use for generating summaries, and whether to perform a full analysis of all code files in the directory. The script also watches for file changes in the directory and automatically generates summaries for modified files. Overall, this script is a useful tool for quickly generating summaries of code files and improving project documentation.
