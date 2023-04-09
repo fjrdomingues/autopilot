@@ -6,8 +6,6 @@ const { countTokens } = require('./modules/gpt');
 const { getTaskInput } = require('./modules/userInputs');
 const { readAllSummaries } = require('./modules/summaries');
 const { saveOutput } = require('./modules/fsOutput');
-
-// Agents
 const agents = require('./agents');
 
 async function main(task) {
