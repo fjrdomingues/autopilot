@@ -1,11 +1,9 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 
 const fs = require('fs');
-const fg = require('fast-glob');
 const { countTokens } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
-const ignorePattern = ['node_modules/**/*'];
 const { getTaskInput } = require('./modules/userInputs');
 const { readAllSummaries } = require('./modules/summaries');
 
