@@ -6,7 +6,7 @@ const { countTokens } = require('./modules/gpt');
 const chalk = require('chalk');
 const path = require('path');
 const ignorePattern = ['node_modules/**/*'];
-const prompts = require('prompts');
+const { getTaskInput } = require('./modules/userInputs');
 
 // Agents
 const agents = require('./agents');
@@ -50,18 +50,6 @@ function saveOutput(task, solution) {
  const filePath = path.join(suggestionsDir, fileName)
  fs.writeFileSync(filePath, `# TASK \n ${task}\n# SOLUTION\n\`\`\`json\n${solution}\`\`\``);
  return filePath
-}
-
-// Asks user for a task
-async function getTaskInput() {
-  const response = await prompts({
-     type: 'text',
-     name: 'task',
-     message: 'Please enter your TASK (multiline supported):',
-     multiline: true,
-   });
-
-  return response.task;
 }
 
 async function main(task) {
