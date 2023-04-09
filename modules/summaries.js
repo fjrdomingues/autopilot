@@ -3,6 +3,28 @@ const fs = require('fs');
 const fg = require('fast-glob');
 const path = require('path');
 
+const types = {
+  FileObject: {
+    path: "string",
+    code: "string",
+  },
+};
+
+/**
+ * @param {FileObject[]} files - An array of file objects, each with a `path` property.
+ * @returns {FileObject[]} - An array of file objects, each with a `path` property and a `code` property containing the file's contents.
+ */
+function getFiles(files){
+  retFiles=[]
+  for (const file of files) {
+    const pathToFile = file.path;
+    const fileContent = fs.readFileSync(pathToFile, 'utf8');
+    file.code = fileContent
+    retFiles.push(file)
+  }
+  return retFiles
+}
+
 // Gets all .ai.txt files (summaries)
 async function readAllSummaries() {
     var files = [];
@@ -33,5 +55,7 @@ async function readAllSummaries() {
 }
 
 module.exports = {
-    readAllSummaries
+    readAllSummaries,
+    getFiles,
+    types
 }

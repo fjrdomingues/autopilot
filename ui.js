@@ -4,7 +4,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 const { countTokens } = require('./modules/gpt');
 const { getTaskInput } = require('./modules/userInputs');
-const { readAllSummaries } = require('./modules/summaries');
+const { readAllSummaries, getFiles } = require('./modules/summaries');
 const { saveOutput } = require('./modules/fsOutput');
 const agents = require('./agents');
 const maxSummaryTokenCount = 3000;
@@ -28,20 +28,18 @@ async function main(task) {
   validateSummaryTokenCount(summariesTokenCount);
   console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
-  //uses GPT AI API to ask what files are relevant to the task and why
+  // Get files by agent decision
   const relevantFiles = await agents.getFiles(task, summaries);
   console.log("Relevant Files are: ", relevantFiles)
+  files = getFiles(relevantFiles)
 
-  // Using the previous reply, the app gets the source code of each relevant file and sends each to GPT to get the relevant context
+  // Ask an agent about each file
   let tempOutput = '';
-  for (const file of relevantFiles) {
-    const pathToFile = file.path;
-    const fileContent = fs.readFileSync(pathToFile, 'utf8');
-    file.code = fileContent
+  for (const file of files) {
     const relevantContext = await agents.codeReader(task, file) ;
-    tempOutput += `// ${pathToFile}\n${JSON.stringify(relevantContext)}\n\n`;
+    tempOutput += `// ${file.path}\n${JSON.stringify(relevantContext)}\n\n`;
   }
-  // console.log("Extracted code:", tempOutput)
+  console.log("Extracted code:", tempOutput)
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solution = await agents.coder(task, tempOutput);
