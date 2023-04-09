@@ -13,30 +13,31 @@ const agents = require('./agents');
 
 // Gets all .ai.txt files (summaries)
 async function readAllSummaries() {
-  console.log("Getting Summary");
+  var files = [];
   try {
+    console.log("Getting Summary");
     const files = await fg(path.posix.join(process.env.CODE_DIR, '**/*.ai.txt'), { ignore: ignorePattern });
-    console.log("Files found:", files);
-
-    if (files.length === 0) {
-      console.log("No matching files found.");
-      return [];
-    }
-
-    let summaries = "";
-    for (const file of files) {
-      try {
-        const summary = fs.readFileSync(file, 'utf-8');
-        summaries += summary + '\n\n';
-      } catch (error) {
-        console.error("Error reading file:", file, error);
-      }
-    }
-    return summaries;
   } catch (err) {
     console.error("Error in fast-glob:", err);
     throw err;
   }
+
+  if (files.length === 0) {
+    console.log("No matching files found. Try running `node createSummaryOfFiles` first.");
+    throw new Error("Can not run without Summaries. Try running `node createSummaryOfFiles` first.");
+  }
+
+  let summaries = "";
+  console.log("Files found:", files);
+  for (const file of files) {
+    try {
+      const summary = fs.readFileSync(file, 'utf-8');
+      summaries += summary + '\n\n';
+    } catch (error) {
+      console.error("Error reading file:", file, error);
+    }
+  }
+  return summaries;
 }
 
 // Saves output to .md file
