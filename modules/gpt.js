@@ -36,7 +36,7 @@ const callGPT = async (prompt, model) => {
     const completion = await openai.createChatCompletion({
       model: model,
       messages: [{role: "user", content: prompt}],
-      temperature: 0.2
+      temperature: process.env.MODEL_TEMPERATURE
     });
 
     const usage = completion.data.usage
