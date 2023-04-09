@@ -1,3 +1,0 @@
-File Path: agents/getFiles.js
-Summary:
-This file exports a function called `getRelevantFiles` which takes in a task and a codebase summary as input. The function uses the OpenAI GPT-3 API to generate a response in JSON format that includes a list of relevant files in the codebase and the reasons why they were selected. The response also includes the user's thoughts, reasoning, constructive self-criticism, and a summary to say to the user. This function contributes to the overall project by providing a way to automatically identify relevant files in a codebase based on user input.

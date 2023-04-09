@@ -1,3 +1,0 @@
-File Path: modules/gpt.js
-Summary:
-This file contains functions related to calling the OpenAI GPT API and calculating the cost of tokens used. The `callGPT` function takes a prompt and a model as input, calls the OpenAI API to generate a response, and returns the response. The `calculateTokensCost` function calculates the cost of tokens used based on the model and number of prompt and completion tokens. The `countTokens` function uses the `@dqbd/tiktoken` library to count the number of tokens in a given input. The file also includes a `log` function to save logs of all GPT calls. These functions contribute to the overall project by providing the necessary functionality for generating responses using the OpenAI GPT API and tracking the cost of tokens used.
