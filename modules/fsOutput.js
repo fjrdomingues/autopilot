@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const outputFolder = 'suggestions';
 
 // Saves output to suggestions
 function saveOutput(task, solution) {
     // Save the solution to a file in the "suggestions" folder
-    const suggestionsDir = path.join(__dirname, '..' , 'suggestions');
+    const suggestionsDir = path.join(__dirname, '..' , outputFolder);
     const fileName = `${Date.now()}.md`;
    
     // Write the suggestion to the file
