@@ -7,24 +7,26 @@ const { getTaskInput } = require('./modules/userInputs');
 const { readAllSummaries } = require('./modules/summaries');
 const { saveOutput } = require('./modules/fsOutput');
 const agents = require('./agents');
+const maxSummaryTokenCount = 3000;
+
+function validateSummaryTokenCount(summariesTokenCount){
+  if (summariesTokenCount > maxSummaryTokenCount) {
+    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
+    console.log(message)
+    throw new Error(message)
+  }
+}
 
 async function main(task) {
   if (!task) task = await getTaskInput()
   if (!task) return "A task is required"
-  
-  console.log("Task:", task)
+  console.log(`Task: ${task}`)
 
-  // Read all summaries (Gets context of all files and project)
-  // TODO: add context of project structure
+  // Summaries fetch and validate
   const summaries = await readAllSummaries();
-
-  console.log("Tokens in Summaries:", countTokens(JSON.stringify(summaries)))
-
-  // A limit to the size of summaries, otherwise they may not fit the context window of gpt3.5
-  if (countTokens(summaries.toString()) > 3000) {
-    console.log("Aborting. Summary files combined are too big for the context window of gpt3.5")
-    return
-  }
+  const summariesTokenCount = countTokens(JSON.stringify(summaries))
+  validateSummaryTokenCount(summariesTokenCount);
+  console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
   //uses GPT AI API to ask what files are relevant to the task and why
   const relevantFiles = await agents.getFiles(task, summaries);
