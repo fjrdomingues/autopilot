@@ -1,0 +1,9 @@
+File Path: modules/fsOutput.js
+Summary:
+- Imports fs and path modules
+- Defines outputFolder variable as "suggestions"
+- Defines saveOutput function to save task and solution to a file in the "suggestions" folder
+- Constructs the file path and file name using path.join and Date.now()
+- Writes the suggestion to the file using fs.writeFileSync
+- Returns the file path
+- Exports the saveOutput function

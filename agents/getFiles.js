@@ -25,13 +25,13 @@ RESPONSE FORMAT:
 Ensure the response can be parsed by JSON.parse    
 
 CONTEXT:
-<start context>
+*** START REPOSITORY CONTEXT ***
 ${summaries}
-<end context>
+*** END REPOSITORY CONTEXT ***
 `
     const reply = await callGPT(prompt, process.env.CHEAP_MODEL);
     const parsedReply = jsonParseWithValidate(reply)
-    return parsedReply.output.relevantFiles;
+    return parsedReply;
   }
 
   module.exports = getRelevantFiles

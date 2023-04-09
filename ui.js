@@ -19,20 +19,21 @@ function validateSummaryTokenCount(summariesTokenCount){
 
 async function runAgent(agentFunction, var1, var2){
   if (interactive){
-      res = await agentFunction(var1, var2);
-      console.log("Agent:", agentFunction.name, ":", res);
-      const proceed = await prompts({
-        type: 'select',
-        name: 'value',
-        message: 'Approve agent\'s reply ?',
-        choices: [
-          { title: 'Approve - continue', value: 'continue' },
-          { title: 'Retry - Rerun agent', value: 'retry'},
-          { title: 'Abort', value: 'abort'}
-        ]
-      });
+    res = await agentFunction(var1, var2);
+    console.log("(agent)", agentFunction.name);
+    console.dir(res, { depth: null })
+    const proceed = await prompts({
+      type: 'select',
+      name: 'value',
+      message: 'Approve agent\'s reply ?',
+      choices: [
+        { title: 'Approve - continue', value: 'continue' },
+        { title: 'Retry - Rerun agent', value: 'retry'},
+        { title: 'Abort', value: 'abort'}
+      ]
+    });
     if (proceed.value === 'continue') return res
-    if (proceed.value === 'retry') runAgent(agentFunction, var1, var2)
+    if (proceed.value === 'retry') await runAgent(agentFunction, var1, var2)
     if (proceed.value === 'abort') throw new Error("Aborted")
   }
   return await agentFunction(var1, var2);
@@ -72,18 +73,19 @@ async function main() {
   // Get files by agent decision
   relevantFiles = await runAgent(agents.getFiles,task, summaries);
 
-  files = getFiles(relevantFiles)
+  files = getFiles(relevantFiles.output.relevantFiles)
 
   // Ask an agent about each file
-  let tempOutput = '';
+  let relevantCode = [];
   for (const file of files) {
-    const relevantContext = await runAgent(agents.codeReader, task, file) ;
-    tempOutput += `// ${file.path}\n${JSON.stringify(relevantContext)}\n\n`;
+    const res = await runAgent(agents.codeReader, task, file) ;
+    relevantCode.push({path: file.path, code: res.output.relevantCode})
   }
-  console.log("Extracted code:", tempOutput)
+  console.log("Extracted code:")
+  console.dir(relevantCode, { depth: null })
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solution = await runAgent(agents.coder, task, tempOutput);
+  const solution = await runAgent(agents.coder, task, relevantCode);
   const solutionPath = saveOutput(task, solution);
   
   console.log(chalk.green("Solution Ready:", solutionPath));

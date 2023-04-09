@@ -1,7 +1,6 @@
 File Path: agents/coder.js
 Summary:
-- Function to suggest changes in source code
-- Uses GPT to generate response
-- Takes in task and source code as input
-- Returns reply with text and necessary assets
-- Includes user input and response format in prompt
+- Function to suggest changes to source code
+- Formats code for prompt
+- Calls GPT for response
+- Returns reply

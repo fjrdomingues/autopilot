@@ -4,7 +4,7 @@ async function getRelevantContextForFile(task, file) {
     const prompt = 
 ` 
 USER INPUT: ${task}
-YOUR TASK: Extract the relevant parts of source code for the USER INPUT. Don't modify the code
+YOUR TASK: Find and extract the relevant source code on this file to solve the USER INPUT. Don't modify the code. Extract only if the code is relevant, otherwise ignore.
 
 You must respond in JSON format as described below
 
@@ -18,8 +18,9 @@ RESPONSE FORMAT:
         "speak": "thoughts summary to say to user"
     },
     "output": {
+        "file": "filename and path of file",
         "relevantCode": [{
-            "sourceCode": "extract code from the file in string format",
+            "sourceCode": "extracted relevant code in string format",
             "reason": "reason this code was selected"
         }]
     }
@@ -27,13 +28,15 @@ RESPONSE FORMAT:
 Ensure the response can be parsed by JSON.parse in nodejs    
 
 CONTEXT SOURCE CODE: 
-\`\`\`
+*** CONTEXT SOURCE CODE START ***
+// ${file.path}
 ${file.code}
-\`\`\`
+*** CONTEXT SOURCE CODE END ***
+
 `
 
     const reply = await callGPT(prompt, process.env.CHEAP_MODEL);
-    return jsonParseWithValidate(reply).output.relevantCode;
+    return jsonParseWithValidate(reply);
   }
 
 module.exports = getRelevantContextForFile
