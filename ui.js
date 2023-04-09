@@ -20,7 +20,7 @@ function validateSummaryTokenCount(summariesTokenCount){
 async function runAgent(agentFunction, var1, var2){
   if (interactive){
       res = await agentFunction(var1, var2);
-      console.log("Agent result: ", res);
+      console.log("Agent:", agentFunction.name, ":", res);
       const proceed = await prompts({
         type: 'select',
         name: 'value',

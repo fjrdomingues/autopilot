@@ -1,7 +1,8 @@
-const ignorePattern = ['node_modules/**/*'];
+require('dotenv').config()
 const fs = require('fs');
 const fg = require('fast-glob');
 const path = require('path');
+const ignorePattern = process.env.IGNORE_LIST.split(',');
 
 const types = {
   FileObject: {
@@ -15,7 +16,7 @@ const types = {
  * @returns {FileObject[]} - An array of file objects, each with a `path` property and a `code` property containing the file's contents.
  */
 function getFiles(files){
-  retFiles=[]
+  let retFiles=[]
   for (const file of files) {
     const pathToFile = file.path;
     const fileContent = fs.readFileSync(pathToFile, 'utf8');
