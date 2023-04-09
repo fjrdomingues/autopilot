@@ -1,3 +1,0 @@
-File Path: agents/coder.js
-Summary:
-This file exports a function called "suggestChanges" that takes in a task and source code as parameters. It uses the GPT-3 API to generate a response to the task and returns it. The response includes a prompt with the task and source code, and the expected response format. This function contributes to the overall project by providing a way to generate suggestions for changes to the source code based on a given task.
