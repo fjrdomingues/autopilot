@@ -135,7 +135,7 @@ async function main() {
   }
   // Watch for file changes in the directory
   const watcher = chokidar.watch(directoryPath, {
-    ignored: /node_modules|autopilot|helpers/,
+    ignored: /node_modules|helpers/,
     persistent: true,
     ignoreInitial: true,
   });

@@ -80,6 +80,7 @@ async function main(task, test) {
   let relevantCode = [];
   for (const file of files) {
     const res = await runAgent(agents.codeReader, task, file) ;
+    console.dir(res, { depth: null })
     relevantCode.push({path: file.path, code: res.output.relevantCode})
   }
   console.log("Extracted code:")

@@ -14,8 +14,8 @@ PATCH - This is the suggested patch to do the USER INPUT. It is important that t
 *** PATCH START ***
 ${result}
 *** PATCH END ***
-   
-*** RESPONSE FORMAT START ***
+
+RESPONSE FORMAT - This is the format of your reply. Ensure the response can be parsed by JSON.parse in nodejs. Response must be valid JSON.
 {
     "thoughts":
     {
@@ -31,8 +31,6 @@ ${result}
         }
     }
 }
-*** RESPONSE FORMAT END ***
-Ensure the response can be parsed by JSON.parse in nodejs. Response must be valid JSON.
 `
 
     const reply = await callGPT(prompt, process.env.ADVANCED_MODEL);
