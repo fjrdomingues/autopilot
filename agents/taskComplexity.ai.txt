@@ -1,3 +1,0 @@
-File Path: agents/taskComplexity.js
-Summary:
-This file exports a function called `taskComplexityAgent` which takes in two parameters: `summaries` and `task`. The function uses the `callGPT` function from the `gpt` module to generate a prompt for the user to assess the complexity of a given task and decide if it needs to be broken down into smaller tasks. The user must respond in JSON format with their thoughts and a list of tasks. The function then returns the parsed JSON response. This file contributes to the overall project by providing a tool for project managers to assess task complexity and break down tasks as needed.

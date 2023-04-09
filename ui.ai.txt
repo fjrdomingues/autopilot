@@ -1,3 +1,0 @@
-File Path: ui.js
-Summary:
-This file is the user interface for the project and accepts a task from the user related to code. It uses AI to complete the task by reading summaries of all .ai.txt files in the project directory and identifying relevant files using GPT AI API. It then extracts the source code of each relevant file and sends it to GPT to get the necessary changes to complete the task. The output is saved to a .md file in the "suggestions" folder. This file contributes to the overall project by providing a user-friendly interface for users to interact with the AI and complete coding tasks efficiently.
