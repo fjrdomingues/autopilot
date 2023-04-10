@@ -4,6 +4,7 @@ const { Configuration, OpenAIApi } = require("openai");
 const fs = require('fs');
 const path = require('path');
 const { countTokens } = require('./tokenHelper');
+const jsonParseWithValidate = require('./jsonHelpers').jsonParseWithValidate;
 
 let totalTokensUsed = 0
 let completionTokens = 0
@@ -81,15 +82,6 @@ function log(text) {
   // Write the suggestion to the file
   fs.appendFileSync(path.join(suggestionsDir, fileName), `${text} \n\n*******\n\n`);
  }
-
-function jsonParseWithValidate(json) {
-  try {
-    return JSON.parse(json);
-  } catch (error) {
-    console.log('failed to parse JSON',error,json)
-    throw new Error('Invalid JSON');
-  }
-}
 
 module.exports= {
   callGPT,
