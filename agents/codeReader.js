@@ -2,9 +2,9 @@ const { callAgent } = require('../agents/genericAgent');
 const { jsonParseWithValidate } = require('../modules/gpt');
 
 const promptTemplate =
-`
+` 
 USER INPUT: {task}
-YOUR TASK: Extract the relevant parts of source code for the USER INPUT. Don't modify the code
+YOUR TASK: Find and extract the relevant source code on this file to solve the USER INPUT. Don't modify the code. Extract only if the code is relevant, otherwise ignore.
 
 You must respond in JSON format as described below
 
@@ -27,15 +27,17 @@ RESPONSE FORMAT:
 Ensure the response can be parsed by JSON.parse in nodejs    
 
 CONTEXT SOURCE CODE: 
-\`\`\`
-{file_code}
-\`\`\`
+*** CONTEXT SOURCE CODE START ***
+// {filePath}
+{fileCode}
+*** CONTEXT SOURCE CODE END ***
+
 `
 
 async function getRelevantContextForFile(task, file) {
-    const values = {task:task, file_code:file.code}
+    const values = {task:task, fileCode:file.code, filePath: file.path}
     const reply = await callAgent(promptTemplate, values, process.env.CHEAP_MODEL);
-    return jsonParseWithValidate(reply).output.relevantCode;
+    return jsonParseWithValidate(reply);
   }
 
 module.exports = getRelevantContextForFile

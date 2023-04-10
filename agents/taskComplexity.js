@@ -5,10 +5,9 @@ const promptTemplate =
 ` 
 USER INPUT: {task}
 YOUR TASK: You are a project manager working in a software development project. Measure the complexity of doing the USER INPUT and decide if it's critical to breakdown the work into less complex JIRA tasks. Based on your assessment output the list of tasks. Tasks will be done by engineers
-CONTEXT: 
-\`\`\`
+*** CONTEXT START ***
 {summaries}
-\`\`\`
+*** CONTEXT END ***
 
 You must respond in JSON format as described below
 
@@ -32,7 +31,7 @@ Ensure the response can be parsed by JSON.parse in nodejs
 `
 
 async function taskComplexityAgent(summaries, task) {
-    const values = {task:task, summaries:summaries}
+    const values = {task, summaries}
     const reply = await callAgent(promptTemplate, values, process.env.CHEAP_MODEL);
     return jsonParseWithValidate(reply)
 }

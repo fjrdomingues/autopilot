@@ -1,8 +1,7 @@
 File Path: agents/getFiles.js
 Summary:
 - Function to get relevant files from codebase based on user input
-- Returns JSON format with path and reason for file selection
-- Uses GPT for prompt and response generation
-- Requires GPT module
-- Takes in task and summaries as input
-- Ensures response can be parsed by JSON.parse
+- Returns JSON response with thoughts, reasoning, criticism, and output
+- Prompt includes task description and response format
+- Uses GPT to generate reply
+- Validates JSON response before returning

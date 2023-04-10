@@ -8,7 +8,6 @@ const agents = require('./agents');
 const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
 const prompts = require('prompts');
-let interactive
 
 function validateSummaryTokenCount(summariesTokenCount){
   if (summariesTokenCount > maxSummaryTokenCount) {
@@ -40,9 +39,9 @@ async function runAgent(agentFunction, var1, var2){
   return await agentFunction(var1, var2);
 }
 
-async function main(task, test) {
+async function main(task) {
   // Summaries fetch and validate
-  const summaries = await readAllSummaries(test);
+  const summaries = await readAllSummaries();
   const summariesTokenCount = countTokens(JSON.stringify(summaries))
   validateSummaryTokenCount(summariesTokenCount);
   console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
@@ -51,7 +50,7 @@ async function main(task, test) {
   .option('task', {
     alias: 't',
     describe: 'The task to be completed',
-    default: false,
+    default: await getTaskInput(),
     type: 'string'
   })
   .option('interactive', {
@@ -66,7 +65,7 @@ async function main(task, test) {
   interactive = options.interactive;
 
   // Task fetch and validate
-  if (options.task) task = options.task;
+  task = options.task;
   if (!task) task = await getTaskInput()
   if (!task) return "A task is required"
   console.log(`Task: ${task}`)
@@ -80,7 +79,6 @@ async function main(task, test) {
   let relevantCode = [];
   for (const file of files) {
     const res = await runAgent(agents.codeReader, task, file) ;
-    console.dir(res, { depth: null })
     relevantCode.push({path: file.path, code: res.output.relevantCode})
   }
   console.log("Extracted code:")
