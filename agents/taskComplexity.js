@@ -1,13 +1,13 @@
-const { callGPT, jsonParseWithValidate } = require('../modules/gpt');
+const { callAgent } = require('../agents/genericAgent');
+const { jsonParseWithValidate } = require('../modules/gpt');
 
-async function taskComplexityAgent(summaries, task) {
-    const prompt = 
+const promptTemplate =
 ` 
-USER INPUT: ${task}
+USER INPUT: {task}
 YOUR TASK: You are a project manager working in a software development project. Measure the complexity of doing the USER INPUT and decide if it's critical to breakdown the work into less complex JIRA tasks. Based on your assessment output the list of tasks. Tasks will be done by engineers
 CONTEXT: 
 \`\`\`
-${summaries}
+{summaries}
 \`\`\`
 
 You must respond in JSON format as described below
@@ -28,13 +28,13 @@ RESPONSE FORMAT:
         }]
     }
 }
-Ensure the response can be parsed by JSON.parse in nodejs    
+Ensure the response can be parsed by JSON.parse in nodejs
 `
 
-
-    const result = await callGPT(prompt, process.env.CHEAP_MODEL)
-    return jsonParseWithValidate(result)
-
+async function taskComplexityAgent(summaries, task) {
+    const values = {task:task, summaries:summaries}
+    const reply = await callAgent(promptTemplate, values, process.env.CHEAP_MODEL);
+    return jsonParseWithValidate(reply)
 }
 
 module.exports = taskComplexityAgent
