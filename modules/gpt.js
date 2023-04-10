@@ -3,7 +3,8 @@ require('dotenv').config()
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require('fs');
 const path = require('path');
-const { get_encoding } = require('@dqbd/tiktoken');
+const { countTokens } = require('./tokenHelper');
+
 let totalTokensUsed = 0
 let completionTokens = 0
 let promptTokens = 0
@@ -60,15 +61,6 @@ const callGPT = async (prompt, model) => {
     console.log(error.response)
   }
 };
-
-// counts tokens using tiktoken
-function countTokens(input) {
-  const encoder = get_encoding("cl100k_base")
-  const tokens = encoder.encode(input);
-  const tokenCount = tokens.length;
-  encoder.free();
-  return tokenCount;
-}
 
 function calculateTokensCost(model, promptTokens, completionTokens, totalTokensUsed) {
   if (model === "gpt-4") {
