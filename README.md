@@ -75,21 +75,14 @@ Task: Create a diagram explaining what this project and the process
    5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
 4. Run `node createSummaryOfFiles.js --all` to create a summary of all files (it will also start a watcher at the end for file changes)
 5. Run `node ui.js` to input a task and get the AI to give you a solution
+6. Solutions will be saved in a `suggestions` folder inside the project directory.
 
-
-## Usage
-
-To use the code summarization tool, follow these steps:
-
-1. Navigate to the `ui.js` file and run it: `node ui.js`
-2. Follow the prompts to provide the necessary input, including the task to complete and the relevant files
-3. The summarization tool will process the selected files and provide suggestions for the given task
-4. Solutions will be saved in a `suggestions` folder inside the project directory. You can view them with a .md viewer tool.
+## Test/Interactive mode
+This project is still in alpha stage. It's recommended that you use `node ui -i` for an interactive mode here you can review the output of every step before proceeding.
 
 ## Components
 
 - **createSummaryOfFiles.js**: Manages the code summarization process for JavaScript and TypeScript files
-- **gpt.js**: Implements the interaction with the OpenAI API to generate responses based on provided prompts
 - **ui.js**: Handles the user interface (UI) interaction and utilizes the GPT-based summaries to complete tasks
 
 ## 🤝 Contributing

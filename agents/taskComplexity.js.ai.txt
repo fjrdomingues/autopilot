@@ -1,9 +1,7 @@
 File Path: agents/taskComplexity.js
 Summary:
 - Function: taskComplexityAgent
-- Imports: callGPT from ../modules/gpt
-- Parameters: summaries, task
-- Prompt: Asks user to measure complexity of task and output list of JIRA tasks
-- Response format: JSON object with "thoughts" and "output" properties
-- Uses callGPT to generate response
-- Returns parsed JSON result
+- Uses GPT to assess complexity of a task
+- Takes in summaries and task input
+- Outputs JSON format with thoughts and task list
+- Response can be parsed with JSON.parse in nodejs

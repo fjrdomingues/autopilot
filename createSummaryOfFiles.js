@@ -55,11 +55,11 @@ const processFile = async (filePath, model) => {
     let fileContent = fs.readFileSync(filePath, 'utf-8');
 
     const prompt = 
-`File:
-\`\`\`
+`
+TASK: Create a summary of the file below. Use as few words as possible while keeping the details. Use bullet points
+*** FILE CONTENT START ***
 ${fileContent}
-\`\`\`
-Task: Create a summary of this file. Use as few words as possible while keeping the details. Use bullet points
+*** FILE CONTENT END ***
 `
     const output = await callGPT(prompt, model)
 
@@ -135,7 +135,7 @@ async function main() {
   }
   // Watch for file changes in the directory
   const watcher = chokidar.watch(directoryPath, {
-    ignored: /node_modules|autopilot|helpers/,
+    ignored: /node_modules|helpers/,
     persistent: true,
     ignoreInitial: true,
   });

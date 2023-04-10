@@ -20,7 +20,7 @@ function saveOutput(task, solution) {
    
     // Write the suggestion to the file
     const filePath = path.join(suggestionsDir, fileName)
-    fs.writeFileSync(filePath, `# TASK \n ${task}\n# SOLUTION\n\`\`\`json\n${solution}\`\`\``);
+    fs.writeFileSync(filePath, `# TASK \n ${task}\n# SOLUTION\n${solution}`);
     return filePath
 }
 
