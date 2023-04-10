@@ -6,7 +6,7 @@ const promptTemplate =
 USER INPUT: {task}
 YOUR TASK: Identify the files in the codebase that are relevant to the USER INPUT. Don't include new files. Also explain why the file is relevant.
 OUTPUT: JSON - You must respond in JSON format as described below
-RESPONSE FORMAT:
+RESPONSE FORMAT: This is the format of your reply. Ensure the response can be parsed by JSON.parse. Must be valid JSON
 {{
     "thoughts":
     {{
@@ -21,9 +21,7 @@ RESPONSE FORMAT:
             "reason": "reason why the file was selected"
         }}]
     }}
-}}
-Ensure the response can be parsed by JSON.parse    
-
+}}  
 CONTEXT:
 *** START REPOSITORY CONTEXT ***
 {summaries}

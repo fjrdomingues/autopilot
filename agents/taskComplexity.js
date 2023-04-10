@@ -9,9 +9,7 @@ YOUR TASK: You are a project manager working in a software development project. 
 {summaries}
 *** CONTEXT END ***
 
-You must respond in JSON format as described below
-
-RESPONSE FORMAT:
+RESPONSE FORMAT: This is the format of your reply. Ensure the response can be parsed by JSON.parse. Must be valid JSON
 {
     "thoughts":
     {

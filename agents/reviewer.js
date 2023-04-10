@@ -4,7 +4,7 @@ async function review(task, context, result) {
     const prompt = 
 ` 
 USER INPUT: ${task}
-YOUR TASK: You are a senior software developer reviewing a patch. Your task is to evaluate the PATCH taking into account the USER INPUT and CONTEXT. reply with an evaluation of the PATCH to solve the USER INPUT to the current SOURCE CODE. Also evaluate the output format.
+YOUR TASK: You are a senior software developer reviewing a patch. Your task is to evaluate the PATCH taking into account the USER INPUT and CONTEXT. Do an evaluation of the PATCH to solve the USER INPUT to the current SOURCE CODE. Also evaluate the output format.
 SOURCE CODE - This is code from the existing codebase of this project:
 *** SOURCE CODE START ***
 ${context}
@@ -16,7 +16,6 @@ ${result}
 *** PATCH END ***
 
 RESPONSE FORMAT - This is the format of your reply. Ensure the response can be parsed by JSON.parse in nodejs. Response must be valid JSON.
-*** RESPONSE FORMAT START ***
 {
     "thoughts":
     {
@@ -32,7 +31,6 @@ RESPONSE FORMAT - This is the format of your reply. Ensure the response can be p
         }
     }
 }
-*** RESPONSE FORMAT END ***
 `
 
     const reply = await callGPT(prompt, process.env.ADVANCED_MODEL);

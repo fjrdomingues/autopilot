@@ -5,10 +5,7 @@ const promptTemplate =
 ` 
 USER INPUT: {task}
 YOUR TASK: Find and extract the relevant source code on this file to solve the USER INPUT. Don't modify the code. Extract only if the code is relevant, otherwise ignore.
-
-You must respond in JSON format as described below
-
-RESPONSE FORMAT:
+RESPONSE FORMAT: This is the format of your reply. Ensure the response can be parsed by JSON.parse. Must be valid JSON
 {{
     "thoughts":
     {{
@@ -24,8 +21,6 @@ RESPONSE FORMAT:
         }}]
     }}
 }}
-Ensure the response can be parsed by JSON.parse in nodejs    
-
 CONTEXT SOURCE CODE: 
 *** CONTEXT SOURCE CODE START ***
 // {filePath}

@@ -80,11 +80,8 @@ async function main(task, test) {
   let relevantCode = [];
   for (const file of files) {
     const res = await runAgent(agents.codeReader, task, file) ;
-    console.dir(res, { depth: null })
     relevantCode.push({path: file.path, code: res.output.relevantCode})
   }
-  console.log("Extracted code:")
-  console.dir(relevantCode, { depth: null })
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solution = await runAgent(agents.coder, task, relevantCode);
