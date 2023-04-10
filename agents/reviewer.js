@@ -16,6 +16,7 @@ ${result}
 *** PATCH END ***
 
 RESPONSE FORMAT - This is the format of your reply. Ensure the response can be parsed by JSON.parse in nodejs. Response must be valid JSON.
+*** RESPONSE FORMAT START ***
 {
     "thoughts":
     {
@@ -31,6 +32,7 @@ RESPONSE FORMAT - This is the format of your reply. Ensure the response can be p
         }
     }
 }
+*** RESPONSE FORMAT END ***
 `
 
     const reply = await callGPT(prompt, process.env.ADVANCED_MODEL);

@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 let score = 0
-const loops = 1
+const loops = 2
 const task = "In the messages displayed to the user in the ui, change the ones colored yellow to red"
 
 async function main(){
