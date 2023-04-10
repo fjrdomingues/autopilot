@@ -7,6 +7,7 @@ const { saveOutput } = require('./modules/fsOutput');
 const agents = require('./agents');
 const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
+const prompts = require('prompts');
 
 function validateSummaryTokenCount(summariesTokenCount){
   if (summariesTokenCount > maxSummaryTokenCount) {
@@ -18,29 +19,23 @@ function validateSummaryTokenCount(summariesTokenCount){
 
 async function runAgent(agentFunction, var1, var2){
   if (interactive){
-    let answer = '';
-    while (answer !== '1') {
       res = await agentFunction(var1, var2);
       console.log("Agent result: ", res);
-  
-      const readline = require('readline');
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
+      const proceed = await prompts({
+        type: 'select',
+        name: 'value',
+        message: 'Approve agent\'s reply ?',
+        choices: [
+          { title: 'Approve - continue', value: 'continue' },
+          { title: 'Retry - Rerun agent', value: 'retry'},
+          { title: 'Abort', value: 'abort'}
+        ]
       });
-  
-      answer = await new Promise(resolve => {
-        rl.question('Do you want to proceed?\n1. Approve - continue\n2. Retry - Reruns the agent command\n', (answer) => {
-          resolve(answer);
-          rl.close();
-        });
-      });
-      if (answer !== '1' && answer !== '2') {
-        console.log('Invalid input');
-      }
-    };
+    if (proceed.value === 'continue') return res
+    if (proceed.value === 'retry') runAgent(agentFunction, var1, var2)
+    if (proceed.value === 'abort') throw new Error("Aborted")
   }
-  return res
+  return await agentFunction(var1, var2);
 }
 
 async function main() {
@@ -60,7 +55,7 @@ async function main() {
   .option('interactive', {
     alias: 'i',
     describe: 'Whether to run in interactive mode',
-    default: true,
+    default: false,
     type: 'boolean'
   })
   .help()
