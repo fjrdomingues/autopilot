@@ -7,6 +7,7 @@ async function getTaskInput() {
        name: 'task',
        message: 'Please enter your TASK (multiline supported):',
        multiline: true,
+         validate: value => value.length > 0 ? true : 'Please enter a task'
      });
 
     return response.task;
