@@ -1,7 +1,6 @@
 const chalk = require('chalk');
 require('dotenv').config()
 const { Configuration, OpenAIApi } = require("openai");
-const { get_encoding } = require('@dqbd/tiktoken');
 const {saveLog} = require('./fsOutput');
 const { countTokens } = require('./tokenHelper');
 const jsonParseWithValidate = require('./jsonHelpers').jsonParseWithValidate;
