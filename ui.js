@@ -8,7 +8,6 @@ const agents = require('./agents');
 const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
 const prompts = require('prompts');
-let interactive
 
 function validateSummaryTokenCount(summariesTokenCount){
   if (summariesTokenCount > maxSummaryTokenCount) {
@@ -18,7 +17,7 @@ function validateSummaryTokenCount(summariesTokenCount){
   }
 }
 
-async function runAgent(agentFunction, var1, var2){
+async function runAgent(agentFunction, var1, var2, interactive=false){
   if (interactive){
     res = await agentFunction(var1, var2);
     console.log("(agent)", agentFunction.name);
@@ -34,19 +33,23 @@ async function runAgent(agentFunction, var1, var2){
       ]
     });
     if (proceed.value === 'continue') return res
-    if (proceed.value === 'retry') await runAgent(agentFunction, var1, var2)
+    if (proceed.value === 'retry') await runAgent(agentFunction, var1, var2, interactive)
     if (proceed.value === 'abort') throw new Error("Aborted")
   }
   return await agentFunction(var1, var2);
 }
 
-async function main(task, test) {
-  // Summaries fetch and validate
+// Summaries fetch and validate
+async function getSummaries(){
   const summaries = await readAllSummaries(test);
   const summariesTokenCount = countTokens(JSON.stringify(summaries))
   validateSummaryTokenCount(summariesTokenCount);
   console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
+  return summaries
+}
+
+function getOptions(){
   const options = yargs
   .option('task', {
     alias: 't',
@@ -63,6 +66,12 @@ async function main(task, test) {
   .help()
   .alias('help', 'h')
   .argv;
+  return options;
+}
+
+async function main(task, test) {
+  summaries = await getSummaries();
+  options = getOptions();
   interactive = options.interactive;
 
   // Task fetch and validate
@@ -71,20 +80,19 @@ async function main(task, test) {
   if (!task) return "A task is required"
   console.log(`Task: ${task}`)
 
-  // Get files by agent decision
-  relevantFiles = await runAgent(agents.getFiles,task, summaries);
-
+  // Decide which files are relevant to the task
+  relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
   files = getFiles(relevantFiles.output.relevantFiles)
 
   // Ask an agent about each file
   let relevantCode = [];
   for (const file of files) {
-    const res = await runAgent(agents.codeReader, task, file) ;
+    const res = await runAgent(agents.codeReader, task, file, interactive);
     relevantCode.push({path: file.path, code: res.output.relevantCode})
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solution = await runAgent(agents.coder, task, relevantCode);
+  const solution = await runAgent(agents.coder, task, relevantCode, interactive);
   const solutionPath = saveOutput(solution);
   
   console.log(chalk.green("Solution Ready:", solutionPath));
