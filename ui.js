@@ -1,4 +1,5 @@
-// This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
+
+
 const chalk = require('chalk');
 const { getTaskInput } = require('./modules/userInputs');
 const { getSummaries, getFiles } = require('./modules/summaries');
@@ -17,9 +18,9 @@ const fs = require('fs');
 @returns {Promise<any>} A Promise that resolves with the return value of the agent function if not in interactive mode, otherwise resolves or rejects based on user input.
 */
 async function runAgent(agentFunction, var1, var2, interactive=false){
+  console.log("(agent)", agentFunction.name);
   if (interactive){
     res = await agentFunction(var1, var2);
-    console.log("(agent)", agentFunction.name);
     console.dir(res, { depth: null })
     const proceed = await prompts({
       type: 'select',
@@ -38,14 +39,13 @@ async function runAgent(agentFunction, var1, var2, interactive=false){
   return await agentFunction(var1, var2);
 }
 
-
 /**
 Returns an object containing the command line options parsed using the Yargs library.
 * @returns {{
-*   task: string, // The task to be completed, or false if not provided
-*   interactive: boolean // Whether to run in interactive mode
-*   }}
-*/
+  *   task: string, // The task to be completed, or false if not provided
+  *   interactive: boolean // Whether to run in interactive mode
+  *   }}
+  */
 function getOptions(){
   const options = yargs
   .option('task', {
@@ -99,12 +99,23 @@ function applyPatch(file, patch) {
   return resCleaned
 }
 
+async function createFile(path, content) {
+  fs.writeFile(path, content, { flag: 'w' }, (err) => {
+    if (err) {
+      console.error(err);
+      throw new Error("Error creating file" + err);
+    }
+    console.log(`The file ${path} has been created.`);
+  });
+}
+
 /**
  * 
  * @param {string} task - The task to be completed.
  * @param {boolean} test - Setting for internal tests.
  * @returns {string}
  */
+
 async function main(task, test) {
   const summaries = await getSummaries(test);
   const options = getOptions();
@@ -119,9 +130,14 @@ async function main(task, test) {
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const patch = await runAgent(agents.coder, task, [file], interactive);
-    const patchCleaned = applyPatch (file, patch)
-    solutions.push(patchCleaned)
+    const patch = await runAgent(agents.coder, task, file, interactive);
+    console.log(patch.explanation)
+    if (patch.command === 'createFile') {
+      await createFile(patch.path, patch.content);
+    } else {
+      const patchCleaned = applyPatch(file, patch.code);
+      solutions.push(patchCleaned);
+    }
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
@@ -137,3 +153,4 @@ if (require.main === module) main();
 
 
 module.exports = { main }
+

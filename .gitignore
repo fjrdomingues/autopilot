@@ -5,3 +5,5 @@ idea.txt
 docs
 web
 logs
+.DS_Store
+.gitignore
