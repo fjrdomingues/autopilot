@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const { countTokens } = require('./modules/gpt');
 const { getTaskInput } = require('./modules/userInputs');
 const { readAllSummaries, getFiles } = require('./modules/summaries');
-const { saveOutput } = require('./modules/fsOutput');
+const { saveOutput, logPath } = require('./modules/fsOutput');
 const agents = require('./agents');
 const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
@@ -85,9 +85,11 @@ async function main(task, test) {
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solution = await runAgent(agents.coder, task, relevantCode);
-  const solutionPath = saveOutput(task, solution);
+  const solutionPath = saveOutput(solution);
   
   console.log(chalk.green("Solution Ready:", solutionPath));
+  console.log(chalk.green("Process Log:", logPath()));
+
   return solution
 }
 
