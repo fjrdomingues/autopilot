@@ -40,17 +40,17 @@ async function runAgent(agentFunction, var1, var2, interactive=false){
 
 /**
 Returns an object containing the command line options parsed using the Yargs library.
-* @returns {
-*   task: string | false, // The task to be completed, or false if not provided
+* @returns {{
+*   task: string, // The task to be completed, or false if not provided
 *   interactive: boolean // Whether to run in interactive mode
-*   }
+*   }}
 */
 function getOptions(){
   const options = yargs
   .option('task', {
     alias: 't',
     describe: 'The task to be completed',
-    default: false,
+    default: '',
     type: 'string'
   })
   .option('interactive', {
@@ -65,23 +65,34 @@ function getOptions(){
   return options;
 }
 
+
 /**
  * 
- * @param {string} task 
- * @param {boolean} test 
+ * @param {string} task
+ * @returns {string}
+ * @throws {Error}
+ * @description Returns the task to be completed. If the task is not provided as a command line argument, the user is prompted to enter a task.
+*/
+function getTask(task){
+  let task = options.task;
+  if (!task) task = getTaskInput()
+  if (!task) return "A task is required"
+  console.log(`Task: ${task}`)
+  return task
+}
+
+/**
+ * 
+ * @param {string} task - The task to be completed.
+ * @param {boolean} test - Setting for internal tests.
  * @returns {string}
  */
 async function main(task, test) {
   const summaries = await getSummaries(test);
   const options = getOptions();
   const interactive = options.interactive;
-
-  // Task fetch and validate
-  if (options.task) task = options.task;
-  if (!task) task = await getTaskInput()
-  if (!task) return "A task is required"
-  console.log(`Task: ${task}`)
-
+  const task = getTask(options.task);
+ 
   // Decide which files are relevant to the task
   const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
   const files = getFiles(relevantFiles.output.relevantFiles)

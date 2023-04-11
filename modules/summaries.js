@@ -76,10 +76,11 @@ async function readAllSummaries(test) {
   return summaries;
 }
 
-// Summaries fetch and validate
-// Returns a Promise that resolves to an array of summary objects
-// @param {boolean} test - The test to retrieve summaries for
-// @returns {Promise<Array<Summary>>}
+/**
+ * Fetches and validates summaries for a given test.
+ * @param {boolean} test - Setting for internal tests.
+ * @returns {Promise<Array<Summary>>} A Promise that resolves to an array of summary objects.
+ */
 async function getSummaries(test){
   const summaries = await readAllSummaries(test);
   const summariesTokenCount = countTokens(JSON.stringify(summaries))
