@@ -96,6 +96,7 @@ async function main(task, test) {
   // Decide which files are relevant to the task
   const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
   const files = getFiles(relevantFiles.output.relevantFiles)
+  if (files.length == 0) throw new Error("No relevant files found")
 
   // Ask an agent about each file
   let solutions = [];
