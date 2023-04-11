@@ -42,9 +42,11 @@ function getFiles(files){
   return retFiles
 }
 
-// Gets all .ai.txt files (summaries)
-// @param {boolean} test - If true, reads files only in the 'benchmarks' directory.
-// @returns {Promise<string>} A string containing all the summaries concatenated together.
+/**
+ * Gets all .ai.txt files (summaries)
+ * @param {boolean} test - If true, reads files only in the 'benchmarks' directory.
+ * @returns {Promise<string>} A string containing all the summaries concatenated together.
+ */
 async function readAllSummaries(test) {
   const pattern = !test ? '**/*.ai.txt' : 'benchmarks/**/*.ai.txt'
   let files = [];
@@ -76,7 +78,7 @@ async function readAllSummaries(test) {
 
 // Summaries fetch and validate
 // Returns a Promise that resolves to an array of summary objects
-// @param {string} test - The test to retrieve summaries for
+// @param {boolean} test - The test to retrieve summaries for
 // @returns {Promise<Array<Summary>>}
 async function getSummaries(test){
   const summaries = await readAllSummaries(test);

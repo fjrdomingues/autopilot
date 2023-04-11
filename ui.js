@@ -65,6 +65,12 @@ function getOptions(){
   return options;
 }
 
+/**
+ * 
+ * @param {string} task 
+ * @param {boolean} test 
+ * @returns {string}
+ */
 async function main(task, test) {
   summaries = await getSummaries(test);
   options = getOptions();
