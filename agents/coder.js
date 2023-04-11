@@ -16,6 +16,31 @@ function formatCode(files) {
   return code
 }
 
+
+/**
+ * Currently the output of the agent is a string with the following format:
+ * ## filename
+ * ```
+ * code
+ * ```
+ * This function removes the filename and the code block markers.
+ * @param {string} res
+ * @returns {string}
+ * @description Removes the filename and the code block markers from the output of the agent.
+ */
+function cleanRes(res){
+  let lines = res.split("\n");
+  lines.shift(); // ## filename
+  if (lines[0] === '' || lines[0] === '```') {
+    lines.shift();
+  }
+  if (lines[lines.length - 1] === '' || lines[lines.length - 1] === '```') {
+    lines.pop();
+  }
+  const resCleaned = lines.join("\n")
+  return resCleaned
+}
+
 const promptTemplate = 
 ` 
 USER INPUT: {task}
@@ -24,8 +49,6 @@ YOUR TASK: As a senior software developer, make the requested changes from the U
 RESPONSE FORMAT: This is the format of your reply. 
 Provide a new version of the source code with the task complete.
 Code only. No comments or other text. 
-Do NOT repeat the file name or path. 
-Do NOT include the triple backticks (\`\`\`) that surround the code.
 
 SOURCE CODE: 
 This is provided in a markdown format as follows:
@@ -48,8 +71,9 @@ async function suggestChanges(task, files) {
     console.log(code)
     const values = {task, code}
     const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
+    const cleanedReply = cleanRes(reply);
 
-    return reply;
+    return cleanedReply;
 }
 
 module.exports = suggestChanges

@@ -7,6 +7,7 @@ const agents = require('./agents');
 const yargs = require('yargs');
 const prompts = require('prompts');
 const fs = require('fs');
+const {printGitDiff} = require('./modules/gitHelper');
 
 /**
 @description Asynchronous function that runs an agent function with given variables.
@@ -82,47 +83,6 @@ async function getTask(task, options){
   return task
 }
 
-function applyPatch(file, patch) {
-  const lines = patch.split("\n");
-  lines.shift();
-  const resCleaned = lines.join("\n")
-    .replace(/^```/, "") // Remove "```" from the start of the string
-    .replace(/```$/, ""); // Remove "```" from the end of the string
-
-  fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
-    if (err) {
-      console.error(err);
-      throw new Error("Error writing file" + err);
-    }
-    console.log(`The file ${file.path} has been updated.`);
-  });
-  return resCleaned
-}
-
-/**
- * Currently the output of the agent is a string with the following format:
- * ## filename
- * ```
- * code
- * ```
- * This function removes the filename and the code block markers.
- * @param {string} res
- * @returns {string}
- * @description Removes the filename and the code block markers from the output of the agent.
- */
-function cleanRes(res){
-  const lines = res.split("\n");
-  lines.shift(); // ## filename
-  if (lines[0] === '' || lines[0] === '```') {
-    lines.shift();
-  }
-  if (lines[lines.length - 1] === '' || lines[lines.length - 1] === '```') {
-    lines.pop();
-  }
-  const resCleaned = lines.join("\n")
-  return resCleaned
-}
-
 /**
  * 
  * @param {string} task - The task to be completed.
@@ -144,19 +104,18 @@ async function main(task, test) {
   let solutions = [];
   for (const file of files) {
     const res = await runAgent(agents.coder, task, [file], interactive);
-    const resCleaned = cleanRes(res);
-    console.log(`res: ${resCleaned}`);
-    solutions.push(resCleaned)
+    solutions.push(res)
 
     // This actually applies the solution to the file
-    updateFile(file.path, resCleaned);
+    updateFile(file.path, res);
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solutionPath = saveOutput(solutions);
   
-  console.log(chalk.green("Solution Ready:", solutionPath));
   console.log(chalk.green("Process Log:", logPath()));
+  console.log(chalk.green("Solutions Auto applied:"));
+  printGitDiff();
 
   return solutions
 }
