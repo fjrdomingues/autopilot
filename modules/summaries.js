@@ -1,8 +1,11 @@
+const { countTokens } = require('./tokenHelper');
 require('dotenv').config()
+
 const fs = require('fs');
 const fg = require('fast-glob');
 const path = require('path');
 const ignorePattern = process.env.IGNORE_LIST.split(',');
+const maxSummaryTokenCount = 3000;
 
 const types = {
   FileObject: {
@@ -10,6 +13,19 @@ const types = {
     code: "string",
   },
 };
+
+/**
+* Validates the number of tokens in a summary against a maximum limit.
+* @param {number} summariesTokenCount - The number of tokens in the summary.
+* @throws {Error} If the number of tokens exceeds the maximum allowed limit.
+*/
+function validateSummaryTokenCount(summariesTokenCount){
+  if (summariesTokenCount > maxSummaryTokenCount) {
+    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
+    console.log(message)
+    throw new Error(message)
+  }
+}
 
 /**
  * @param {FileObject[]} files - An array of file objects, each with a `path` property.
@@ -27,6 +43,8 @@ function getFiles(files){
 }
 
 // Gets all .ai.txt files (summaries)
+// @param {boolean} test - If true, reads files only in the 'benchmarks' directory.
+// @returns {Promise<string>} A string containing all the summaries concatenated together.
 async function readAllSummaries(test) {
   const pattern = !test ? '**/*.ai.txt' : 'benchmarks/**/*.ai.txt'
   let files = [];
@@ -56,8 +74,22 @@ async function readAllSummaries(test) {
   return summaries;
 }
 
+// Summaries fetch and validate
+// Returns a Promise that resolves to an array of summary objects
+// @param {string} test - The test to retrieve summaries for
+// @returns {Promise<Array<Summary>>}
+async function getSummaries(test){
+  const summaries = await readAllSummaries(test);
+  const summariesTokenCount = countTokens(JSON.stringify(summaries))
+  validateSummaryTokenCount(summariesTokenCount);
+  console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
+
+  return summaries
+}
+
 module.exports = {
     readAllSummaries,
     getFiles,
-    types
+    types,
+    getSummaries
 }

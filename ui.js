@@ -1,22 +1,20 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
-const { countTokens } = require('./modules/gpt');
 const { getTaskInput } = require('./modules/userInputs');
-const { readAllSummaries, getFiles } = require('./modules/summaries');
+const { getSummaries, getFiles } = require('./modules/summaries');
 const { saveOutput, logPath } = require('./modules/fsOutput');
 const agents = require('./agents');
-const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
 const prompts = require('prompts');
 
-function validateSummaryTokenCount(summariesTokenCount){
-  if (summariesTokenCount > maxSummaryTokenCount) {
-    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
-    console.log(message)
-    throw new Error(message)
-  }
-}
-
+/**
+@description Asynchronous function that runs an agent function with given variables.
+@param {function} agentFunction - The agent function to be executed asynchronously.
+@param {any} var1 - The first variable to be passed as an argument to the agent function.
+@param {any} var2 - The second variable to be passed as an argument to the agent function.
+@param {boolean} interactive=false - A boolean indicating whether or not to prompt the user for approval after running the agent function.
+@returns {Promise<any>} A Promise that resolves with the return value of the agent function if not in interactive mode, otherwise resolves or rejects based on user input.
+*/
 async function runAgent(agentFunction, var1, var2, interactive=false){
   if (interactive){
     res = await agentFunction(var1, var2);
@@ -39,16 +37,14 @@ async function runAgent(agentFunction, var1, var2, interactive=false){
   return await agentFunction(var1, var2);
 }
 
-// Summaries fetch and validate
-async function getSummaries(){
-  const summaries = await readAllSummaries(test);
-  const summariesTokenCount = countTokens(JSON.stringify(summaries))
-  validateSummaryTokenCount(summariesTokenCount);
-  console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
-  return summaries
-}
-
+/**
+Returns an object containing the command line options parsed using the Yargs library.
+* @returns {
+*   task: string | false, // The task to be completed, or false if not provided
+*   interactive: boolean // Whether to run in interactive mode
+*   }
+*/
 function getOptions(){
   const options = yargs
   .option('task', {
@@ -70,7 +66,7 @@ function getOptions(){
 }
 
 async function main(task, test) {
-  summaries = await getSummaries();
+  summaries = await getSummaries(test);
   options = getOptions();
   interactive = options.interactive;
 
