@@ -90,7 +90,7 @@ async function main(task, test) {
   const summaries = await getSummaries(test);
   const options = getOptions();
   const interactive = options.interactive;
-  task = await getTask(options.task);
+  if (!task) task = await getTask(options.task);
  
   // Decide which files are relevant to the task
   const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
