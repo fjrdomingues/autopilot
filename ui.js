@@ -82,6 +82,23 @@ async function getTask(task, options){
   return task
 }
 
+function applyPatch(file, patch) {
+  const lines = patch.split("\n");
+  lines.shift();
+  const resCleaned = lines.join("\n")
+    .replace(/^```/, "") // Remove "```" from the start of the string
+    .replace(/```$/, ""); // Remove "```" from the end of the string
+
+  fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
+    if (err) {
+      console.error(err);
+      throw new Error("Error writing file" + err);
+    }
+    console.log(`The file ${file.path} has been updated.`);
+  });
+  return resCleaned
+}
+
 /**
  * 
  * @param {string} task - The task to be completed.
@@ -102,22 +119,9 @@ async function main(task, test) {
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const res = await runAgent(agents.coder, task, [file], interactive);
-    const lines = res.split("\n");
-    lines.shift();
-    const resCleaned = lines.join("\n")
-      .replace(/^```/, "") // Remove "```" from the start of the string
-      .replace(/```$/, ""); // Remove "```" from the end of the string
-
-    fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
-      if (err) {
-        console.error(err);
-        throw new Error("Error writing file" + err);
-      }
-      console.log(`The file ${file.path} has been updated.`);
-    });
-    console.log(`res: ${resCleaned}`);
-    solutions.push(resCleaned)
+    const patch = await runAgent(agents.coder, task, [file], interactive);
+    const patchCleaned = applyPatch (file, patch)
+    solutions.push(patchCleaned)
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
