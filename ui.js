@@ -7,6 +7,7 @@ const agents = require('./agents');
 const yargs = require('yargs');
 const prompts = require('prompts');
 const fs = require('fs');
+const {printGitDiff} = require('./modules/gitHelper');
 
 /**
 @description Asynchronous function that runs an agent function with given variables.
@@ -112,8 +113,9 @@ async function main(task, test) {
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
   const solutionPath = saveOutput(solutions);
   
-  console.log(chalk.red("Solution Ready:", solutionPath));
   console.log(chalk.green("Process Log:", logPath()));
+  console.log(chalk.green("Solutions Auto applied:"));
+  printGitDiff();
 
   return solutions
 }

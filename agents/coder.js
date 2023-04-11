@@ -29,7 +29,7 @@ function formatCode(files) {
  * @description Removes the filename and the code block markers from the output of the agent.
  */
 function cleanRes(res){
-  const lines = res.split("\n");
+  let lines = res.split("\n");
   lines.shift(); // ## filename
   if (lines[0] === '' || lines[0] === '```') {
     lines.shift();
