@@ -6,6 +6,7 @@ const { saveOutput, logPath } = require('./modules/fsOutput');
 const agents = require('./agents');
 const yargs = require('yargs');
 const prompts = require('prompts');
+const fs = require('fs');
 
 /**
 @description Asynchronous function that runs an agent function with given variables.
@@ -102,8 +103,21 @@ async function main(task, test) {
   let solutions = [];
   for (const file of files) {
     const res = await runAgent(agents.coder, task, [file], interactive);
-    console.log(`res: ${res}`);
-    solutions.push(res)
+    const lines = res.split("\n");
+    lines.shift();
+    const resCleaned = lines.join("\n")
+      .replace(/^```/, "") // Remove "```" from the start of the string
+      .replace(/```$/, ""); // Remove "```" from the end of the string
+
+    fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
+      if (err) {
+        console.error(err);
+        throw new Error("Error writing file" + err);
+      }
+      console.log(`The file ${file.path} has been updated.`);
+    });
+    console.log(`res: ${resCleaned}`);
+    solutions.push(resCleaned)
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
