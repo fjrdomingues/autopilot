@@ -4,8 +4,9 @@ function formatCode(files) {
   // format code for prompt
   let code = '';
   files.forEach(file => {
-    code += `// File: ${file.path}\n`;
+    code += `\`${file.path}\`\n`;
     code += `${file.code}`;
+    code += `---`;
   });
   return code
 }
@@ -16,9 +17,7 @@ USER INPUT: {task}
 YOUR TASK: As a senior software developer, make the requested changes from the USER INPUT.
 
 SOURCE CODE: Here are the relevant files and code from the existing codebase:
-*** SOURCE CODE START ***
-{code}
-*** SOURCE CODE END ***
+\`\`\`{code}\`\`\`
 
 RESPONSE FORMAT: This is the format of your reply. Provide a patch in the following format, only showing modified lines. Do NOT include any additional formatting, such as JSON or triple backticks. Do NOT include explanations, comments, or any unchanged lines. Only include the modified lines:
 diff --git a/example_file.txt b/example_file.txt
