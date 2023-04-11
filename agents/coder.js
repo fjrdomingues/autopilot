@@ -5,9 +5,13 @@ function formatCode(files) {
   let code = '';
   files.forEach(file => {
     code += `## ${file.path}`;
+    code += `\n`;
     code += '```';
+    code += `\n`;
     code += `${file.code}`;
+    code += `\n`;
     code += '```';
+    code += `\n`;
   });
   return code
 }
