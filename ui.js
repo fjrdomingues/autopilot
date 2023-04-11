@@ -76,7 +76,7 @@ function getOptions(){
 async function getTask(task, options){
   if (!task) task = options.task
   if (!task) task = await getTaskInput()
-  if (!task || task !='') throw new Error("No task provided")
+  if (!task || task =='') throw new Error("No task provided")
   console.log(`Task: ${task}`)
   return task
 }
