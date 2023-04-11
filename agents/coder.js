@@ -4,13 +4,8 @@ function formatCode(files) {
   // format code for prompt
   let code = '';
   files.forEach(file => {
-      code += `// File: ${file.path}\n`;
-    if (file.code.length > 0) {
-      file.code.forEach(cs => {
-        code += `// Code Relevance: ${cs.reason}\n`;
-        code += `${cs.sourceCode}\n\n`;
-      });
-    }
+    code += `// File: ${file.path}\n`;
+    code += `${file.code}`;
   });
   return code
 }

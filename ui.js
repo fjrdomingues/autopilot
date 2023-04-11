@@ -101,7 +101,7 @@ async function main(task, test) {
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const res = await runAgent(agents.coder, task, file, interactive);
+    const res = await runAgent(agents.coder, task, [file], interactive);
     console.log(`res: ${res}`);
     solutions.push(res)
   }
@@ -112,7 +112,7 @@ async function main(task, test) {
   console.log(chalk.green("Solution Ready:", solutionPath));
   console.log(chalk.green("Process Log:", logPath()));
 
-  return solution
+  return solutions
 }
 
 if (require.main === module) main();
