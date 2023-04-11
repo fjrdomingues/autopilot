@@ -4,13 +4,10 @@ function formatCode(files) {
   // format code for prompt
   let code = '';
   files.forEach(file => {
-      code += `// File: ${file.path}\n`;
-    if (file.code.length > 0) {
-      file.code.forEach(cs => {
-        code += `// Code Relevance: ${cs.reason}\n`;
-        code += `${cs.sourceCode}\n\n`;
-      });
-    }
+    code += `## ${file.path}`;
+    code += '```';
+    code += `${file.code}`;
+    code += '```';
   });
   return code
 }
@@ -20,17 +17,20 @@ const promptTemplate =
 USER INPUT: {task}
 YOUR TASK: As a senior software developer, make the requested changes from the USER INPUT.
 
-SOURCE CODE: Here are the relevant files and code from the existing codebase:
-*** SOURCE CODE START ***
-{code}
-*** SOURCE CODE END ***
+RESPONSE FORMAT: This is the format of your reply. 
+Provide a new version of the source code with the task complete.
+Code only. No comments or other text. 
+Do NOT repeat the file name or path. 
+Do NOT include the triple backticks (\`\`\`) that surround the code.
 
-RESPONSE FORMAT: This is the format of your reply. Provide a patch in the following format, only showing modified lines. Do NOT include any additional formatting, such as JSON or triple backticks. Do NOT include explanations, comments, or any unchanged lines. Only include the modified lines:
-diff --git a/example_file.txt b/example_file.txt
-index abc123..def456 100644
-@@ -3,1 +3,1 @@
--This line will be removed in the modified file
-+This line is added in the modified file
+SOURCE CODE: 
+This is provided in a markdown format as follows:
+## /path/filename
+\`\`\`
+code
+\`\`\`
+Here are the relevant files and code from the existing codebase:
+{code}
 ` 
 
 /**

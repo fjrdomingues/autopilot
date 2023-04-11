@@ -1,24 +1,22 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
-const { countTokens } = require('./modules/gpt');
 const { getTaskInput } = require('./modules/userInputs');
-const { readAllSummaries, getFiles } = require('./modules/summaries');
-const { saveOutput } = require('./modules/fsOutput');
+const { getSummaries, getFiles } = require('./modules/summaries');
+const { saveOutput, logPath } = require('./modules/fsOutput');
 const agents = require('./agents');
-const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
 const prompts = require('prompts');
-let interactive
+const fs = require('fs');
 
-function validateSummaryTokenCount(summariesTokenCount){
-  if (summariesTokenCount > maxSummaryTokenCount) {
-    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
-    console.log(message)
-    throw new Error(message)
-  }
-}
-
-async function runAgent(agentFunction, var1, var2){
+/**
+@description Asynchronous function that runs an agent function with given variables.
+@param {function} agentFunction - The agent function to be executed asynchronously.
+@param {any} var1 - The first variable to be passed as an argument to the agent function.
+@param {any} var2 - The second variable to be passed as an argument to the agent function.
+@param {boolean} interactive=false - A boolean indicating whether or not to prompt the user for approval after running the agent function.
+@returns {Promise<any>} A Promise that resolves with the return value of the agent function if not in interactive mode, otherwise resolves or rejects based on user input.
+*/
+async function runAgent(agentFunction, var1, var2, interactive=false){
   if (interactive){
     res = await agentFunction(var1, var2);
     console.log("(agent)", agentFunction.name);
@@ -34,24 +32,26 @@ async function runAgent(agentFunction, var1, var2){
       ]
     });
     if (proceed.value === 'continue') return res
-    if (proceed.value === 'retry') await runAgent(agentFunction, var1, var2)
+    if (proceed.value === 'retry') await runAgent(agentFunction, var1, var2, interactive)
     if (proceed.value === 'abort') throw new Error("Aborted")
   }
   return await agentFunction(var1, var2);
 }
 
-async function main(task, test) {
-  // Summaries fetch and validate
-  const summaries = await readAllSummaries(test);
-  const summariesTokenCount = countTokens(JSON.stringify(summaries))
-  validateSummaryTokenCount(summariesTokenCount);
-  console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
+/**
+Returns an object containing the command line options parsed using the Yargs library.
+* @returns {{
+*   task: string, // The task to be completed, or false if not provided
+*   interactive: boolean // Whether to run in interactive mode
+*   }}
+*/
+function getOptions(){
   const options = yargs
   .option('task', {
     alias: 't',
     describe: 'The task to be completed',
-    default: false,
+    default: '',
     type: 'string'
   })
   .option('interactive', {
@@ -63,32 +63,70 @@ async function main(task, test) {
   .help()
   .alias('help', 'h')
   .argv;
-  interactive = options.interactive;
+  return options;
+}
 
-  // Task fetch and validate
-  if (options.task) task = options.task;
+
+/**
+ * 
+ * @param {string} task
+ * @returns {string}
+ * @throws {Error}
+ * @description Returns the task to be completed. If the task is not provided as a command line argument, the user is prompted to enter a task.
+*/
+async function getTask(task, options){
+  if (!task) task = options.task
   if (!task) task = await getTaskInput()
-  if (!task) return "A task is required"
+  if (!task || task =='') throw new Error("No task provided")
   console.log(`Task: ${task}`)
+  return task
+}
 
-  // Get files by agent decision
-  relevantFiles = await runAgent(agents.getFiles,task, summaries);
-
-  files = getFiles(relevantFiles.output.relevantFiles)
+/**
+ * 
+ * @param {string} task - The task to be completed.
+ * @param {boolean} test - Setting for internal tests.
+ * @returns {string}
+ */
+async function main(task, test) {
+  const summaries = await getSummaries(test);
+  const options = getOptions();
+  const interactive = options.interactive;
+  task = await getTask(task, options);
+ 
+  // Decide which files are relevant to the task
+  const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
+  const files = getFiles(relevantFiles.output.relevantFiles)
+  if (files.length == 0) throw new Error("No relevant files found")
 
   // Ask an agent about each file
-  let relevantCode = [];
+  let solutions = [];
   for (const file of files) {
-    const res = await runAgent(agents.codeReader, task, file) ;
-    relevantCode.push({path: file.path, code: res.output.relevantCode})
+    const res = await runAgent(agents.coder, task, [file], interactive);
+    const lines = res.split("\n");
+    lines.shift();
+    const resCleaned = lines.join("\n")
+      .replace(/^```/, "") // Remove "```" from the start of the string
+      .replace(/```$/, ""); // Remove "```" from the end of the string
+
+    fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
+      if (err) {
+        console.error(err);
+        throw new Error("Error writing file" + err);
+      }
+      console.log(`The file ${file.path} has been updated.`);
+    });
+    console.log(`res: ${resCleaned}`);
+    solutions.push(resCleaned)
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solution = await runAgent(agents.coder, task, relevantCode);
-  const solutionPath = saveOutput(task, solution);
+  const solutionPath = saveOutput(solutions);
   
   console.log(chalk.green("Solution Ready:", solutionPath));
-  return solution
+  console.log(chalk.green("Process Log:", logPath()));
+
+  return solutions
 }
 
 if (require.main === module) main();

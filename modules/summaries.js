@@ -1,8 +1,12 @@
 require('dotenv').config()
+const { countTokens } = require('./tokenHelper');
+const chalk = require('chalk');
 const fs = require('fs');
 const fg = require('fast-glob');
 const path = require('path');
+
 const ignorePattern = process.env.IGNORE_LIST.split(',');
+const maxSummaryTokenCount = 3000;
 
 const types = {
   FileObject: {
@@ -10,6 +14,19 @@ const types = {
     code: "string",
   },
 };
+
+/**
+* Validates the number of tokens in a summary against a maximum limit.
+* @param {number} summariesTokenCount - The number of tokens in the summary.
+* @throws {Error} If the number of tokens exceeds the maximum allowed limit.
+*/
+function validateSummaryTokenCount(summariesTokenCount){
+  if (summariesTokenCount > maxSummaryTokenCount) {
+    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
+    console.log(message)
+    throw new Error(message)
+  }
+}
 
 /**
  * @param {FileObject[]} files - An array of file objects, each with a `path` property.
@@ -26,7 +43,11 @@ function getFiles(files){
   return retFiles
 }
 
-// Gets all .ai.txt files (summaries)
+/**
+ * Gets all .ai.txt files (summaries)
+ * @param {boolean} test - If true, reads files only in the 'benchmarks' directory.
+ * @returns {Promise<string>} A string containing all the summaries concatenated together.
+ */
 async function readAllSummaries(test) {
   const pattern = !test ? '**/*.ai.txt' : 'benchmarks/**/*.ai.txt'
   let files = [];
@@ -56,8 +77,23 @@ async function readAllSummaries(test) {
   return summaries;
 }
 
+/**
+ * Fetches and validates summaries for a given test.
+ * @param {boolean} test - Setting for internal tests.
+ * @returns {Promise<Array<Summary>>} A Promise that resolves to an array of summary objects.
+ */
+async function getSummaries(test){
+  const summaries = await readAllSummaries(test);
+  const summariesTokenCount = countTokens(JSON.stringify(summaries))
+  validateSummaryTokenCount(summariesTokenCount);
+  console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
+
+  return summaries
+}
+
 module.exports = {
     readAllSummaries,
     getFiles,
-    types
+    types,
+    getSummaries
 }
