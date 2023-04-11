@@ -73,9 +73,10 @@ function getOptions(){
  * @throws {Error}
  * @description Returns the task to be completed. If the task is not provided as a command line argument, the user is prompted to enter a task.
 */
-async function getTask(task){
+async function getTask(task, options){
+  if (!task) task = options.task
   if (!task) task = await getTaskInput()
-  if (!task || task !='') return "A task is required"
+  if (!task || task !='') throw new Error("No task provided")
   console.log(`Task: ${task}`)
   return task
 }
@@ -90,7 +91,7 @@ async function main(task, test) {
   const summaries = await getSummaries(test);
   const options = getOptions();
   const interactive = options.interactive;
-  if (!task) task = await getTask(options.task);
+  task = await getTask(task, options);
  
   // Decide which files are relevant to the task
   const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
