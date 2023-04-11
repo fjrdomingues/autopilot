@@ -82,6 +82,23 @@ async function getTask(task, options){
   return task
 }
 
+function applyPatch(file, patch) {
+  const lines = patch.split("\n");
+  lines.shift();
+  const resCleaned = lines.join("\n")
+    .replace(/^```/, "") // Remove "```" from the start of the string
+    .replace(/```$/, ""); // Remove "```" from the end of the string
+
+  fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
+    if (err) {
+      console.error(err);
+      throw new Error("Error writing file" + err);
+    }
+    console.log(`The file ${file.path} has been updated.`);
+  });
+  return resCleaned
+}
+
 /**
  * Currently the output of the agent is a string with the following format:
  * ## filename
