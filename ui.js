@@ -72,9 +72,9 @@ function getOptions(){
  * @returns {string}
  */
 async function main(task, test) {
-  summaries = await getSummaries(test);
-  options = getOptions();
-  interactive = options.interactive;
+  const summaries = await getSummaries(test);
+  const options = getOptions();
+  const interactive = options.interactive;
 
   // Task fetch and validate
   if (options.task) task = options.task;
@@ -83,8 +83,8 @@ async function main(task, test) {
   console.log(`Task: ${task}`)
 
   // Decide which files are relevant to the task
-  relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
-  files = getFiles(relevantFiles.output.relevantFiles)
+  const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
+  const files = getFiles(relevantFiles.output.relevantFiles)
 
   // Ask an agent about each file
   let relevantCode = [];
