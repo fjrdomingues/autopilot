@@ -73,10 +73,9 @@ function getOptions(){
  * @throws {Error}
  * @description Returns the task to be completed. If the task is not provided as a command line argument, the user is prompted to enter a task.
 */
-function getTask(task){
-  let task = options.task;
-  if (!task) task = getTaskInput()
-  if (!task) return "A task is required"
+async function getTask(task){
+  if (!task) task = await getTaskInput()
+  if (!task || task !='') return "A task is required"
   console.log(`Task: ${task}`)
   return task
 }
@@ -91,22 +90,22 @@ async function main(task, test) {
   const summaries = await getSummaries(test);
   const options = getOptions();
   const interactive = options.interactive;
-  const task = getTask(options.task);
+  task = await getTask(options.task);
  
   // Decide which files are relevant to the task
   const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
   const files = getFiles(relevantFiles.output.relevantFiles)
 
   // Ask an agent about each file
-  let relevantCode = [];
+  let solutions = [];
   for (const file of files) {
-    const res = await runAgent(agents.codeReader, task, file, interactive);
-    relevantCode.push({path: file.path, code: res.output.relevantCode})
+    const res = await runAgent(agents.coder, task, file, interactive);
+    console.log(`res: ${res}`);
+    solutions.push(res)
   }
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solution = await runAgent(agents.coder, task, relevantCode, interactive);
-  const solutionPath = saveOutput(solution);
+  const solutionPath = saveOutput(solutions);
   
   console.log(chalk.green("Solution Ready:", solutionPath));
   console.log(chalk.green("Process Log:", logPath()));
