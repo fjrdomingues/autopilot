@@ -1,9 +1,7 @@
-File Path: modules/fsOutput.js
+File Path: C:\Users\hatky\code\public\autopilot\modules\fsOutput.js
 Summary:
-- Imports fs and path modules
-- Defines outputFolder variable as "suggestions"
-- Defines saveOutput function to save task and solution to a file in the "suggestions" folder
-- Constructs the file path and file name using path.join and Date.now()
-- Writes the suggestion to the file using fs.writeFileSync
-- Returns the file path
-- Exports the saveOutput function
+- Defines constants for output folder, logs directory, logs extension, and logs filename
+- Defines a function to get the path of the log file
+- Defines a function to save logs to the logs folder by appending text to the end of the log file
+- Defines a function to save a given solution to a file in the "suggestions" folder and returns the path to the created file
+- Exports the saveOutput, saveLog, and logPath functions

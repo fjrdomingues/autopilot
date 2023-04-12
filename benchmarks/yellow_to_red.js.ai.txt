@@ -1,0 +1,11 @@
+File Path: C:\Users\hatky\code\public\autopilot\benchmarks\yellow_to_red.js
+Summary:
+- Imports main function from ui.js
+- Imports agents and file system modules
+- Defines score and loops variables
+- Defines task to change yellow messages to red in UI
+- Runs main function in a loop for 3 times
+- Executes task and reads context from ui.js file
+- Uses agents module to review the task and output evaluation rating
+- Adds evaluation rating to score
+- Prints final score after loop completion

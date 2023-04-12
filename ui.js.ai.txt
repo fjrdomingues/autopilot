@@ -1,12 +1,10 @@
-File Path: ui.js
+File Path: C:\Users\hatky\code\public\autopilot\ui.js
 Summary:
-- UI file for user
-- Accepts TASK from user, uses AI to complete task related to code
-- Validates summaries token count
-- Runs in interactive mode if specified
-- Fetches and validates task
-- Gets relevant files by agent decision
-- Asks agent about each file
-- Extracts relevant code
-- Sends output to GPT for necessary changes to complete task
-- Saves solution and returns it
+- UI for user to input a TASK related to code
+- Uses AI to complete the task
+- Uses Yargs library to parse command line options
+- Prompts user for task if not provided
+- Determines relevant files for the task using an agent function
+- Asks an agent about each file and saves the output to a file
+- Sends the saved output to GPT and asks for necessary changes to complete the task
+- Returns solutions to the task

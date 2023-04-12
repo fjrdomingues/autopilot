@@ -1,0 +1,7 @@
+File Path: C:\Users\hatky\code\public\autopilot\modules\jsonHelpers.js
+Summary:
+- Function parses JSON string and validates syntax
+- Takes in a string parameter
+- Returns parsed JSON object
+- Throws an error if JSON string is invalid
+- Function is exported as a module
