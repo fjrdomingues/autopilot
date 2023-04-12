@@ -103,7 +103,7 @@ async function main(task, test) {
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const res = await runAgent(agents.coder, task, [file], interactive);
+    const res = await runAgent(agents.coder, task, file, interactive);
     solutions.push(res)
 
     // This actually applies the solution to the file

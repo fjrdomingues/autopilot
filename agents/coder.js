@@ -1,18 +1,16 @@
 const { callAgent } = require('../agents/genericAgent');
 
-function formatCode(files) {
+function formatCode(file) {
   // format code for prompt
   let code = '';
-  files.forEach(file => {
-    code += `## ${file.path}`;
-    code += `\n`;
-    code += '```';
-    code += `\n`;
-    code += `${file.code}`;
-    code += `\n`;
-    code += '```';
-    code += `\n`;
-  });
+  code += `## ${file.path}`;
+  code += `\n`;
+  code += '```';
+  code += `\n`;
+  code += `${file.code}`;
+  code += `\n`;
+  code += '```';
+  code += `\n`;
   return code
 }
 
@@ -56,18 +54,18 @@ This is provided in a markdown format as follows:
 \`\`\`
 code
 \`\`\`
-Here are the relevant files and code from the existing codebase:
+Here is the relevant file and code from the existing codebase:
 {code}
 ` 
 
 /**
  * Asynchronously suggests changes to a task's source code using an advanced model.
  * @param {string} task - The task to suggest changes for.
- * @param {Array} files - List of files to apply code to.
+ * @param {} file - A file to apply code to.
  * @returns {Promise<string>} - A Promise that resolves with the suggested changes.
  */
-async function suggestChanges(task, files) {
-    const code = formatCode(files)
+async function suggestChanges(task, file) {
+    const code = formatCode(file)
     console.log(code)
     const values = {task, code}
     const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
