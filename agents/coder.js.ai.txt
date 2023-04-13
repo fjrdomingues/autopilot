@@ -1,0 +1,6 @@
+File Path: agents/coder.js
+Summary:
+- Function to suggest changes to source code
+- Formats code for prompt
+- Calls GPT for response
+- Returns reply

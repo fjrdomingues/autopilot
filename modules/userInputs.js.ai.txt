@@ -1,7 +1,8 @@
-File Path: C:\Users\hatky\code\public\autopilot\modules\userInputs.js
+File Path: modules/userInputs.js
 Summary:
-- File contains a function to ask user for a task input
-- Uses prompts package
-- Function supports multiline input
-- Validates input to ensure it is not empty
-- Function is exported for use in other files
+- Imports prompts module
+- Defines async function getTaskInput()
+- Uses prompts to ask user for task input
+- Allows for multiline input
+- Returns user's task input
+- Exports getTaskInput() function

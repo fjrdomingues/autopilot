@@ -1,3 +1,7 @@
-File Path: C:\Users\hatky\code\public\autopilot\modules\summaries.js
+File Path: modules/summaries.js
 Summary:
-Sorry, there is no file attached or mentioned in your request. Please provide more information or attach the file for me to summarize.
+- Reads and returns the contents of all .ai.txt files in a directory
+- Uses fast-glob to ignore specified patterns
+- Throws an error if no matching files are found
+- Uses fs module to read file contents
+- Exports readAllSummaries and getFiles functions, as well as types object
