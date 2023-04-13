@@ -1,6 +1,0 @@
-File Path: C:\Users\hatky\code\public\autopilot\modules\tokenHelper.js
-Summary:
-- Function to count number of tokens in input string
-- Uses get_encoding from '@dqbd/tiktoken'
-- Returns number of tokens
-- Exports countTokens function

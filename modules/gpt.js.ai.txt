@@ -1,11 +1,7 @@
-File Path: C:\Users\hatky\code\public\autopilot\modules\gpt.js
+File Path: modules/gpt.js
 Summary:
-- A Node.js file for calling OpenAI's GPT models
-- Requires chalk, dotenv, Configuration, OpenAIApi, saveLog, countTokens, and jsonParseWithValidate
-- Defines modelCostMap object with costs for different GPT models
-- Defines configuration and openai objects for API authentication
-- Defines verifyModel function to check if a given model is valid
-- Defines callGPT function to call GPT with a given prompt and model
-- Calculates and logs total tokens used and cost
-- Defines calculateTokensCost function to calculate cost based on model and token usage
-- Exports callGPT, calculateTokensCost, countTokens, and jsonParseWithValidate functions
+- Imports required modules: chalk, dotenv, openai, fs, path, and @dqbd/tiktoken
+- Defines modelCostMap object with costs for different OpenAI models
+- Configures OpenAI API with API key from environment variable
+- Defines functions to verify OpenAI model, call GPT with prompt and model, count tokens using tiktoken, calculate cost of tokens used, and log GPT calls
+- Exports functions callGPT, calculateTokensCost, countTokens, and jsonParseWithValidate
