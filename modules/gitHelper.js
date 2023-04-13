@@ -1,16 +1,16 @@
-const { exec } = require('child_process');
+const simpleGit = require('simple-git');
 
 /**
  * Prints the output of git diff to the console.
  */
-function printGitDiff(){
-    exec('git diff', (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error executing git diff: ${error}`);
-          return;
-        }
-        console.log(`Git diff output:\n${stdout}`);
-    });    
+async function printGitDiff(dir) {
+  try {
+    const git = simpleGit(dir);
+    const diff = await git.diff();
+    console.log(`Git diff output:\n${diff}`);
+  } catch (error) {
+    console.error(`Error executing git diff: ${error}`);
+  }
 }
 
 module.exports = {
