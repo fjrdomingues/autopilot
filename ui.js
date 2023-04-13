@@ -132,9 +132,7 @@ async function main(task, test=false) {
   for (const summaries of chunkedSummaries){
     // Decide which files are relevant to the task
     reply = await runAgent(agents.getFiles,task, summaries, interactive);
-    console.log("Relevant files:", reply.output.relevantFiles)
     relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
-    console.log("concat relevantFiles:", relevantFiles)
   }
   const files = getFiles(relevantFiles)
   if (files.length == 0) throw new Error("No relevant files found")
