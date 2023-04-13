@@ -48,12 +48,12 @@ function getFiles(files){
  * @param {boolean} test - If true, reads files only in the 'benchmarks' directory.
  * @returns {Promise<string>} A string containing all the summaries concatenated together.
  */
-async function readAllSummaries(test) {
+async function readAllSummaries(dir, test) {
   const pattern = !test ? '**/*.ai.txt' : 'benchmarks/**/*.ai.txt'
   let files = [];
   try {
     console.log("Getting Summary");
-    files = await fg(path.posix.join(process.env.CODE_DIR, pattern), { ignore: ignorePattern });
+    files = await fg(path.posix.join(dir, pattern), { ignore: ignorePattern });
   } catch (err) {
     console.error("Error in fast-glob:", err);
     throw err;
@@ -82,8 +82,8 @@ async function readAllSummaries(test) {
  * @param {boolean} test - Setting for internal tests.
  * @returns {Promise<Array<Summary>>} A Promise that resolves to an array of summary objects.
  */
-async function getSummaries(test){
-  const summaries = await readAllSummaries(test);
+async function getSummaries(dir, test){
+  const summaries = await readAllSummaries(dir, test);
   const summariesTokenCount = countTokens(JSON.stringify(summaries))
   validateSummaryTokenCount(summariesTokenCount);
   console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)

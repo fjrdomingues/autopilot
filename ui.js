@@ -2,11 +2,11 @@
 const chalk = require('chalk');
 const { getTaskInput } = require('./modules/userInputs');
 const { getSummaries, getFiles } = require('./modules/summaries');
-const { saveOutput, logPath } = require('./modules/fsOutput');
+const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
 const agents = require('./agents');
 const yargs = require('yargs');
 const prompts = require('prompts');
-const fs = require('fs');
+const {printGitDiff} = require('./modules/gitHelper');
 
 /**
 @description Asynchronous function that runs an agent function with given variables.
@@ -41,28 +41,50 @@ async function runAgent(agentFunction, var1, var2, interactive=false){
 
 /**
 Returns an object containing the command line options parsed using the Yargs library.
+* @param {boolean} test - Whether or not to run in test mode.
 * @returns {{
 *   task: string, // The task to be completed, or false if not provided
 *   interactive: boolean // Whether to run in interactive mode
 *   }}
 */
-function getOptions(){
+function getOptions(task, test){
   const options = yargs
-  .option('task', {
-    alias: 't',
-    describe: 'The task to be completed',
-    default: '',
-    type: 'string'
-  })
   .option('interactive', {
     alias: 'i',
     describe: 'Whether to run in interactive mode',
     default: false,
     type: 'boolean'
   })
+  .option('task', {
+    alias: 't',
+    describe: 'The task to be completed',
+    demandOption: false, // set initial value to false
+    default: task,
+    type: 'string'
+  })
+  .option('dir', {
+    alias: 'd',
+    describe: 'The path to the directory containing the code files',
+    default: process.env.CODE_DIR,
+    type: 'string'
+  })
+  .option('auto-apply', {
+    alias: 'a',
+    describe: 'The path to the directory containing the code files',
+    default: !test,
+    type: 'boolean'
+  })
   .help()
   .alias('help', 'h')
   .argv;
+
+  if (!options.interactive && !options.task) {
+    console.log('Please provide a task using the -t flag.');
+    console.log('  node ui -t task1');
+    yargs.showHelp();
+    process.exit(1);
+  }
+
   return options;
 }
 
@@ -76,27 +98,10 @@ function getOptions(){
 */
 async function getTask(task, options){
   if (!task) task = options.task
-  if (!task) task = await getTaskInput()
+  if (!task && options.interactive) task = await getTaskInput()
   if (!task || task =='') throw new Error("No task provided")
   console.log(`Task: ${task}`)
   return task
-}
-
-function applyPatch(file, patch) {
-  const lines = patch.split("\n");
-  lines.shift();
-  const resCleaned = lines.join("\n")
-    .replace(/^```/, "") // Remove "```" from the start of the string
-    .replace(/```$/, ""); // Remove "```" from the end of the string
-
-  fs.writeFile(file.path, resCleaned, { flag: 'w' }, (err) => {
-    if (err) {
-      console.error(err);
-      throw new Error("Error writing file" + err);
-    }
-    console.log(`The file ${file.path} has been updated.`);
-  });
-  return resCleaned
 }
 
 /**
@@ -105,11 +110,22 @@ function applyPatch(file, patch) {
  * @param {boolean} test - Setting for internal tests.
  * @returns {string}
  */
-async function main(task, test) {
-  const summaries = await getSummaries(test);
-  const options = getOptions();
+async function main(task, test=false) {
+  const options = getOptions(task, test);
   const interactive = options.interactive;
+  const dir = options.dir
+  let autoApply;
+  if (interactive){
+    autoApply = false
+  } else {
+    autoApply = options.autoApply
+  }
+
+  // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
+
+  // Get the summaries of the files in the directory
+  const summaries = await getSummaries(dir, test);
  
   // Decide which files are relevant to the task
   const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
@@ -119,15 +135,27 @@ async function main(task, test) {
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const patch = await runAgent(agents.coder, task, [file], interactive);
-    const patchCleaned = applyPatch (file, patch)
-    solutions.push(patchCleaned)
+    const res = await runAgent(agents.coder, task, file, interactive);
+    solutions.push(
+      `${file.path}\n` +
+      `${res}\n` +
+      `---`)
+
+    if (autoApply){
+      // This actually applies the solution to the file
+      updateFile(file.path, res);
+    }
   }
 
-  //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solutionPath = saveOutput(solutions);
-  
-  console.log(chalk.green("Solution Ready:", solutionPath));
+  if (autoApply){
+    // Sends the saved output to GPT and ask for the necessary changes to do the TASK
+    console.log(chalk.green("Solutions Auto applied:"));
+    printGitDiff(dir);
+  }else{
+    const solutionsPath = saveOutput(solutions);
+    console.log(chalk.green("Solutions saved to:", solutionsPath));
+  }
+
   console.log(chalk.green("Process Log:", logPath()));
 
   return solutions

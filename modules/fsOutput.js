@@ -39,8 +39,25 @@ function saveOutput(solution) {
     return filePath
 }
 
+/**
+ *
+ * @param {string} filePath - The path to the file to be updated.
+ * @param {string} content - The new contents of the file.
+ * @description Updates the file at filePath with the contents of content.
+ */
+function updateFile(filePath, content) {
+    fs.writeFile(filePath, content, { flag: 'w' }, (err) => {
+        if (err) {
+        console.error(err);
+        throw new Error("Error writing file" + err);
+        }
+        console.log(`The file ${filePath} has been updated.`);
+    });
+}
+
 module.exports= {
     saveOutput,
     saveLog,
-    logPath
+    logPath,
+    updateFile
 }
