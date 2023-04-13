@@ -79,6 +79,8 @@ function getOptions(task, test){
   .argv;
 
   if (!options.interactive && !options.task) {
+    console.log('Please provide a task using the -t flag.');
+    console.log('  node ui -t task1');
     yargs.showHelp();
     process.exit(1);
   }
