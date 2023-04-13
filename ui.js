@@ -112,7 +112,12 @@ async function main(task, test=false) {
   const options = getOptions(task, test);
   const interactive = options.interactive;
   const dir = options.dir
-  const autoApply = options.autoApply
+  let autoApply;
+  if (interactive){
+    autoApply = false
+  } else {
+    autoApply = options.autoApply
+  }
 
   // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
