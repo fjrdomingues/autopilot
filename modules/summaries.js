@@ -16,16 +16,39 @@ const types = {
 };
 
 /**
-* Validates the number of tokens in a summary against a maximum limit.
-* @param {number} summariesTokenCount - The number of tokens in the summary.
-* @throws {Error} If the number of tokens exceeds the maximum allowed limit.
+Splits an array of summary strings into chunks up to a maximum size.
+@param {string} summaries - An array of summary strings to chunk.
+@param {number} maxChunkLength - The maximum length of each chunk.
+@returns {string[]} An array of arrays, where each sub-array contains summary strings that are up to maxChunkLength characters long.
+@throws {Error} If a single summary string is longer than maxChunkLength.
 */
-function validateSummaryTokenCount(summariesTokenCount){
-  if (summariesTokenCount > maxSummaryTokenCount) {
-    message = `Aborting. Too many tokens in summaries. ${chalk.red(summariesTokenCount)} Max allowed: ${chalk.red(maxSummaryTokenCount)}`
-    console.log(message)
-    throw new Error(message)
+function chunkSummaries(summaries, maxChunkLength) {
+  const delimiter = "\n\n";
+  const summaryChunks = [];
+  let currentChunk = "";
+  let currentChunkLength = 0;
+  summariesArray = summaries.split(delimiter);
+
+  for (const summary of summariesArray) {
+    const delimitedSummary = summary + delimiter;
+    const currentSummaryLength = countTokens(delimitedSummary);
+
+    if (currentSummaryLength > maxChunkLength) {
+      throw new Error('Single summary is too big');
+    }
+
+    if (currentChunkLength + currentSummaryLength > maxChunkLength) {
+      summaryChunks.push(currentChunk);
+      currentChunk = summary;
+      currentChunkLength = currentSummaryLength;
+    } else {
+      currentChunkLength += currentSummaryLength;
+      currentChunk += delimitedSummary;
+    }
   }
+
+  summaryChunks.push(currentChunk); // Push last chunk
+  return summaryChunks;
 }
 
 /**
@@ -80,12 +103,12 @@ async function readAllSummaries(dir, test) {
 /**
  * Fetches and validates summaries for a given test.
  * @param {boolean} test - Setting for internal tests.
+ * @param {string} dir - The directory to search for summaries.
  * @returns {Promise<Array<Summary>>} A Promise that resolves to an array of summary objects.
  */
 async function getSummaries(dir, test){
   const summaries = await readAllSummaries(dir, test);
   const summariesTokenCount = countTokens(JSON.stringify(summaries))
-  validateSummaryTokenCount(summariesTokenCount);
   console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
   return summaries
@@ -95,5 +118,7 @@ module.exports = {
     readAllSummaries,
     getFiles,
     types,
-    getSummaries
+    getSummaries,
+    chunkSummaries,
+    maxSummaryTokenCount
 }

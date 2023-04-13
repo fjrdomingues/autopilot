@@ -1,7 +1,7 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
 const { getTaskInput } = require('./modules/userInputs');
-const { getSummaries, getFiles } = require('./modules/summaries');
+const { getSummaries, getFiles, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
 const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
 const agents = require('./agents');
 const yargs = require('yargs');
@@ -126,10 +126,15 @@ async function main(task, test=false) {
 
   // Get the summaries of the files in the directory
   const summaries = await getSummaries(dir, test);
+  const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
  
-  // Decide which files are relevant to the task
-  const relevantFiles = await runAgent(agents.getFiles,task, summaries, interactive);
-  const files = getFiles(relevantFiles.output.relevantFiles)
+  let relevantFiles=[]
+  for (const summaries of chunkedSummaries){
+    // Decide which files are relevant to the task
+    reply = await runAgent(agents.getFiles,task, summaries, interactive);
+    relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
+  }
+  const files = getFiles(relevantFiles)
   if (files.length == 0) throw new Error("No relevant files found")
 
   // Ask an agent about each file
