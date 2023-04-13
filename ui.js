@@ -108,7 +108,7 @@ async function getTask(task, options){
  * 
  * @param {string} task - The task to be completed.
  * @param {boolean} test - Setting for internal tests.
- * @returns {string}
+ * @returns {Array} - Array with file and code
  */
 async function main(task, test=false) {
   const options = getOptions(task, test);
@@ -135,15 +135,12 @@ async function main(task, test=false) {
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const res = await runAgent(agents.coder, task, file, interactive);
-    solutions.push(
-      `${file.path}\n` +
-      `${res}\n` +
-      `---`)
+    const coderRes = await runAgent(agents.coder, task, file, interactive);
+    solutions.push({file:file.path, code:coderRes})
 
     if (autoApply){
       // This actually applies the solution to the file
-      updateFile(file.path, res);
+      updateFile(file.path, coderRes);
     }
   }
 

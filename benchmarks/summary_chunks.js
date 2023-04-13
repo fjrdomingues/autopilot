@@ -6,12 +6,9 @@ const LineDiff = require("line-diff")
 
 let score = 0
 const loops = 1
-const task = "In the messages displayed to the user in the ui, change the messages that are colored yellow to the color red"
+const task = "In some situations, summaries can have too many tokens to be processed in 1 go. Fix that by loop the summaries and split them by the max amount of 3000 tokens"
 const criteria = [
-    "The chalk.yellow statement must be changed to chalk.red",
-    "No other lines can be changed",
-    "All other console.logs must remain untouched",
-    "Don't change console.log statements if they don't have chalk already"
+    "none"
 ]
 
 async function main(){
