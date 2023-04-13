@@ -47,19 +47,20 @@ Returns an object containing the command line options parsed using the Yargs lib
 *   interactive: boolean // Whether to run in interactive mode
 *   }}
 */
-function getOptions(test){
+function getOptions(task, test){
   const options = yargs
-  .option('task', {
-    alias: 't',
-    describe: 'The task to be completed',
-    default: '',
-    type: 'string'
-  })
   .option('interactive', {
     alias: 'i',
     describe: 'Whether to run in interactive mode',
     default: false,
     type: 'boolean'
+  })
+  .option('task', {
+    alias: 't',
+    describe: 'The task to be completed',
+    demandOption: false, // set initial value to false
+    default: task,
+    type: 'string'
   })
   .option('dir', {
     alias: 'd',
@@ -76,6 +77,12 @@ function getOptions(test){
   .help()
   .alias('help', 'h')
   .argv;
+
+  if (!options.interactive && !options.task) {
+    yargs.showHelp();
+    process.exit(1);
+  }
+
   return options;
 }
 
@@ -89,7 +96,7 @@ function getOptions(test){
 */
 async function getTask(task, options){
   if (!task) task = options.task
-  if (!task) task = await getTaskInput()
+  if (!task && options.interactive) task = await getTaskInput()
   if (!task || task =='') throw new Error("No task provided")
   console.log(`Task: ${task}`)
   return task
@@ -102,7 +109,7 @@ async function getTask(task, options){
  * @returns {string}
  */
 async function main(task, test=false) {
-  const options = getOptions(test);
+  const options = getOptions(task, test);
   const interactive = options.interactive;
   const dir = options.dir
   const autoApply = options.autoApply
