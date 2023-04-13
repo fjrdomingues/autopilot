@@ -4,10 +4,18 @@ const fs = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
 const { callGPT, calculateTokensCost, countTokens } = require('./modules/gpt');
-const ignoreList = process.env.IGNORE_LIST.split(',');
-const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
 const prompts = require('prompts');
-require('dotenv').config()
+
+let ignoreList = process.env.IGNORE_LIST.split(',');
+let fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
+
+const dotenv = require('dotenv');
+try {
+  dotenv.config()
+} catch (error) {
+  console.error("Error loading .env file:", error);
+}
+
 
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
@@ -104,13 +112,57 @@ async function main() {
     default: process.env.SUMMARY_MODEL,
     type: 'string'
   })
+  .option('conf', {
+    alias: 'cf',
+    describe: 'The name of a json file containing .env variables. This will override any defaults in the .env file. This is useful for running multiple instances of the script with different configurations.',
+    default: '',
+    type: 'string'
+  })
   .help()
   .alias('help', 'h')
   .argv;
 
-  const directoryPath = options.dir;
+  let directoryPath = options.dir;
+  let model = options.model;
+
   const fullAnalysis = options.all;
-  const model = options.model;
+  
+  const conf = options.conf;
+  if (conf) {
+    console.log(`Using config file: ${conf}`);
+
+    // Read the contents of the configuration file
+    const configFileContents = fs.readFileSync(conf, 'utf8');
+    const configData = JSON.parse(configFileContents);
+
+    // Update the environment variables
+    for (const key in configData) {
+      // Ignore the OPENAI_API_KEY variable
+      if (key === "OPENAI_API_KEY") {
+        continue;
+      }
+
+      process.env[key] = configData[key];
+      //console.log(`Set ${key} to ${configData[key]}`);
+    }
+
+    if (configData["CODE_DIR"]) {
+      directoryPath = process.env.CODE_DIR;
+      console.log(`Using CODE_DIR: ${directoryPath}`);
+    }
+    if (configData["SUMMARY_MODEL"]) {
+      model = process.env.SUMMARY_MODEL;
+      console.log(`Using SUMMARY_MODEL: ${model}`);
+    }
+    if (configData["IGNORE_LIST"]) {
+      ignoreList = process.env.IGNORE_LIST.split(',');
+      console.log(`Using IGNORE_LIST: ${ignoreList}`);
+    }
+    if (configData["FILE_EXTENSIONS_TO_PROCESS"]) {
+      fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
+      console.log(`Using FILE_EXTENSIONS_TO_PROCESS: ${fileExtensionsToProcess}`);
+    }
+  }
 
   if (fullAnalysis) {
     // Calculate and display the project size
