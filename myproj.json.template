@@ -1,0 +1,12 @@
+{
+  "CODE_DIR": "./",
+  "FILE_EXTENSIONS_TO_PROCESS": ".js,.tsx,.ts,.jsx",
+  "IGNORE_LIST": "node_modules,coverage,public,__tests__,.git",
+  "ADVANCED_MODEL": "gpt-4",
+  "CHEAP_MODEL": "gpt-3.5-turbo",
+  "SUMMARY_MODEL": "gpt-3.5-turbo",
+  "MODEL_TEMPERATURE": 0.01,
+  "MODEL_PRESENCE_PENALTY": 0,
+  "MODEL_FREQUENCY_PENALTY": 0,
+  "MODEL_USER": "autopilot"
+}

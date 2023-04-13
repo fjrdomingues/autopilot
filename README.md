@@ -68,12 +68,17 @@ Task: Create a diagram explaining what this project and the process
 1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git`
 2. Do `cd autopilot` to install dependencies: `npm install`
 3. Create the `.env` file and set up the environment variables:
-   1. Copy the .env.example file to .env: `cp .env.template .env`
+   1. Copy the `.env.template file` to .env: `cp .env.template .env`
    2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`
    3. Set the path to your code `CODE_DIR=<path-to-your-code>`
-   4. Update `IGNORE_LIST=node_modules,coverage,public,__tests__`
+   4. Update `IGNORE_LIST=node_modules,coverage,public,__tests__,.git`
    5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
 4. Run `node createSummaryOfFiles.js --all` to create a summary of all files (it will also start a watcher at the end for file changes)
+
+    #### *Alternatively...*
+    
+    After creating the .env file you can configure your own settings in a project-specific json file. To do this, first copy the `myproj.json.template` file: `cp myproj.json.template MyProjectSettings.json`. Now you can run `node createSummaryOfFiles.js --all --cf MyProjectSettings.json` to create a summary of all files using your own json settings file. Any setting here will override those in your .env file EXCEPT the OPENAI_API_KEY setting.
+
 5. Run `node ui.js` to input a task and get the AI to give you a solution
 6. Solutions will be saved in a `suggestions` folder inside the project directory.
 
