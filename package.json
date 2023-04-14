@@ -15,6 +15,7 @@
     "dotenv": "^16.0.3",
     "fast-glob": "^3.2.12",
     "langchain": "^0.0.51",
+    "line-diff": "^2.1.1",
     "openai": "^3.2.1",
     "prompts": "^2.4.2",
     "readline-sync": "^1.4.10",
