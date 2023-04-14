@@ -42,7 +42,7 @@ const processDirectory = async (dir, model) => {
       const file = fs.readFileSync(filePath, 'utf8')
       console.log(filePath, countTokens(file))
       if (countTokens(file) > 3000) {
-        console.log('File too BIG')
+        console.log(chalk.red('File too BIG'))
         continue
       }
       await processFile(filePath, model);
