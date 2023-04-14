@@ -8,6 +8,9 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@dqbd/tiktoken": "^1.0.3",
     "chalk": "^4.1.2",
