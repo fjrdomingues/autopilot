@@ -28,14 +28,21 @@ function saveLog(text) {
 * @param {string} solution - The solution to save to a file.
 * @returns {string} - The path to the created file.
 */
-function saveOutput(solution) {
+function saveOutput(solutions) {
     // Save the solution to a file in the "suggestions" folder
     const suggestionsDir = path.join(__dirname, '..' , outputFolder);
     const fileName = `${Date.now()}.patch`;
    
-    // Write the suggestion to the file
     const filePath = path.join(suggestionsDir, fileName)
-    fs.writeFileSync(filePath, `${solution}`);
+    // Get solutions from array and format to save
+    let content 
+    solutions.map(file => {
+        content += "File: " + file.file
+        content += "\n"
+        content += file.code
+    })
+
+    fs.writeFileSync(filePath, content);
     return filePath
 }
 

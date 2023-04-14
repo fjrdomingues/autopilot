@@ -14,8 +14,8 @@ async function callAgent(template, values, model) {
     const reply = await callGPT(prompt, model);
 
     // console.log(`Prompt: ${prompt}`);
-    console.log(`Reply:\n`);
-    console.dir(reply, { depth: null });
+    // console.log(`Reply:\n`);
+    // console.dir(reply, { depth: null });
   
     return reply;
 }
