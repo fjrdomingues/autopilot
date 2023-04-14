@@ -40,9 +40,14 @@ const processDirectory = async (dir, model) => {
       await processDirectory(filePath, model);
     } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
       const file = fs.readFileSync(filePath, 'utf8')
+      const fileTokensCount = countTokens(file)
       console.log(filePath, countTokens(file))
-      if (countTokens(file) > 3000) {
+      if (fileTokensCount > 3000) {
         console.log(chalk.red('File too BIG'))
+        continue
+      }
+      if (fileTokensCount == 0) {
+        console.log(chalk.yellow('Empty file'))
         continue
       }
       await processFile(filePath, model);
