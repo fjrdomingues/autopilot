@@ -46,7 +46,7 @@ function saveOutput(solution) {
  * @description Updates the file at filePath with the contents of content.
  */
 function updateFile(filePath, content) {
-    fs.writeFile(filePath, content, { flag: 'w' }, (err) => {
+    fs.writeFileSync(filePath, content, { flag: 'w' }, (err) => {
         if (err) {
         console.error(err);
         throw new Error("Error writing file" + err);
