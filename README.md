@@ -49,19 +49,15 @@ Task: Create a diagram explaining what this project and the process
 
 ### CreateSummaries script:
 
-- 📚 Reads all relevant files in the project (you can choose what file extensions you want)
-- 🧠 Creates a summary (using GPT AI API) representing a mental model for each file, allowing the app to work on larger codebases that wouldn't fit GPT's context window
-- 💾 Saves the summary next to each file with a `.ai.txt` extension for later use
-- 👀 A watcher continuously updates files that have been modified
+- 📚 Pre-processes all the relavent code base files.
+- 👀 A watcher continuously updates files that have been modified.
 
 ### 🖥️ UI script:
 
-- 🧩 Takes into account the TASK and retrieves all the summary files (`.ai.txt`)
-- 🤖 Uses GPT AI API to identify relevant files for the task based on the summaries
-- 📁 Retrieves the source code of each relevant file and sends it to GPT to obtain the necessary context
-- 💾 Temporarily saves the output of each file
-- 🔧 Sends the saved output to GPT and requests the required changes to complete the TASK
-- 📋 Creates a `.md` file containing the suggestions to accomplish the TASK, along with the source code that can be used
+- 🧩 Desides what files to update for the given task.
+- 🤖 Does code updates for you.
+- 📋 Shows you what was updated. Full process log with each AI interaction also produced.
+- 🔧 Optional interacrive mode to see the process and retry, continue, abort options.
 
 ## 🛠️ Installation
 
@@ -69,21 +65,28 @@ Task: Create a diagram explaining what this project and the process
 2. Do `cd autopilot` to install dependencies: `npm install`
 3. Create the `.env` file and set up the environment variables:
    1. Copy the .env.example file to .env: `cp .env.template .env`
-   2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`
+   2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`. [Create openAI API key](https://platform.openai.com/account/api-keys)
    3. Set the path to your code `CODE_DIR=<path-to-your-code>`
    4. Update `IGNORE_LIST=node_modules,coverage,public,__tests__`
    5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
-4. Run `node createSummaryOfFiles.js --all` to create a summary of all files (it will also start a watcher at the end for file changes)
-5. Run `node ui.js` to input a task and get the AI to give you a solution
-6. Solutions will be saved in a `suggestions` folder inside the project directory.
+   
+## Running
+### 1. The indexer
+* `node createSummaryOfFiles --all` - creates a summary of all files (required for first run) and starts the watcher.
+* `node createSummaryOfFiles` - starts the watcher for any code changes which would trigger a file re-index.
+### 2. The tasker
+* `node ui -t "YOUR_TASK"` - is the easiest way to start.
+  * Solutions will be auto applied on your code and a git diff shown if possible. 
+  * Alternatively you may specify `--auto-apply=false`.
+* `node ui -h` - will show you all the options.
 
 ## Test/Interactive mode
 This project is still in alpha stage. It's recommended that you use `node ui -i` for an interactive mode here you can review the output of every step before proceeding.
 
 ## Components
 
-- **createSummaryOfFiles.js**: Manages the code summarization process for JavaScript and TypeScript files
-- **ui.js**: Handles the user interface (UI) interaction and utilizes the GPT-based summaries to complete tasks
+- **createSummaryOfFiles.js**: Manages the code summarization process for JavaScript and TypeScript files.
+- **ui.js**: Handles the user interface (UI) interaction and utilizes the GPT-based summaries to complete tasks.
 
 ## 🤝 Contributing
 
