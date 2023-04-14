@@ -1,9 +1,11 @@
 File Path: modules/fsOutput.js
 Summary:
-- Imports fs and path modules
-- Defines outputFolder variable as "suggestions"
-- Defines saveOutput function to save task and solution to a file in the "suggestions" folder
-- Constructs the file path and file name using path.join and Date.now()
-- Writes the suggestion to the file using fs.writeFileSync
-- Returns the file path
-- Exports the saveOutput function
+This file contains four functions that are used to handle file operations in the project. 
+
+The first function, `logPath()`, returns the path of the log file. It concatenates the logs directory path, the current date and time as the filename, and the logs file extension to create the full path of the log file.
+
+The second function, `saveLog(text)`, appends the specified text to the end of the log file. It calls the `logPath()` function to get the path of the log file and uses the `fs.appendFileSync()` method to append the text to the file.
+
+The third function, `saveOutput(solution)`, saves the given solution to a file in the "suggestions" folder and returns the path to the created file. It concatenates the suggestions directory path, the current timestamp as the filename, and the file extension ".patch" to create the full path of the output file. It then uses the `fs.writeFileSync()` method to write the solution to the file.
+
+The fourth function, `updateFile(filePath, content)`, updates the file at `filePath` with the contents of `content`. It uses the `fs.writeFileSync()` method with the `flag` option set to 'w' to overwrite the file with the new content. If there is an error writing the file, it logs an error message and throws an error.

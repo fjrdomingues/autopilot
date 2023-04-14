@@ -1,6 +1,11 @@
 File Path: agents/coder.js
 Summary:
-- Function to suggest changes to source code
-- Formats code for prompt
-- Calls GPT for response
-- Returns reply
+This file contains a function called `suggestChanges` that asynchronously suggests changes to a task's source code using an advanced model. The function takes in a `task` string and a `file` object, which contains the path and code of the file to apply the changes to. 
+
+The `formatCode` function is used to format the code for the prompt, by adding the file path and enclosing the code in markdown code blocks. 
+
+The `cleanRes` function is used to remove the file name and code block markers from the output of the agent. 
+
+The `promptTemplate` variable contains a template for the prompt that will be sent to the advanced model. 
+
+The `suggestChanges` function uses the `callAgent` function from the `genericAgent` module to send the prompt to the advanced model and receive a reply. The reply is then cleaned using the `cleanRes` function and returned as a Promise that resolves with the suggested changes.

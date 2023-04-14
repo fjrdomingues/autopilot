@@ -1,8 +1,11 @@
 File Path: agents/index.js
 Summary:
-- Exports four modules:
-  - taskComplexity
-  - codeReader
-  - getFiles
-  - coder
-- Each module is required from a separate file.
+This file exports an object that contains references to various modules required for the project. These modules include:
+
+- taskComplexity: a module that calculates the complexity of a given task
+- codeReader: a module that reads code from a file or a string
+- getFiles: a module that retrieves a list of files from a directory
+- coder: a module that writes code to a file
+- reviewer: a module that reviews code and provides feedback
+
+By exporting these modules, other parts of the project can easily access and use them.

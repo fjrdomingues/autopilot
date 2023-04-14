@@ -1,7 +1,7 @@
 File Path: agents/taskComplexity.js
 Summary:
-- Function: taskComplexityAgent
-- Uses GPT to assess complexity of a task
-- Takes in summaries and task input
-- Outputs JSON format with thoughts and task list
-- Response can be parsed with JSON.parse in nodejs
+This file contains a function called taskComplexityAgent that measures the complexity of a given task and decides whether it needs to be broken down into smaller JIRA tasks. The function takes in two parameters: summaries and task. Summaries provide context for the task, while task is the actual task to be assessed. 
+
+The function uses a prompt template to generate a response that includes the thoughts, reasoning, criticism, and summary to say to the user. The output of the function is a list of JIRA tasks that engineers will work on. 
+
+The function uses two other modules: callAgent and jsonParseWithValidate. The callAgent module is used to generate the response based on the prompt template and the values passed in. The jsonParseWithValidate module is used to ensure that the response can be parsed by JSON.parse in nodejs.

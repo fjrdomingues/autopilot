@@ -1,7 +1,9 @@
 File Path: modules/gpt.js
 Summary:
-- Imports required modules: chalk, dotenv, openai, fs, path, and @dqbd/tiktoken
-- Defines modelCostMap object with costs for different OpenAI models
-- Configures OpenAI API with API key from environment variable
-- Defines functions to verify OpenAI model, call GPT with prompt and model, count tokens using tiktoken, calculate cost of tokens used, and log GPT calls
-- Exports functions callGPT, calculateTokensCost, countTokens, and jsonParseWithValidate
+This file contains functions and variables related to calling the OpenAI API to generate text using the GPT model. It imports necessary modules such as chalk, dotenv, Configuration, and OpenAIApi. It also defines a few helper functions such as verifyModel, calculateTokensCost, countTokens, and jsonParseWithValidate. 
+
+The main function in this file is callGPT, which takes a prompt and a model as input and returns the generated text as output. It first verifies that the model is valid and then calls the OpenAI API to generate text using the given prompt and model. It also logs the usage and cost of the API call. 
+
+The file also defines a modelCostMap object that maps each model to its corresponding cost per token. The cost is used to calculate the total cost of the API call based on the number of tokens used. 
+
+Finally, the file exports the callGPT function, calculateTokensCost function, countTokens function, and jsonParseWithValidate function for use in other parts of the project.

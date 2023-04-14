@@ -61,10 +61,9 @@ const processFile = async (filePath, model) => {
 
     const prompt = 
 `
-TASK: Create a summary of the file below. Use as few words as possible while keeping the details. Use bullet points
-*** FILE CONTENT START ***
+TASK: You are a software developer. Describe what the following file does in the project
+
 ${fileContent}
-*** FILE CONTENT END ***
 `
     const output = await callGPT(prompt, model)
 

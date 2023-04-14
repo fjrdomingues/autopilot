@@ -1,7 +1,3 @@
 File Path: agents/getFiles.js
 Summary:
-- Function to get relevant files from codebase based on user input
-- Returns JSON response with thoughts, reasoning, criticism, and output
-- Prompt includes task description and response format
-- Uses GPT to generate reply
-- Validates JSON response before returning
+This file exports a function called "getRelevantFiles" which takes in a task and a set of summaries as parameters. The function uses a prompt template to call an external agent and retrieve a response in JSON format. The response includes a set of thoughts, reasoning, criticism, and a summary to say to the user, as well as a list of relevant files and the reasons why they were selected. The function then parses the JSON response and returns it. This file is relevant to the project as it provides a way to retrieve relevant files based on user input and summaries.
