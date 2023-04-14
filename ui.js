@@ -170,3 +170,8 @@ if (require.main === module) main();
 
 
 module.exports = { main }
+
+// Change get task message
+prompts.override(require('prompts/dist/strings.js')({
+  describeTask: 'Describe your task in detail'
+}));

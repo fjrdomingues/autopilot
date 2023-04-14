@@ -5,7 +5,7 @@ const simpleGit = require('simple-git');
  */
 async function printGitDiff(dir) {
   try {
-    const git = simpleGit(dir);
+    const git = await simpleGit(dir);
     const diff = await git.diff();
     console.log(`Git diff output:\n${diff}`);
   } catch (error) {
