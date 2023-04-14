@@ -1,8 +1,0 @@
-File Path: modules/userInputs.js
-Summary:
-- Imports prompts module
-- Defines async function getTaskInput()
-- Uses prompts to ask user for task input
-- Allows for multiline input
-- Returns user's task input
-- Exports getTaskInput() function
