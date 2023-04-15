@@ -96,8 +96,8 @@ function getOptions(){
 
 // Calculate and display the project size and cost estimation
 function printCostEstimation(directoryPath, model){
-  const projectSize = getDirectorySize(directoryPath);
-  tokenCount = countTokens(projectSize)
+  const getDirectoryTokensCount = require('./modules/directoryHelper');
+  tokenCount = getDirectoryTokensCount(directoryPath)
   cost = calculateTokensCost(model, tokenCount, null, tokenCount)
   
   console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
@@ -117,7 +117,7 @@ async function approveIndexing(){
 async function indexFullProject(directoryPath, model){
   printCostEstimation(directoryPath, model);
 
-  if (approveIndexing()) {
+  if (await approveIndexing()) {
     await processDirectory(directoryPath, model);
   } else {
     console.log('Aborted summarizing the project.');

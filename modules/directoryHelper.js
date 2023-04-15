@@ -5,16 +5,15 @@ const loadFiles = require('./fsInput');
  * @param {string} dir - The directory path to calculate the size of.
  * @returns {number} - The total size of the directory in bytes.
  */
-const getDirectorySize = (dir) => {
-  let directorySize = 0;
+function getDirectoryTokensCount(dir) {
+  let directoryTokensCount = 0;
 
   const files = loadFiles(dir);
   for (const file of files) {
-    const fileContent = file.fileContent;
-    directorySize += fileContent.length;
+    directoryTokensCount += file.fileTokensCount;
   }
 
-  return directorySize;
+  return directoryTokensCount;
 };
 
-exports.getDirectorySize = getDirectorySize;
+module.exports = getDirectoryTokensCount;
