@@ -140,7 +140,7 @@ async function generateAndWriteFileSummary(dir, filePathRelative, fileContent, m
       const timestamp = new Date().toISOString();
       const hour = timestamp.match(/\d\d:\d\d/);
 
-      console.log(`${hour}: Updated ${summaryFilePath}`);
+      console.log(`${hour}: Updated summary for ${filePathRelative}`);
     }
   } catch (error) {
     console.error(`Error processing file: ${filePathRelative}`, error);
