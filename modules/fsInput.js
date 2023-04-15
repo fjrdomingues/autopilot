@@ -37,7 +37,7 @@ function getFilePaths(dir) {
  * @param {string} dir - The directory to load and hash project files from.
  * @returns {object[]} An array of objects containing the file path, file content, file token count, and file hash.
  */
-function loadFiles (dir) {
+function loadFiles(dir) {
     require('dotenv').config();
     const hashFile = require('./hashing');
     const countTokens = require('./tokenHelper');
