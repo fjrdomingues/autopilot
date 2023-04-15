@@ -106,7 +106,7 @@ async function initApp() {
   const password = process.env.GIT_PASSWORD
   // init git repo
   execSync('git init')
-  execSync(`git remote add origin https://fjrdomingues:${process.env.GH_TOKEN}@github.com/fjrdomingues/autopilot.git@github.com/fjrdomingues/autopilot.git`)
+  execSync(`git remote add origin https://fjrdomingues:${process.env.GH_TOKEN}@github.com/fjrdomingues/autopilot.git`)
   
 
 
