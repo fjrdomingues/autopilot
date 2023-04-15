@@ -105,7 +105,9 @@ function initApp() {
   execSync('git init')
   execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
   execSync('git fetch origin');
-  execSync('git reset --hard origin/main');
+  execSync('git checkout origin/main');
+  execSync('git config --global user.email "fjrdomingues@gmail.com"');
+  execSync('git config --global user.name "Fabio Domingues"');
   execSync('node createSummaryOfFiles --all --auto')
 }
 
