@@ -13,8 +13,7 @@ async function fileSummary(fileContent, model) {
     const values = {fileContent:fileContent}
     const reply = await callAgent(promptTemplate, values, model);
 
-    const parsedReply = jsonParseWithValidate(reply)
-    return parsedReply;
+    return reply;
 }
 
 module.exports = fileSummary

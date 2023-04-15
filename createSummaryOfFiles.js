@@ -39,7 +39,7 @@ const processDirectory = async (dir, model) => {
   }
 };
 
-const processFile = async (filePath, fileContent, model) => {
+async function processFile(filePath, fileContent, model) {
   const fileSummary = require('./agents/indexer')
   try {
     const output = await fileSummary(fileContent,model)
