@@ -90,7 +90,7 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-async function main() {
+function getOptions(){
   const options = yargs
   .option('dir', {
     alias: 'd',
@@ -112,6 +112,12 @@ async function main() {
   .help()
   .alias('help', 'h')
   .argv;
+
+  return options;
+}
+
+async function main() {
+  const options = getOptions();
 
   const directoryPath = options.dir;
   const fullAnalysis = options.all;
