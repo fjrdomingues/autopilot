@@ -6,7 +6,6 @@ const chokidar = require('chokidar');
 const { callGPT, calculateTokensCost, countTokens } = require('./modules/gpt');
 const ignoreList = process.env.IGNORE_LIST.split(',');
 const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
-const prompts = require('prompts');
 require('dotenv').config()
 
 const calculateProjectSize = (dir) => {
@@ -126,6 +125,8 @@ function printCostEstimation(directoryPath, model){
 }
 
 async function approveIndexing(){
+  const prompts = require('prompts');
+
   const proceed = await prompts({
     type: 'confirm',
     name: 'value',
