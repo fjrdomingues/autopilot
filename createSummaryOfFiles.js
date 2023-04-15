@@ -2,11 +2,12 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-const { calculateTokensCost, countTokens } = require('./modules/gpt');
+const { calculateTokensCost } = require('./modules/gpt');
+const countTokens = require('./modules/tokenHelper');
 const loadFiles = require('./modules/fsInput');
 const { getDirectorySize } = require("./modules/directoryHelper");
 
-require('dotenv').config()
+require('dotenv').config();
 
 const maxTokenSingleFile = 3000;
 
