@@ -18,7 +18,7 @@ function getFilePaths(dir) {
   const projectFiles = [];
 
   for (const file of files) {
-    const filePath = path.join(dir, file);
+    const filePath = path.posix.join(dir, file);
     const stats = fs.statSync(filePath);
 
     if (stats.isDirectory() && !ignoreList.includes(file)) {
@@ -52,9 +52,10 @@ function loadFiles(dir) {
         }
         const fileTokensCount = countTokens(fileContent);
         const fileHash = hashFile(fileContent);
+        const relativePath = path.posix.relative(dir, filePath);
 
         files.push({
-            filePath: filePath,
+            filePath: relativePath,
             fileContent: fileContent,
             fileTokensCount: fileTokensCount,
             fileHash: fileHash

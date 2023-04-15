@@ -23,9 +23,9 @@ const processDirectory = async (dir, model) => {
   for (const file of files) {
     const fileContent = file.fileContent;
     const fileTokensCount = file.fileTokensCount;
-    const filePath = file.filePath;
+    const filePathRelative = file.filePath;
 
-    console.log(filePath, fileTokensCount);
+    console.log(filePathRelative, fileTokensCount);
     if (fileTokensCount > maxTokenSingleFile) {
       console.log(chalk.red('File too BIG'));
       continue;
@@ -35,28 +35,28 @@ const processDirectory = async (dir, model) => {
       continue;
     }
 
-    await processFile(filePath, fileContent, model);
+    await processFile(dir, filePathRelative, fileContent, model);
   }
 };
 
-async function processFile(filePath, fileContent, model) {
+async function processFile(dir, filePathRelative, fileContent, model) {
   const fileSummary = require('./agents/indexer')
+
   try {
     const output = await fileSummary(fileContent,model)
 
     if (output) {
-        // Save new comment
-        const summaryPath = path.join(filePath + '.ai.txt');
-        // adds filepath to top of summary
-        const contentToRight = `File Path: ${filePath}\nSummary:\n${output}`
-        fs.writeFileSync(summaryPath, contentToRight);
+        const filePathFull = path.join(dir, filePathRelative);
+        const summaryFilePath = path.join(filePathFull + '.ai.txt');
+        const summaryFileContent = `File Path: ${filePathRelative}\nSummary:\n${output}`
+        fs.writeFileSync(summaryFilePath, summaryFileContent);
         const timestamp = new Date().toISOString();
         const hour = timestamp.match(/\d\d:\d\d/);
 
-        console.log(`${hour}: Updated ${summaryPath}`);
+        console.log(`${hour}: Updated ${summaryFilePath}`);
     }
   } catch (error) {
-    console.error(`Error processing file: ${filePath}`, error);
+    console.error(`Error processing file: ${filePathRelative}`, error);
   }
 };
 
@@ -125,6 +125,7 @@ async function indexFullProject(directoryPath, model){
 }
 
 async function main() {
+  const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
   const chokidar = require('chokidar');
 
   const options = getOptions();
@@ -139,10 +140,12 @@ async function main() {
     ignoreInitial: true,
   });
   // Process the modified file
-  watcher.on('change', async (filePath) => {
-    if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      console.log(`File modified: ${filePath}`);
-      await processFile(filePath, model);
+  watcher.on('change', async (filePathFull) => {
+    if (fileExtensionsToProcess.includes(path.extname(filePathFull))) {
+      const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+      const filePathRelative = path.relative(directoryPath, filePathFull).replace(/\\/g, '/');
+      console.log(`File modified: ${filePathRelative}`);
+      await processFile(directoryPath, filePathRelative, fileContent, model);
     }
   });
 
