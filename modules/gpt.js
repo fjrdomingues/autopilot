@@ -2,7 +2,6 @@ const chalk = require('chalk');
 require('dotenv').config()
 const { Configuration, OpenAIApi } = require("openai");
 const {saveLog} = require('./fsOutput');
-const jsonParseWithValidate = require('./jsonHelpers').jsonParseWithValidate;
 
 let totalTokensUsed = 0
 let completionTokens = 0
@@ -71,6 +70,5 @@ function calculateTokensCost(model, promptTokens, completionTokens, totalTokensU
 
 module.exports= {
   callGPT,
-  calculateTokensCost,
-  jsonParseWithValidate
+  calculateTokensCost
 }
