@@ -32,6 +32,7 @@ function getFilePaths(dir) {
 };
 
 
+
 /**
  * Loads and hashes all project files in the specified directory.
  * @param {string} dir - The directory to load and hash project files from.
@@ -53,13 +54,14 @@ function loadFiles(dir) {
         const fileTokensCount = countTokens(fileContent);
         const fileHash = hashFile(fileContent);
         const relativePath = path.posix.relative(dir, filePath);
-
-        files.push({
+		const file = {
             filePath: relativePath,
             fileContent: fileContent,
             fileTokensCount: fileTokensCount,
             fileHash: fileHash
-        });
+        }
+
+        files.push(file);
     }
   
     return files;
