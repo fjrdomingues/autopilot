@@ -1,5 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
+const hashFile = require('./hashing');
+const countTokens = require('./tokenHelper');
 
 const ignoreList = process.env.IGNORE_LIST.split(',');
 const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
@@ -32,6 +35,29 @@ function getFilePaths(dir) {
 };
 
 
+/**
+ * Parses the file content and returns an object with relevant file information.
+ * @param {string} dir - The directory path of the file.
+ * @param {string} filePath - The path of the file.
+ * @param {string} fileContent - The content of the file.
+ * @returns {object} - An object with the following properties:
+	* filePath: The relative path of the file.
+	* fileContent: The content of the file.
+	* fileTokensCount: The count of tokens in the file.
+	* fileHash: The hash of the file content.
+ */
+function parseFileContent(dir, filePath, fileContent) {
+	const fileTokensCount = countTokens(fileContent);
+	const fileHash = hashFile(fileContent);
+	const relativePath = path.posix.relative(dir, filePath);
+	const file = {
+		filePath: relativePath,
+		fileContent: fileContent,
+		fileTokensCount: fileTokensCount,
+		fileHash: fileHash
+	};
+	return file;
+}
 
 /**
  * Loads and hashes all project files in the specified directory.
@@ -39,9 +65,6 @@ function getFilePaths(dir) {
  * @returns {object[]} An array of objects containing the file path, file content, file token count, and file hash.
  */
 function loadFiles(dir) {
-    require('dotenv').config();
-    const hashFile = require('./hashing');
-    const countTokens = require('./tokenHelper');
 
     const filePaths = getFilePaths(dir);
     const files = [];
@@ -51,16 +74,7 @@ function loadFiles(dir) {
         if (!fileContent || fileContent.length == 0) {
             continue;
         }
-        const fileTokensCount = countTokens(fileContent);
-        const fileHash = hashFile(fileContent);
-        const relativePath = path.posix.relative(dir, filePath);
-		const file = {
-            filePath: relativePath,
-            fileContent: fileContent,
-            fileTokensCount: fileTokensCount,
-            fileHash: fileHash
-        }
-
+        const file = parseFileContent(dir, filePath, fileContent);
         files.push(file);
     }
   
@@ -68,3 +82,4 @@ function loadFiles(dir) {
 };
 
 module.exports = loadFiles;
+
