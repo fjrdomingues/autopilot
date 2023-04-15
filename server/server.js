@@ -66,33 +66,34 @@ function commitChanges(issueTitle, issueDescription, issueNumber){
 
 }
 
+async function processIssue(issue) {
+  execSync('git checkout main');
+  execSync('git pull');
+  const title = issue.title.replace(/"/g, '\\"');
+  const description = issue.body.replace(/"/g, '\\"');
+  const number = issue.number;
+  const task = "title: " + title + "\ndescription: " + description;
+  console.log("STARTING A NEW TASK!");
+  await doTask(task);
+  runCI();
+  commitChanges(title, description, number);
+}
+
 // Route to handle incoming webhook events
 app.post('/issue', async (req, res) => {
-    try {
-      const event = req.body;
-      console.log('Received webhook event:', event);
-        
-        // Check if the event is an issue event and has the required properties
-      if (event.action === 'opened' && event.issue && event.issue.title && event.issue.body) {
-        res.status(200).send('Working on issue');
-        execSync('git checkout main');
-        execSync('git pull');
-        const title = event.issue.title.replace(/"/g, '\\"');;
-        const description = event.issue.body.replace(/"/g, '\\"');;
-        const number = event.issue.number
-        const task = "title: " + title + "\ndescription: " + description
-        // Call the doTask function with the issue's title and description
-        console.log("STARTING A NEW TASK!")
-        await doTask(task);
-        // Run CI
-        runCI()
+  try {
+    const event = req.body;
+    console.log('Received webhook event:', event);
 
-        // commit and open PR
-        commitChanges(title, description, number)
-
-      } else {
-        res.status(200).send('Issue doesnt qualify');
-      }
+    if (event.action === 'opened' && event.issue && event.issue.title && event.issue.body) {
+      res.status(200).send('Working on issue');
+      await processIssue(event.issue);
+    } else if (event.action === 'labeled' && event.label && event.label.name === 'autopilot' && event.issue && event.issue.title && event.issue.body) {
+      res.status(200).send('Working on issue');
+      await processIssue(event.issue);
+    } else {
+      res.status(200).send('Issue doesn\'t qualify');
+    }
   } catch (error) {
     console.error('Error processing webhook event:', error);
     res.status(500).send('Error processing webhook event');

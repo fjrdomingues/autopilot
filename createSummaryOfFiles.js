@@ -112,7 +112,7 @@ async function main() {
   .option('auto', {
     alias: 'a',
     describe: 'Run --all without prompts',
-    default: true,
+    default: false,
     type: 'boolean'
   })
   .help()
