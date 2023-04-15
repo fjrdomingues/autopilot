@@ -3,7 +3,7 @@ const { callAgent } = require('../agents/genericAgent');
 function formatCode(file) {
   // format code for prompt
   let code = '';
-  code += `## ${file.path}`;
+  code += `### ${file.path}`;
   code += `\n`;
   code += '```';
   code += `\n`;
@@ -41,16 +41,20 @@ function cleanRes(res){
 
 const promptTemplate = 
 ` 
-USER INPUT: {task}
-YOUR TASK: As a senior software developer, make the requested changes from the USER INPUT.
+# USER INPUT
+{task}
 
-RESPONSE FORMAT: This is the format of your reply. 
+# YOUR TASK
+As a senior software developer, make the requested changes from the USER INPUT.
+
+# RESPONSE FORMAT 
+## This is the format of your reply. 
 Provide a new version of the source code with the task complete.
 Code only. No comments or other text. 
 
-SOURCE CODE: 
-This is provided in a markdown format as follows:
-## /path/filename
+# SOURCE CODE 
+## This is provided in a markdown format as follows:
+### /path/filename
 \`\`\`
 code
 \`\`\`
