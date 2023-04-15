@@ -116,34 +116,34 @@ function getOptions(){
   return options;
 }
 
+async function indexFullProject(directoryPath, model){
+  // Calculate and display the project size
+  const projectSize = calculateProjectSize(directoryPath);
+  tokenCount = countTokens(projectSize)
+  cost = calculateTokensCost(model, tokenCount, null, tokenCount)
+  
+  console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
+
+  const proceed = await prompts({
+    type: 'confirm',
+    name: 'value',
+    message: 'Proceed with summarizing the project?',
+  });
+
+  if (proceed.value) {
+    // Process the initial directory
+    await processDirectory(directoryPath, model);
+  } else {
+    console.log('Aborted summarizing the project.');
+  }
+}
+
 async function main() {
   const options = getOptions();
-
   const directoryPath = options.dir;
-  const fullAnalysis = options.all;
   const model = options.model;
 
-  if (fullAnalysis) {
-    // Calculate and display the project size
-    const projectSize = calculateProjectSize(directoryPath);
-    tokenCount = countTokens(projectSize)
-    cost = calculateTokensCost(model, tokenCount, null, tokenCount)
-    
-    console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
-
-    const proceed = await prompts({
-      type: 'confirm',
-      name: 'value',
-      message: 'Proceed with summarizing the project?',
-    });
-
-    if (proceed.value) {
-      // Process the initial directory
-      await processDirectory(directoryPath, model);
-    } else {
-      console.log('Aborted summarizing the project.');
-    }
-  }
+  if (options.all) { await indexFullProject(directoryPath, model); }
   // Watch for file changes in the directory
   const watcher = chokidar.watch(directoryPath, {
     ignored: /node_modules|helpers/,
