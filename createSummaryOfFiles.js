@@ -125,17 +125,19 @@ function printCostEstimation(directoryPath, model){
   console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 }
 
-async function indexFullProject(directoryPath, model){
-  printCostEstimation(directoryPath, model);
-
+async function approveIndexing(){
   const proceed = await prompts({
     type: 'confirm',
     name: 'value',
     message: 'Proceed with summarizing the project?',
   });
+  return proceed.value;
+}
 
-  if (proceed.value) {
-    // Process the initial directory
+async function indexFullProject(directoryPath, model){
+  printCostEstimation(directoryPath, model);
+
+  if (approveIndexing()) {
     await processDirectory(directoryPath, model);
   } else {
     console.log('Aborted summarizing the project.');
