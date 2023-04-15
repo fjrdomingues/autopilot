@@ -1,5 +1,4 @@
 const chalk = require('chalk');
-const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
@@ -90,6 +89,8 @@ const readline = require('readline').createInterface({
 });
 
 function getOptions(){
+  const yargs = require('yargs');
+
   const options = yargs
   .option('dir', {
     alias: 'd',
