@@ -1,7 +1,6 @@
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
-const chokidar = require('chokidar');
 const { callGPT, calculateTokensCost, countTokens } = require('./modules/gpt');
 const ignoreList = process.env.IGNORE_LIST.split(',');
 const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
@@ -147,6 +146,8 @@ async function indexFullProject(directoryPath, model){
 }
 
 async function main() {
+  const chokidar = require('chokidar');
+
   const options = getOptions();
   const directoryPath = options.dir;
   const model = options.model;
