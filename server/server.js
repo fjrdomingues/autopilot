@@ -103,9 +103,12 @@ app.post('/issue', async (req, res) => {
 });
 
 async function initApp() {
+  const password = process.env.GIT_PASSWORD
   // init git repo
   execSync('git init')
-  execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
+  execSync(`git remote add origin https://fjrdomingues:${process.env.GH_TOKEN}/fjrdomingues/autopilot.git@github.com/fjrdomingues/autopilot.git`)
+  
+
 
   // // save heroku folder
   // execSync('mv .heroku /tmp')
@@ -120,7 +123,7 @@ async function initApp() {
   execSync('git config --global user.name "Fabio Domingues"');
 
   // creates summaries every time that the app is deployed
-  await createSummaries(all=true, auto=true, watch=false)
+  await createSummaries(true, true, false)
   // execSync('node createSummaryOfFiles --all --auto')
 }
 
