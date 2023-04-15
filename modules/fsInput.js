@@ -14,21 +14,21 @@ const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(','
  * @returns {string[]} An array of absolute file paths for all project files found.
 */
 function getFilePaths(dir) {
-  const files = fs.readdirSync(dir);
-  const projectFiles = [];
+	const files = fs.readdirSync(dir);
+	const projectFiles = [];
 
-  for (const file of files) {
-    const filePath = path.posix.join(dir, file);
-    const stats = fs.statSync(filePath);
+	for (const file of files) {
+		const filePath = path.posix.join(dir, file);
+		const stats = fs.statSync(filePath);
 
-    if (stats.isDirectory() && !ignoreList.includes(file)) {
-      projectFiles.push(...getFilePaths(filePath));
-    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      projectFiles.push(filePath);
-    }
-  }
+		if (stats.isDirectory() && !ignoreList.includes(file)) {
+			projectFiles.push(...getFilePaths(filePath));
+		} else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
+			projectFiles.push(filePath);
+		}
+	}
 
-  return projectFiles;
+	return projectFiles;
 };
 
 
