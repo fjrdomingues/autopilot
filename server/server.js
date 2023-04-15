@@ -104,8 +104,8 @@ app.post('/issue', async (req, res) => {
 function initApp() {
   execSync('git init')
   execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
-  execSync('git pull');
-  execSync('git checkout main');
+  execSync('git fetch origin');
+  execSync('git reset --hard origin/main');
   execSync('node createSummaryOfFiles --all --auto')
 }
 
