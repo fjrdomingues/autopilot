@@ -18,9 +18,9 @@ const maxTokenSingleFile = 3000;
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
 
-  const files = loadProjectFiles(dir);
-  for (const file of files) {
-    const fileContent = fs.readFileSync(file, 'utf8');
+  const filePaths = loadProjectFiles(dir);
+  for (const filePath of filePaths) {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
     projectSize += fileContent;
   }
 
@@ -34,13 +34,13 @@ const calculateProjectSize = (dir) => {
  * @returns {number} - The cost of the project in tokens.
   */
 const processDirectory = async (dir, model) => {
-  const files = loadProjectFiles(dir);
+  const filePaths = loadProjectFiles(dir);
 
-  for (const file of files) {
-    const fileContent = fs.readFileSync(file, 'utf8');
+  for (const filePath of filePaths) {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
     const fileTokensCount = countTokens(fileContent);
 
-    console.log(file, fileTokensCount);
+    console.log(filePath, fileTokensCount);
     if (fileTokensCount > maxTokenSingleFile) {
       console.log(chalk.red('File too BIG'));
       continue;
@@ -50,7 +50,7 @@ const processDirectory = async (dir, model) => {
       continue;
     }
 
-    await processFile(file, fileContent, model);
+    await processFile(filePath, fileContent, model);
   }
 };
 
