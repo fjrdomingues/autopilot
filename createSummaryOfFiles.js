@@ -7,6 +7,12 @@ const loadProjectFiles = require('./modules/fsInput');
 
 require('dotenv').config()
 
+/**
+ *
+ * Calculates the size of a project by summing the size of all files in the specified directory.
+ * @param {string} dir - The directory to calculate the project size for.
+ * @returns {number} - The size of the project in bytes.
+ */
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
 
