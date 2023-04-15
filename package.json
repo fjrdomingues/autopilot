@@ -5,7 +5,8 @@
   "main": "ui.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node createSummaryOfFiles --all --auto && node server/server"
+    "start": "node createSummaryOfFiles --all --auto & node server/server",
+    "logs": "heroku logs --tail --app autopilot-ai"
   },
   "author": "",
   "license": "ISC",
