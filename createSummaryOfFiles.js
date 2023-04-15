@@ -4,27 +4,11 @@ const path = require('path');
 
 const { calculateTokensCost, countTokens } = require('./modules/gpt');
 const loadFiles = require('./modules/fsInput');
+const { getDirectorySize } = require("./modules/directoryHelper");
 
 require('dotenv').config()
 
 const maxTokenSingleFile = 3000;
-
-/**
- * Calculates the total size of a directory by summing the length of all files in the directory.
- * @param {string} dir - The directory path to calculate the size of.
- * @returns {number} - The total size of the directory in bytes.
- */
-const getDirectorySize = (dir) => {
-  let directorySize = 0;
-
-  const files = loadFiles(dir);
-  for (const file of files) {
-    const fileContent = file.fileContent;
-    directorySize += fileContent.length;
-  }
-
-  return directorySize;
-};
 
 /**
  * Calculates the cost of a project by summing the cost of all files in the specified directory.
