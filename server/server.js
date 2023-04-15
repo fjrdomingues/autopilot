@@ -104,8 +104,14 @@ app.post('/issue', async (req, res) => {
 function initApp() {
   execSync('git init')
   execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
+  // stash heroku folder
+  execSync('git stash push -u -- .heroku');
   execSync('git fetch origin');
-  execSync('git checkout origin/main');
+  // Reset the working directory to the latest commit
+  execSync('git reset --hard FETCH_HEAD');
+  // Apply stash
+  execSync('git stash apply');
+
   execSync('git config --global user.email "fjrdomingues@gmail.com"');
   execSync('git config --global user.name "Fabio Domingues"');
   execSync('node createSummaryOfFiles --all --auto')
