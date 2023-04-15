@@ -105,14 +105,14 @@ function initApp() {
   execSync('git init')
   execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
 
-  // save heroku folder
-  execSync('mv .heroku /tmp')
-  // Fetch the latest code from the remote repository
-  execSync('git fetch origin');
-  // Reset the working directory to the latest commit
-  execSync('git reset --hard FETCH_HEAD');
-  // get heroku folder
-  execSync('mv /tmp/.heroku .');
+  // // save heroku folder
+  // execSync('mv .heroku /tmp')
+  // // Fetch the latest code from the remote repository
+  // execSync('git fetch origin');
+  // // Reset the working directory to the latest commit
+  // execSync('git reset --hard FETCH_HEAD');
+  // // get heroku folder
+  // execSync('mv /tmp/.heroku .');
 
   execSync('git config --global user.email "fjrdomingues@gmail.com"');
   execSync('git config --global user.name "Fabio Domingues"');
