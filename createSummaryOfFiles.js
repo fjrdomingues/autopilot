@@ -109,6 +109,12 @@ async function main() {
     default: process.env.SUMMARY_MODEL,
     type: 'string'
   })
+  .option('auto', {
+    alias: 'a',
+    describe: 'Run --all without prompts',
+    default: true,
+    type: 'boolean'
+  })
   .help()
   .alias('help', 'h')
   .argv;
@@ -116,6 +122,7 @@ async function main() {
   const directoryPath = options.dir;
   const fullAnalysis = options.all;
   const model = options.model;
+  const {auto} = options
 
   if (fullAnalysis) {
     // Calculate and display the project size
@@ -125,13 +132,16 @@ async function main() {
     
     console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 
-    const proceed = await prompts({
-      type: 'confirm',
-      name: 'value',
-      message: 'Proceed with summarizing the project?',
-    });
+    let proceed
+    if(!auto){
+      proceed = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: 'Proceed with summarizing the project?',
+      });
+    }
 
-    if (proceed.value) {
+    if (proceed && proceed.value || auto) {
       // Process the initial directory
       await processDirectory(directoryPath, model);
     } else {
