@@ -1,5 +1,5 @@
 const { callAgent } = require('../agents/genericAgent');
-const { jsonParseWithValidate } = require('../modules/gpt');
+const { jsonParseWithValidate } = require('../modules/jsonHelpers');
 
 const promptTemplate =
 ` 

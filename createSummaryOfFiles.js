@@ -1,72 +1,48 @@
 const chalk = require('chalk');
-const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
-const chokidar = require('chokidar');
-const { callGPT, calculateTokensCost, countTokens } = require('./modules/gpt');
-const ignoreList = process.env.IGNORE_LIST.split(',');
-const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
-const prompts = require('prompts');
-require('dotenv').config()
 
-const calculateProjectSize = (dir) => {
-  let projectSize = 0;
-  const files = fs.readdirSync(dir);
+const { calculateTokensCost } = require('./modules/gpt');
+const countTokens = require('./modules/tokenHelper');
+const loadFiles = require('./modules/fsInput');
+const { getDirectorySize } = require("./modules/directoryHelper");
 
-  for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stats = fs.statSync(filePath);
+require('dotenv').config();
 
-    if (stats.isDirectory() && !ignoreList.includes(file)) {
-      projectSize += calculateProjectSize(filePath);
-    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      projectSize += fileContent;
-    }
-  }
+const maxTokenSingleFile = 3000;
 
-  return projectSize;
-};
-
-
+/**
+ * Calculates the cost of a project by summing the cost of all files in the specified directory.
+ * @param {string} dir - The directory to calculate the project cost for.
+ * @param {string} model - The model to use for the cost calculation.
+ * @returns {number} - The cost of the project in tokens.
+ */
 const processDirectory = async (dir, model) => {
-  const files = fs.readdirSync(dir);
+  const files = loadFiles(dir);
 
   for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stats = fs.statSync(filePath);
+    const fileContent = file.fileContent;
+    const fileTokensCount = file.fileTokensCount;
+    const filePath = file.filePath;
 
-    if (stats.isDirectory() && !ignoreList.includes(file)) {
-      await processDirectory(filePath, model);
-    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      const file = fs.readFileSync(filePath, 'utf8')
-      const fileTokensCount = countTokens(file)
-      console.log(filePath, countTokens(file))
-      if (fileTokensCount > 3000) {
-        console.log(chalk.red('File too BIG'))
-        continue
-      }
-      if (fileTokensCount == 0) {
-        console.log(chalk.yellow('Empty file'))
-        continue
-      }
-      await processFile(filePath, model);
+    console.log(filePath, fileTokensCount);
+    if (fileTokensCount > maxTokenSingleFile) {
+      console.log(chalk.red('File too BIG'));
+      continue;
     }
+    if (fileTokensCount == 0) {
+      console.log(chalk.yellow('Empty file'));
+      continue;
+    }
+
+    await processFile(filePath, fileContent, model);
   }
 };
 
-const processFile = async (filePath, model) => {
+async function processFile(filePath, fileContent, model) {
+  const fileSummary = require('./agents/indexer')
   try {
-    let fileContent = fs.readFileSync(filePath, 'utf-8');
-
-    const prompt = 
-`
-TASK: Create a summary of the file below. Use as few words as possible while keeping the details. Use bullet points
-*** FILE CONTENT START ***
-${fileContent}
-*** FILE CONTENT END ***
-`
-    const output = await callGPT(prompt, model)
+    const output = await fileSummary(fileContent,model)
 
     if (output) {
         // Save new comment
@@ -90,7 +66,9 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-async function main() {
+function getOptions(){
+  const yargs = require('yargs');
+
   const options = yargs
   .option('dir', {
     alias: 'd',
@@ -113,31 +91,47 @@ async function main() {
   .alias('help', 'h')
   .argv;
 
+  return options;
+}
+
+// Calculate and display the project size and cost estimation
+function printCostEstimation(directoryPath, model){
+  const getDirectoryTokensCount = require('./modules/directoryHelper');
+  tokenCount = getDirectoryTokensCount(directoryPath)
+  cost = calculateTokensCost(model, tokenCount, null, tokenCount)
+  
+  console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
+}
+
+async function approveIndexing(){
+  const prompts = require('prompts');
+
+  const proceed = await prompts({
+    type: 'confirm',
+    name: 'value',
+    message: 'Proceed with summarizing the project?',
+  });
+  return proceed.value;
+}
+
+async function indexFullProject(directoryPath, model){
+  printCostEstimation(directoryPath, model);
+
+  if (await approveIndexing()) {
+    await processDirectory(directoryPath, model);
+  } else {
+    console.log('Aborted summarizing the project.');
+  }
+}
+
+async function main() {
+  const chokidar = require('chokidar');
+
+  const options = getOptions();
   const directoryPath = options.dir;
-  const fullAnalysis = options.all;
   const model = options.model;
 
-  if (fullAnalysis) {
-    // Calculate and display the project size
-    const projectSize = calculateProjectSize(directoryPath);
-    tokenCount = countTokens(projectSize)
-    cost = calculateTokensCost(model, tokenCount, null, tokenCount)
-    
-    console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
-
-    const proceed = await prompts({
-      type: 'confirm',
-      name: 'value',
-      message: 'Proceed with summarizing the project?',
-    });
-
-    if (proceed.value) {
-      // Process the initial directory
-      await processDirectory(directoryPath, model);
-    } else {
-      console.log('Aborted summarizing the project.');
-    }
-  }
+  if (options.all) { await indexFullProject(directoryPath, model); }
   // Watch for file changes in the directory
   const watcher = chokidar.watch(directoryPath, {
     ignored: /node_modules|helpers/,
