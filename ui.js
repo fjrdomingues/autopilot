@@ -17,9 +17,9 @@ const {printGitDiff} = require('./modules/gitHelper');
 @returns {Promise<any>} A Promise that resolves with the return value of the agent function if not in interactive mode, otherwise resolves or rejects based on user input.
 */
 async function runAgent(agentFunction, var1, var2, interactive=false){
+  console.log("(agent)", agentFunction.name);
   if (interactive){
     res = await agentFunction(var1, var2);
-    console.log("(agent)", agentFunction.name);
     console.dir(res, { depth: null })
     const proceed = await prompts({
       type: 'select',
