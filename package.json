@@ -17,6 +17,7 @@
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "fast-glob": "^3.2.12",
     "langchain": "^0.0.51",
     "line-diff": "^2.1.1",
