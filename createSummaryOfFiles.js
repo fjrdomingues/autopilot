@@ -39,6 +39,14 @@ const processDirectory = async (dir, model) => {
   }
 };
 
+/**
+ * Processes a file by generating a summary using the specified machine learning model
+ * and writing the summary to a new file.
+ * @param {string} dir - The directory of the file being processed.
+ * @param {string} filePathRelative - The relative path of the file being processed.
+ * @param {string} fileContent - The content of the file being processed.
+ * @param {object} model - The machine learning model used to generate the summary.
+ */
 async function processFile(dir, filePathRelative, fileContent, model) {
   const fileSummary = require('./agents/indexer')
 
