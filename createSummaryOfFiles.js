@@ -10,20 +10,20 @@ require('dotenv').config()
 const maxTokenSingleFile = 3000;
 
 /**
- * Calculates the size of a project by summing the size of all files in the specified directory.
- * @param {string} dir - The directory to calculate the project size for.
- * @returns {number} - The size of the project in bytes.
+ * Calculates the total size of a directory by summing the length of all files in the directory.
+ * @param {string} dir - The directory path to calculate the size of.
+ * @returns {number} - The total size of the directory in bytes.
  */
-const calculateProjectSize = (dir) => {
-  let projectSize = 0;
+const getDirectorySize = (dir) => {
+  let directorySize = 0;
 
   const files = loadFiles(dir);
   for (const file of files) {
     const fileContent = file.fileContent;
-    projectSize += fileContent.length;
+    directorySize += fileContent.length;
   }
 
-  return projectSize;
+  return directorySize;
 };
 
 /**
@@ -111,7 +111,7 @@ function getOptions(){
 
 // Calculate and display the project size and cost estimation
 function printCostEstimation(directoryPath, model){
-  const projectSize = calculateProjectSize(directoryPath);
+  const projectSize = getDirectorySize(directoryPath);
   tokenCount = countTokens(projectSize)
   cost = calculateTokensCost(model, tokenCount, null, tokenCount)
   
