@@ -67,8 +67,6 @@ function commitChanges(issueTitle, issueDescription, issueNumber){
 }
 
 async function processIssue(issue) {
-  execSync('git checkout main');
-  execSync('git pull');
   const title = issue.title.replace(/"/g, '\\"');
   const description = issue.body.replace(/"/g, '\\"');
   const number = issue.number;
@@ -103,8 +101,18 @@ app.post('/issue', async (req, res) => {
   }
 });
 
+function initApp() {
+  execSync('git init')
+  execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
+  execSync('git pull');
+  execSync('git checkout main');
+  execSync('node createSummaryOfFiles --all --auto')
+}
+
 // Start the server
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
+initApp()
