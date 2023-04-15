@@ -86,13 +86,16 @@ app.post('/issue', async (req, res) => {
     console.log('Received webhook event:', event);
 
     if (event.action === 'opened' && event.issue && event.issue.title && event.issue.body) {
+      console.log('NEW ISSUE')
       res.status(200).send('Working on issue');
       await processIssue(event.issue);
     } else if (event.action === 'labeled' && event.label && event.label.name === 'autopilot' && event.issue && event.issue.title && event.issue.body) {
+      console.log('ISSUE WITH LABEL')
       res.status(200).send('Working on issue');
       await processIssue(event.issue);
     } else {
       res.status(200).send('Issue doesn\'t qualify');
+      console.log('Issue doesn\'t qualify')
     }
   } catch (error) {
     console.error('Error processing webhook event:', error);
