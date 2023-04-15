@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/server",
-    "logs": "heroku logs --tail --app autopilot-ai"
+    "logs": "heroku logs --tail --app autopilot-ai",
+    "postinstall": "./update_code.sh"
   },
   "author": "",
   "license": "ISC",
