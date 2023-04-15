@@ -3,14 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 const { calculateTokensCost, countTokens } = require('./modules/gpt');
-const fileProjectFiles = require('./modules/fsInput');
+const loadFiles = require('./modules/fsInput');
 
 require('dotenv').config()
 
 const maxTokenSingleFile = 3000;
 
 /**
- *
  * Calculates the size of a project by summing the size of all files in the specified directory.
  * @param {string} dir - The directory to calculate the project size for.
  * @returns {number} - The size of the project in bytes.
@@ -18,10 +17,10 @@ const maxTokenSingleFile = 3000;
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
 
-  const filePaths = fileProjectFiles(dir);
-  for (const filePath of filePaths) {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    projectSize += fileContent;
+  const files = loadFiles(dir);
+  for (const file of files) {
+    const fileContent = file.fileContent;
+    projectSize += fileContent.length;
   }
 
   return projectSize;
@@ -32,13 +31,14 @@ const calculateProjectSize = (dir) => {
  * @param {string} dir - The directory to calculate the project cost for.
  * @param {string} model - The model to use for the cost calculation.
  * @returns {number} - The cost of the project in tokens.
-  */
+ */
 const processDirectory = async (dir, model) => {
-  const filePaths = fileProjectFiles(dir);
+  const files = loadFiles(dir);
 
-  for (const filePath of filePaths) {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const fileTokensCount = countTokens(fileContent);
+  for (const file of files) {
+    const fileContent = file.fileContent;
+    const fileTokensCount = file.fileTokensCount;
+    const filePath = file.filePath;
 
     console.log(filePath, fileTokensCount);
     if (fileTokensCount > maxTokenSingleFile) {
@@ -53,7 +53,6 @@ const processDirectory = async (dir, model) => {
     await processFile(filePath, fileContent, model);
   }
 };
-
 
 const processFile = async (filePath, fileContent, model) => {
   const fileSummary = require('./agents/indexer')
