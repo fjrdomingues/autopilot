@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
-const { callGPT, calculateTokensCost, countTokens } = require('./modules/gpt');
+const { calculateTokensCost, countTokens } = require('./modules/gpt');
 const ignoreList = process.env.IGNORE_LIST.split(',');
 const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
 require('dotenv').config()
@@ -53,17 +53,10 @@ const processDirectory = async (dir, model) => {
 };
 
 const processFile = async (filePath, model) => {
+  const fileSummary = require('./agents/indexer')
   try {
     let fileContent = fs.readFileSync(filePath, 'utf-8');
-
-    const prompt = 
-`
-TASK: Create a summary of the file below. Use as few words as possible while keeping the details. Use bullet points
-*** FILE CONTENT START ***
-${fileContent}
-*** FILE CONTENT END ***
-`
-    const output = await callGPT(prompt, model)
+    const output = await fileSummary(fileContent,model)
 
     if (output) {
         // Save new comment
