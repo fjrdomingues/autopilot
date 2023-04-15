@@ -75,6 +75,8 @@ app.post('/issue', async (req, res) => {
         // Check if the event is an issue event and has the required properties
       if (event.action === 'opened' && event.issue && event.issue.title && event.issue.body) {
         res.status(200).send('Working on issue');
+        execSync('git checkout main');
+        execSync('git pull');
         const title = event.issue.title.replace(/"/g, '\\"');;
         const description = event.issue.body.replace(/"/g, '\\"');;
         const number = event.issue.number
