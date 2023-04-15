@@ -6,6 +6,7 @@ const { calculateTokensCost } = require('./modules/gpt');
 const countTokens = require('./modules/tokenHelper');
 const loadFiles = require('./modules/fsInput');
 const { getDirectorySize } = require("./modules/directoryHelper");
+const { generateAndWriteFileSummary } = require('./modules/summaries');
 
 require('dotenv').config();
 
@@ -35,36 +36,7 @@ const processDirectory = async (dir, model) => {
       continue;
     }
 
-    await processFile(dir, filePathRelative, fileContent, model);
-  }
-};
-
-/**
- * Processes a file by generating a summary using the specified machine learning model
- * and writing the summary to a new file.
- * @param {string} dir - The directory of the file being processed.
- * @param {string} filePathRelative - The relative path of the file being processed.
- * @param {string} fileContent - The content of the file being processed.
- * @param {object} model - The machine learning model used to generate the summary.
- */
-async function processFile(dir, filePathRelative, fileContent, model) {
-  const fileSummary = require('./agents/indexer')
-
-  try {
-    const output = await fileSummary(fileContent,model)
-
-    if (output) {
-        const filePathFull = path.join(dir, filePathRelative);
-        const summaryFilePath = path.join(filePathFull + '.ai.txt');
-        const summaryFileContent = `File Path: ${filePathRelative}\nSummary:\n${output}`
-        fs.writeFileSync(summaryFilePath, summaryFileContent);
-        const timestamp = new Date().toISOString();
-        const hour = timestamp.match(/\d\d:\d\d/);
-
-        console.log(`${hour}: Updated ${summaryFilePath}`);
-    }
-  } catch (error) {
-    console.error(`Error processing file: ${filePathRelative}`, error);
+    await generateAndWriteFileSummary(dir, filePathRelative, fileContent, model);
   }
 };
 
@@ -153,7 +125,7 @@ async function main() {
       const fileContent = fs.readFileSync(filePathFull, 'utf-8');
       const filePathRelative = path.relative(directoryPath, filePathFull).replace(/\\/g, '/');
       console.log(`File modified: ${filePathRelative}`);
-      await processFile(directoryPath, filePathRelative, fileContent, model);
+      await generateAndWriteFileSummary(directoryPath, filePathRelative, fileContent, model);
     }
   });
 
