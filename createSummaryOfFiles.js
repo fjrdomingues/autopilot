@@ -1,56 +1,45 @@
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
+
 const { calculateTokensCost, countTokens } = require('./modules/gpt');
-const ignoreList = process.env.IGNORE_LIST.split(',');
-const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
+const loadProjectFiles = require('./modules/fsInput');
+
 require('dotenv').config()
 
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
-  const files = fs.readdirSync(dir);
 
+  const files = loadProjectFiles(dir);
   for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stats = fs.statSync(filePath);
-
-    if (stats.isDirectory() && !ignoreList.includes(file)) {
-      projectSize += calculateProjectSize(filePath);
-    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      projectSize += fileContent;
-    }
+    const fileContent = fs.readFileSync(file, 'utf8');
+    projectSize += fileContent;
   }
 
   return projectSize;
 };
 
-
 const processDirectory = async (dir, model) => {
-  const files = fs.readdirSync(dir);
+  const files = loadProjectFiles(dir);
 
   for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stats = fs.statSync(filePath);
+    const fileContent = fs.readFileSync(file, 'utf8');
+    const fileTokensCount = countTokens(fileContent);
 
-    if (stats.isDirectory() && !ignoreList.includes(file)) {
-      await processDirectory(filePath, model);
-    } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      const file = fs.readFileSync(filePath, 'utf8')
-      const fileTokensCount = countTokens(file)
-      console.log(filePath, countTokens(file))
-      if (fileTokensCount > 3000) {
-        console.log(chalk.red('File too BIG'))
-        continue
-      }
-      if (fileTokensCount == 0) {
-        console.log(chalk.yellow('Empty file'))
-        continue
-      }
-      await processFile(filePath, model);
+    console.log(file, fileTokensCount);
+    if (fileTokensCount > 3000) {
+      console.log(chalk.red('File too BIG'));
+      continue;
     }
+    if (fileTokensCount == 0) {
+      console.log(chalk.yellow('Empty file'));
+      continue;
+    }
+
+    await processFile(file, model);
   }
 };
+
 
 const processFile = async (filePath, model) => {
   const fileSummary = require('./agents/indexer')
