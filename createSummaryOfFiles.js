@@ -27,6 +27,12 @@ const calculateProjectSize = (dir) => {
   return projectSize;
 };
 
+/**
+ * Calculates the cost of a project by summing the cost of all files in the specified directory.
+ * @param {string} dir - The directory to calculate the project cost for.
+ * @param {string} model - The model to use for the cost calculation.
+ * @returns {number} - The cost of the project in tokens.
+  */
 const processDirectory = async (dir, model) => {
   const files = loadProjectFiles(dir);
 
