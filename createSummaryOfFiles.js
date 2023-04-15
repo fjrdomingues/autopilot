@@ -90,7 +90,7 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-async function main(all, auto) {
+async function main(all, auto, watch) {
   const options = yargs
   .option('dir', {
     alias: 'd',
@@ -115,6 +115,12 @@ async function main(all, auto) {
     default: false,
     type: 'boolean'
   })
+  .option('watch', {
+    alias: 'w',
+    describe: 'watch for file changes',
+    default: true,
+    type: 'boolean'
+  })
   .help()
   .alias('help', 'h')
   .argv;
@@ -122,7 +128,8 @@ async function main(all, auto) {
   const directoryPath = options.dir;
   const fullAnalysis = all || options.all;
   const model = options.model;
-  auto = auto || options.auto
+  const autoMode = auto || options.auto
+  const watchChanges = watch || options.watch
 
   if (fullAnalysis) {
     // Calculate and display the project size
@@ -133,7 +140,7 @@ async function main(all, auto) {
     console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
 
     let proceed
-    if(!auto){
+    if(!autoMode){
       proceed = await prompts({
         type: 'confirm',
         name: 'value',
@@ -141,28 +148,31 @@ async function main(all, auto) {
       });
     }
 
-    if (proceed && proceed.value || auto) {
+    if (proceed && proceed.value || autoMode) {
       // Process the initial directory
       await processDirectory(directoryPath, model);
     } else {
       console.log('Aborted summarizing the project.');
     }
   }
-  // Watch for file changes in the directory
-  const watcher = chokidar.watch(directoryPath, {
-    ignored: /node_modules|helpers/,
-    persistent: true,
-    ignoreInitial: true,
-  });
-  // Process the modified file
-  watcher.on('change', async (filePath) => {
-    if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-      console.log(`File modified: ${filePath}`);
-      await processFile(filePath, model);
-    }
-  });
 
-  console.log('Watching for file changes...');
+  if(watchChanges) {
+    // Watch for file changes in the directory
+    const watcher = chokidar.watch(directoryPath, {
+      ignored: /node_modules|helpers/,
+      persistent: true,
+      ignoreInitial: true,
+    });
+    // Process the modified file
+    watcher.on('change', async (filePath) => {
+      if (fileExtensionsToProcess.includes(path.extname(filePath))) {
+        console.log(`File modified: ${filePath}`);
+        await processFile(filePath, model);
+      }
+    });
+    console.log('Watching for file changes...');
+  }
+
   readline.close();
 }
 
