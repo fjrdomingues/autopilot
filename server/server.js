@@ -116,7 +116,7 @@ function initApp() {
 
   execSync('git config --global user.email "fjrdomingues@gmail.com"');
   execSync('git config --global user.name "Fabio Domingues"');
-  execSync('node createSummaryOfFiles --all --auto')
+  // execSync('node createSummaryOfFiles --all --auto')
 }
 
 // Start the server
