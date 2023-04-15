@@ -3,9 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { calculateTokensCost } = require('./modules/gpt');
-const countTokens = require('./modules/tokenHelper');
 const loadFiles = require('./modules/fsInput');
-const { getDirectorySize } = require("./modules/directoryHelper");
 const { generateAndWriteFileSummary } = require('./modules/summaries');
 
 require('dotenv').config();
