@@ -6,11 +6,11 @@ const { get_encoding } = require('@dqbd/tiktoken');
 * @returns {number} - The number of tokens in the input string.
 */
 function countTokens(input) {
-    const encoder = get_encoding("cl100k_base")
-    const tokens = encoder.encode(input);
-    const tokenCount = tokens.length;
-    encoder.free();
-    return tokenCount;
+	const encoder = get_encoding("cl100k_base")
+	const tokens = encoder.encode(input);
+	const tokenCount = tokens.length;
+	encoder.free();
+	return tokenCount;
 }
 
-module.exports = { countTokens };
+module.exports = countTokens;

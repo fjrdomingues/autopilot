@@ -1,4 +1,6 @@
-const { callGPT, jsonParseWithValidate } = require('../modules/gpt');
+const { callGPT } = require('../modules/gpt');
+const { jsonParseWithValidate } = require('../modules/jsonHelpers');
+
 
 async function review(task, diff, criteria) {
     const prompt = 
