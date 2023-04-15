@@ -7,6 +7,8 @@ const loadProjectFiles = require('./modules/fsInput');
 
 require('dotenv').config()
 
+const maxTokenSingleFile = 3000;
+
 /**
  *
  * Calculates the size of a project by summing the size of all files in the specified directory.
@@ -33,7 +35,7 @@ const processDirectory = async (dir, model) => {
     const fileTokensCount = countTokens(fileContent);
 
     console.log(file, fileTokensCount);
-    if (fileTokensCount > 3000) {
+    if (fileTokensCount > maxTokenSingleFile) {
       console.log(chalk.red('File too BIG'));
       continue;
     }
