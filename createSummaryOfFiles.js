@@ -50,15 +50,14 @@ const processDirectory = async (dir, model) => {
       continue;
     }
 
-    await processFile(file, model);
+    await processFile(file, fileContent, model);
   }
 };
 
 
-const processFile = async (filePath, model) => {
+const processFile = async (filePath, fileContent, model) => {
   const fileSummary = require('./agents/indexer')
   try {
-    let fileContent = fs.readFileSync(filePath, 'utf-8');
     const output = await fileSummary(fileContent,model)
 
     if (output) {
