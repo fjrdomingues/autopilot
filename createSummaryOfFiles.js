@@ -116,13 +116,17 @@ function getOptions(){
   return options;
 }
 
-async function indexFullProject(directoryPath, model){
-  // Calculate and display the project size
+// Calculate and display the project size and cost estimation
+function printCostEstimation(directoryPath, model){
   const projectSize = calculateProjectSize(directoryPath);
   tokenCount = countTokens(projectSize)
   cost = calculateTokensCost(model, tokenCount, null, tokenCount)
   
   console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
+}
+
+async function indexFullProject(directoryPath, model){
+  printCostEstimation(directoryPath, model);
 
   const proceed = await prompts({
     type: 'confirm',
