@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { calculateTokensCost, countTokens } = require('./modules/gpt');
-const loadProjectFiles = require('./modules/fsInput');
+const fileProjectFiles = require('./modules/fsInput');
 
 require('dotenv').config()
 
@@ -18,7 +18,7 @@ const maxTokenSingleFile = 3000;
 const calculateProjectSize = (dir) => {
   let projectSize = 0;
 
-  const filePaths = loadProjectFiles(dir);
+  const filePaths = fileProjectFiles(dir);
   for (const filePath of filePaths) {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     projectSize += fileContent;
@@ -34,7 +34,7 @@ const calculateProjectSize = (dir) => {
  * @returns {number} - The cost of the project in tokens.
   */
 const processDirectory = async (dir, model) => {
-  const filePaths = loadProjectFiles(dir);
+  const filePaths = fileProjectFiles(dir);
 
   for (const filePath of filePaths) {
     const fileContent = fs.readFileSync(filePath, 'utf8');

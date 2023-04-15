@@ -11,7 +11,7 @@ const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(','
  * @param {string} dir - The path of the directory to scan for project files.
  * @returns {string[]} An array of absolute file paths for all project files found.
 */
-const loadProjectFiles = (dir) => {
+const fileProjectFiles = (dir) => {
   const files = fs.readdirSync(dir);
   const projectFiles = [];
 
@@ -20,7 +20,7 @@ const loadProjectFiles = (dir) => {
     const stats = fs.statSync(filePath);
 
     if (stats.isDirectory() && !ignoreList.includes(file)) {
-      projectFiles.push(...loadProjectFiles(filePath));
+      projectFiles.push(...fileProjectFiles(filePath));
     } else if (fileExtensionsToProcess.includes(path.extname(filePath))) {
       projectFiles.push(filePath);
     }
@@ -29,4 +29,4 @@ const loadProjectFiles = (dir) => {
   return projectFiles;
 };
 
-module.exports = loadProjectFiles;
+module.exports = fileProjectFiles;
