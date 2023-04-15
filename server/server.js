@@ -102,8 +102,8 @@ app.post('/issue', async (req, res) => {
 });
 
 function initApp() {
-  execSync('git init')
-  execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
+  // execSync('git init')
+  // execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
 
   // // save heroku folder
   // execSync('mv .heroku /tmp')
