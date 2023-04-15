@@ -3,6 +3,7 @@ const app = express();
 const { main: doTask } = require('../ui');
 const {execSync} = require('child_process')
 const path = require('path')
+const { main: createSummaries } = require("../createSummaryOfFiles")
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')))
@@ -101,7 +102,7 @@ app.post('/issue', async (req, res) => {
   }
 });
 
-function initApp() {
+async function initApp() {
   // execSync('git init')
   // execSync('git remote add origin https://github.com/fjrdomingues/autopilot.git')
 
@@ -116,6 +117,8 @@ function initApp() {
 
   execSync('git config --global user.email "fjrdomingues@gmail.com"');
   execSync('git config --global user.name "Fabio Domingues"');
+
+  await createSummaries(true, true)
   // execSync('node createSummaryOfFiles --all --auto')
 }
 

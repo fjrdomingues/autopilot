@@ -90,7 +90,7 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-async function main() {
+async function main(all, auto) {
   const options = yargs
   .option('dir', {
     alias: 'd',
@@ -120,9 +120,9 @@ async function main() {
   .argv;
 
   const directoryPath = options.dir;
-  const fullAnalysis = options.all;
+  const fullAnalysis = all || options.all;
   const model = options.model;
-  const {auto} = options
+  auto = auto || options.auto
 
   if (fullAnalysis) {
     // Calculate and display the project size
@@ -166,4 +166,6 @@ async function main() {
   readline.close();
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { main }
