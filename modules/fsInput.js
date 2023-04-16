@@ -38,7 +38,7 @@ function getFilePaths(dir) {
 /**
  * Parses the file content and returns an object with relevant file information.
  * @param {string} dir - The directory path of the file.
- * @param {string} filePath - The path of the file.
+ * @param {string} filePathFull - The path of the file.
  * @param {string} fileContent - The content of the file.
  * @returns {object} - An object with the following properties:
 	* filePath: The relative path of the file.
@@ -46,10 +46,10 @@ function getFilePaths(dir) {
 	* fileTokensCount: The count of tokens in the file.
 	* fileHash: The hash of the file content.
  */
-function parseFileContent(dir, filePath, fileContent) {
+function parseFileContent(dir, filePathFull, fileContent) {
 	const fileTokensCount = countTokens(fileContent);
 	const fileHash = hashFile(fileContent);
-	const relativePath = path.posix.relative(dir, filePath);
+	const relativePath = path.posix.relative(dir, filePathFull);
 	const file = {
 		filePath: relativePath,
 		fileContent: fileContent,
@@ -81,5 +81,8 @@ function loadFiles(dir) {
     return files;
 };
 
-module.exports = loadFiles;
+module.exports = {
+	loadFiles,
+	parseFileContent
+}
 
