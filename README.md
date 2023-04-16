@@ -1,3 +1,5 @@
+(This project is now running autopilot on a server. Every time that an issue is created it will propose a PR. It's using gpt-4. Be mindfull in creating issues that can be understood by autopilot 🙇‍♂️)
+
 <p align="center">
   <img src="public/banner.png" alt="Autopilot Logo" width="200"/>
 </p>
