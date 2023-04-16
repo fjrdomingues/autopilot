@@ -45,16 +45,19 @@ function getFilePaths(dir) {
 	* fileContent: The content of the file.
 	* fileTokensCount: The count of tokens in the file.
 	* fileHash: The hash of the file content.
+    * fileTimestamp: The timestamp when the file was last modified.
  */
 function parseFileContent(dir, filePathFull, fileContent) {
 	const fileTokensCount = countTokens(fileContent);
 	const fileHash = hashFile(fileContent);
 	const relativePath = path.posix.relative(dir, filePathFull);
+	const fileTimestamp = fs.statSync(filePathFull).mtimeMs; // Get the file modification timestamp
 	const parseFile = {
 		filePath: relativePath,
 		fileContent: fileContent,
 		fileTokensCount: fileTokensCount,
-		fileHash: fileHash
+		fileHash: fileHash,
+		fileTimestamp: fileTimestamp,
 	};
 	return parseFile;
 }
