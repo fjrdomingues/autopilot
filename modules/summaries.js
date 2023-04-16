@@ -161,9 +161,6 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
     console.error(`Error processing file: ${filePathRelative}`, error);
   }
 }
-exports.generateAndWriteFileSummary = generateAndWriteFileSummary;
-;
-
 
 module.exports = {
     readAllSummaries,
