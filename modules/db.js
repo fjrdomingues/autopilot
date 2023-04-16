@@ -8,11 +8,11 @@ DB_FILE_NAME = 'autopilot.db'
 function createFilesTable(db){
     const sql =```
 CREATE TABLE IF NOT EXISTS files (
-    filePath TEXT PRIMARY KEY,
-    fileSummary TEXT,
-    fileTokensCount INTEGER,
-    fileHash TEXT,
-    fileTimestamp INTEGER
+    path TEXT PRIMARY KEY,
+    summary TEXT,
+    tokensCount INTEGER,
+    hash TEXT,
+    timestamp INTEGER
 );
 ```
     db.run(sql);
@@ -53,11 +53,11 @@ function insertOrUpdateFile(codeBaseDirectory, file, summary){
     db = getDB(codeBaseDirectory);
     const sql = ```
 INSERT OR REPLACE INTO files (
-    filePath, 
-    fileSummary, 
-    fileTokensCount, 
-    fileHash,
-    fileTimestamp)
+    path, 
+    summary, 
+    tokensCount, 
+    hash,
+    timestamp)
 VALUES (?, ?, ?, ?, ?)
 ```
     db.run(sql, [
