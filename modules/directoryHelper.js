@@ -1,4 +1,4 @@
-const loadFiles = require('./fsInput');
+const { loadFiles } = require('./fsInput');
 
 /**
  * Calculates the total size of a directory by summing the length of all files in the directory.

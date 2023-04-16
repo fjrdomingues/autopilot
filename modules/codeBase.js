@@ -28,7 +28,7 @@ async function codeBaseFullIndex(codeBaseDirectory, model){
  * @param {object} model - The cost model to use for calculating the cost.
  */
 function printCostEstimation(directoryPath, model){
-  const getDirectoryTokensCount = require('./modules/directoryHelper');
+  const getDirectoryTokensCount = require('./directoryHelper');
   tokenCount = getDirectoryTokensCount(directoryPath)
   cost = calculateTokensCost(model, tokenCount, null, tokenCount)
   
