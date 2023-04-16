@@ -81,8 +81,28 @@ function loadFiles(dir) {
     return files;
 };
 
+
+/**
+ * Takes an array of file objects, each with a path property, and returns an array of file objects,
+ * each with a path property and a code property containing the file's contents.
+ * @param {FileObject[]} files - An array of file objects, each with a path property.
+ * @returns {FileObject[]} - An array of file objects,
+ * each with a path property and a code property containing the file's contents.
+ */
+function getFiles(files){
+	let retFiles=[]
+	for (const file of files) {
+	  const pathToFile = file.path;
+	  const fileContent = fs.readFileSync(pathToFile, 'utf8');
+	  file.code = fileContent
+	  retFiles.push(file)
+	}
+	return retFiles
+}
+
 module.exports = {
 	loadFiles,
-	parseFileContent
+	parseFileContent,
+	getFiles,
 }
 
