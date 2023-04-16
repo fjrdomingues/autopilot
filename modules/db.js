@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 
-const { getCodeBaseAutopilotDirectory } = require('./codeBase');
+const { getCodeBaseAutopilotDirectory } = require('./autopilotConfig');
 
 DB_FILE_NAME = 'autopilot.db'
 

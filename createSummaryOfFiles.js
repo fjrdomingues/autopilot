@@ -48,7 +48,7 @@ async function main() {
   const codeBaseDirectory = options.dir;
   const model = options.model;
 
-  const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
+  const { getCodeBaseAutopilotDirectory } = require('./modules/autopilotConfig');
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   const initCodeBase = require('./modules/init').initCodeBase;
   if (!fs.existsSync(codeBaseAutopilotDirectory)){

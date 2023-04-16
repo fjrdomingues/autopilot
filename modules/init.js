@@ -1,7 +1,8 @@
 const path = require('path');
 const { createDB } = require('./db');
 const fs = require('fs');
-const { codeBaseFullIndex, getCodeBaseAutopilotDirectory, codeBaseFullIndexInteractive } = require('./codeBase');
+const { codeBaseFullIndex, codeBaseFullIndexInteractive } = require('./codeBase');
+const { getCodeBaseAutopilotDirectory } = require('./autopilotConfig');
 
 /**
  *

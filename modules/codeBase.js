@@ -1,18 +1,7 @@
-const autopilotDirectoryName = '.autopilot';
-const path = require('path');
 const { loadFiles } = require('./fsInput');
 const { generateAndWriteFileSummary } = require('./summaries');
 const { calculateTokensCost } = require('./gpt');
 const chalk = require('chalk');
-
-/**
- * Returns the path of the directory containing the autopilot files within the codebase directory.
- * @param {string} codeBaseDirectory - The path of the codebase directory.
- * @returns {string} - The path of the autopilot config sub-directory.
- */
-function getCodeBaseAutopilotDirectory(codeBaseDirectory){
-    return path.posix.join(codeBaseDirectory, autopilotDirectoryName);
-}
 
 /**
  * Calculates the cost of a project by summing the cost of all files in the specified directory.
@@ -63,4 +52,4 @@ async function codeBaseFullIndexInteractive(codeBaseDirectory, model){
 }
 
 
-module.exports = { getCodeBaseAutopilotDirectory, codeBaseFullIndex, codeBaseFullIndexInteractive }
+module.exports = { codeBaseFullIndex, codeBaseFullIndexInteractive }
