@@ -47,12 +47,13 @@ async function main() {
   const options = getOptions();
   const codeBaseDirectory = options.dir;
   const model = options.model;
+  const interactive = true;
 
   const { getCodeBaseAutopilotDirectory } = require('./modules/autopilotConfig');
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
     const { initCodeBase } = require('./modules/init');
-    initCodeBase(codeBaseDirectory);
+    initCodeBase(codeBaseDirectory, interactive);
   }
 
   if (options.all) { await indexFullProject(codeBaseDirectory, model); }
