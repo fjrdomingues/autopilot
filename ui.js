@@ -9,6 +9,7 @@ const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./module
 const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
 const { printGitDiff } = require('./modules/gitHelper');
 const { getFiles } = require('./modules/fsInput');
+const { generateAndWriteFileSummary } = require('./modules/summaries');
 
 const testingDirectory = '/benchmarks';
 
