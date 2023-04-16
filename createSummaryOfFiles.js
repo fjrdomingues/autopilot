@@ -3,40 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const { calculateTokensCost } = require('./modules/gpt');
-const { loadFiles } = require('./modules/fsInput');
 const { generateAndWriteFileSummary } = require('./modules/summaries');
 
 require('dotenv').config();
-
-const maxTokenSingleFile = 3000;
-
-/**
- * Calculates the cost of a project by summing the cost of all files in the specified directory.
- * @param {string} dir - The directory to calculate the project cost for.
- * @param {string} model - The model to use for the cost calculation.
- * @returns {number} - The cost of the project in tokens.
- */
-const processDirectory = async (dir, model) => {
-  const files = loadFiles(dir);
-
-  for (const file of files) {
-    const fileContent = file.fileContent;
-    const fileTokensCount = file.fileTokensCount;
-    const filePathRelative = file.filePath;
-
-    console.log(filePathRelative, fileTokensCount);
-    if (fileTokensCount > maxTokenSingleFile) {
-      console.log(chalk.red('File too BIG'));
-      continue;
-    }
-    if (fileTokensCount == 0) {
-      console.log(chalk.yellow('Empty file'));
-      continue;
-    }
-
-    await generateAndWriteFileSummary(dir, filePathRelative, fileContent, model);
-  }
-};
 
 // Prompt the user to proceed
 const readline = require('readline').createInterface({

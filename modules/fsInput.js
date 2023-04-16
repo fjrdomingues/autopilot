@@ -50,13 +50,13 @@ function parseFileContent(dir, filePathFull, fileContent) {
 	const fileTokensCount = countTokens(fileContent);
 	const fileHash = hashFile(fileContent);
 	const relativePath = path.posix.relative(dir, filePathFull);
-	const file = {
+	const parseFile = {
 		filePath: relativePath,
 		fileContent: fileContent,
 		fileTokensCount: fileTokensCount,
 		fileHash: fileHash
 	};
-	return file;
+	return parseFile;
 }
 
 /**

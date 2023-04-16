@@ -9,6 +9,7 @@ const { insertOrUpdateFile } = require('./db');
 
 const ignorePattern = process.env.IGNORE_LIST.split(',');
 const maxSummaryTokenCount = 3000;
+const maxTokenSingleFile = 3000;
 
 const types = {
   FileObject: {
@@ -131,14 +132,27 @@ async function getSummaries(dir, test){
 async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model) {
   const fileSummary = require('./agents/indexer');
 
+  const filePathFull = path.join(codeBaseDirectory, filePathRelative);
+  const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
+  const fileTokensCount = parsedFile.fileTokensCount;
+
+  console.log(`Processing file: ${filePathRelative}`);
+  if (fileTokensCount > maxTokenSingleFile) {
+    console.log(chalk.red('File too BIG'));
+    return;
+  }
+  if (fileTokensCount == 0) {
+    console.log(chalk.yellow('File Empty'));
+    return;
+  }
+
   try {
     const output = await fileSummary(fileContent, model);
 
     if (output) {
-      const filePathFull = path.join(codeBaseDirectory, filePathRelative);
-      const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
       insertOrUpdateFile(codeBaseDirectory, parsedFile);
 
+      // TODO: Use logging library that already adds timestamps
       const timestamp = new Date().toISOString();
       const hour = timestamp.match(/\d\d:\d\d/);
       console.log(`${hour}: Updated summary for ${filePathRelative}`);

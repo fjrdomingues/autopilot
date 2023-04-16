@@ -2,6 +2,7 @@ const path = require('path');
 const { createDB } = require('./db');
 const fs = require('fs');
 const { getCodeBaseAutopilotDirectory } = require('./codeBase');
+const { codeBaseFullIndex } = require('./codeBase');
 
 /**
  *
@@ -19,7 +20,7 @@ function initCodeBase(codeBaseDirectory){
     createDB(codeBaseDirectory);
 
     // Trigger codeBase indexing
-    // TODO
+    codeBaseFullIndex(codeBaseDirectory, model);
 }
 
 module.exports = { initCodeBase }
