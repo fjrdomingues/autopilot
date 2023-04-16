@@ -8,7 +8,7 @@ const chalk = require('chalk');
 /**
  * Returns the path of the directory containing the autopilot files within the codebase directory.
  * @param {string} codeBaseDirectory - The path of the codebase directory.
- * @returns {string} - The path of the autopilot directory.
+ * @returns {string} - The path of the autopilot config sub-directory.
  */
 function getCodeBaseAutopilotDirectory(codeBaseDirectory){
     return path.posix.join(codeBaseDirectory, autopilotDirectoryName);
