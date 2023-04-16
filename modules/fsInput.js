@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const hashFile = require('./hashing');
-const countTokens = require('./tokenHelper');
+const { countTokens } = require('./tokenHelper');
 
 const ignoreList = process.env.IGNORE_LIST.split(',');
 const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');

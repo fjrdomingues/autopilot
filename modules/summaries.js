@@ -1,5 +1,5 @@
 require('dotenv').config()
-const countTokens = require('./tokenHelper')
+const { countTokens } = require('./tokenHelper')
 const chalk = require('chalk');
 const fs = require('fs');
 const fg = require('fast-glob');
