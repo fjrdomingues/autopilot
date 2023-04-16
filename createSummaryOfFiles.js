@@ -95,7 +95,7 @@ async function main(processAllFile, watchFileChanges) {
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
     const { initCodeBase } = require('./modules/init');
-    initCodeBase(codeBaseDirectory, interactive);
+    await initCodeBase(codeBaseDirectory, interactive);
   }
 
   if (options.all) { await indexFullProject(codeBaseDirectory, model); }

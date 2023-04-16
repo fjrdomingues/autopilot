@@ -134,7 +134,7 @@ async function main(task, test=false) {
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   const initCodeBase = require('./modules/init').initCodeBase;
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
-    initCodeBase(codeBaseDirectory, interactive);
+    await initCodeBase(codeBaseDirectory, interactive);
   }
 
   // Make sure we have a task, ask user if needed
