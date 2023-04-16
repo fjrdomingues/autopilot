@@ -46,8 +46,7 @@ async function processFile(dir, filePathRelative, fileContent, model) {
     const output = await fileSummary(fileContent,model)
 
     if (output) {
-        const filePathFull = path.join(dir, filePathRelative);
-        const summaryFilePath = path.join(filePathFull + '.ai.txt');
+        const summaryFilePath = path.join(filePathRelative + '.ai.txt');
         const summaryFileContent = `File Path: ${filePathRelative}\nSummary:\n${output}`
         fs.writeFileSync(summaryFilePath, summaryFileContent);
         const timestamp = new Date().toISOString();
