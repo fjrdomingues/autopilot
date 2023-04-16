@@ -50,10 +50,18 @@ function getDB(codeBaseDirectory){
 function insertOrUpdateFile(codeBaseDirectory, file){
     db = getDB(codeBaseDirectory);
     const sql = ```
-INSERT OR REPLACE INTO files (filePath, fileContent, fileTokensCount, fileHash)
+INSERT OR REPLACE INTO files (
+    filePath, 
+    fileContent, 
+    fileTokensCount, 
+    fileHash)
 VALUES (?, ?, ?, ?)
 ```
-    db.run(sql, [file.filePath, file.fileContent, file.fileTokensCount, file.fileHash]);
+    db.run(sql, [
+        file.filePath, 
+        file.fileContent, 
+        file.fileTokensCount, 
+        file.fileHash]);
 }
 
 
