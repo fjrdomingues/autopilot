@@ -20,6 +20,7 @@
     "prompts": "^2.4.2",
     "readline-sync": "^1.4.10",
     "simple-git": "^3.17.0",
+    "sqlite3": "^5.1.6",
     "word-count": "^0.2.2",
     "yargs": "^17.7.1"
   }
