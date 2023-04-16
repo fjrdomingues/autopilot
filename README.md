@@ -2,7 +2,7 @@
   <img src="public/banner.png" alt="Autopilot Logo" width="200"/>
 </p>
 
-<h1 align="center">Autopilot - Using GPT to Work on Entire Codebases</h1>
+<h1 align="center">Autopilot - An AI developer</h1>
 
 <p align="center">
   <strong>Autopilot</strong> is an AI tool that utilizes GPT to read a codebase, create context, and solve tasks that you request.
@@ -89,5 +89,7 @@ This project is still in alpha stage. It's recommended that you use `node ui -i`
 - **ui.js**: Handles the user interface (UI) interaction and utilizes the GPT-based summaries to complete tasks.
 
 ## 🤝 Contributing
+
+**We are running autopilot on a server connnected to the https://github.com/fjrdomingues/autopilot repository. New issues created will trigger autopilot and  create a new Pull Request with a proposal. Running with gpt-4**
 
 We welcome contributions! Please submit pull requests to the repository, and ensure your changes align with the project's goals and guidelines. Together, we can make **Autopilot** an even more powerful and efficient tool for developers!
