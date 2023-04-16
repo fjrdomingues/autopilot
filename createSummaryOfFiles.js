@@ -3,6 +3,7 @@ const path = require('path');
 
 const { generateAndWriteFileSummary } = require('./modules/summaries');
 
+
 require('dotenv').config();
 
 // Prompt the user to proceed

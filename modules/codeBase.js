@@ -1,7 +1,7 @@
 const autopilotDirectoryName = '.autopilot';
 const path = require('path');
-const { loadFiles } = require('./files');
-const generateAndWriteFileSummary = require('./summaries').generateAndWriteFileSummary;
+const { loadFiles } = require('./fsInput');
+const { generateAndWriteFileSummary } = require('./summaries');
 const { calculateTokensCost } = require('./gpt');
 const chalk = require('chalk');
 
