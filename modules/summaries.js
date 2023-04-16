@@ -129,10 +129,10 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   }
 
   try {
-    const output = await fileSummary(fileContent, model);
+    const summary = await fileSummary(fileContent, model);
 
-    if (output) {
-      insertOrUpdateFile(codeBaseDirectory, parsedFile);
+    if (summary) {
+      insertOrUpdateFile(codeBaseDirectory, parsedFile, summary);
 
       // TODO: Use logging library that already adds timestamps
       const timestamp = new Date().toISOString();
