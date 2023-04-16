@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS files (
     filePath TEXT PRIMARY KEY,
     fileContent TEXT,
     fileTokensCount INTEGER,
-    fileHash TEXT
+    fileHash TEXT,
+    fileTimestamp INTEGER
 );
 ```
     db.run(sql);
@@ -46,6 +47,7 @@ function getDB(codeBaseDirectory){
  * @param {string} file.fileContent - The content of the file
  * @param {number} file.fileTokensCount - The count of tokens in the file
  * @param {string} file.fileHash - The hash of the file content
+ * @param {number} file.fileTimestamp - The timestamp when the file was last modified
  */
 function insertOrUpdateFile(codeBaseDirectory, file){
     db = getDB(codeBaseDirectory);
@@ -54,14 +56,16 @@ INSERT OR REPLACE INTO files (
     filePath, 
     fileContent, 
     fileTokensCount, 
-    fileHash)
-VALUES (?, ?, ?, ?)
+    fileHash,
+    fileTimestamp)
+VALUES (?, ?, ?, ?, ?)
 ```
     db.run(sql, [
         file.filePath, 
         file.fileContent, 
         file.fileTokensCount, 
-        file.fileHash]);
+        file.fileHash,
+        file.fileTimestamp]);
 }
 
 
