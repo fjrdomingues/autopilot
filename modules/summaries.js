@@ -105,7 +105,7 @@ async function getSummaries(codeBaseDirectory){
  * @param {object} model - The machine learning model used to generate the summary.
  */
 async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model) {
-  const fileSummary = require('./agents/indexer');
+  const fileSummary = require('../agents/indexer');
 
   const filePathFull = path.join(codeBaseDirectory, filePathRelative);
   const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
