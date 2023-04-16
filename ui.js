@@ -113,7 +113,7 @@ async function getTask(task, options){
 async function main(task, test=false) {
   const options = getOptions(task, test);
   const interactive = options.interactive;
-  const dir = options.dir
+  const codeBaseDirectory = options.dir
   let autoApply;
   if (interactive){
     autoApply = false
@@ -122,17 +122,17 @@ async function main(task, test=false) {
   }
 
   const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
-  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(dir);
+  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   const initCodeBase = require('./modules/init').initCodeBase;
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
-    initCodeBase(dir);
+    initCodeBase(codeBaseDirectory);
   }
 
   // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
 
   // Get the summaries of the files in the directory
-  const summaries = await getSummaries(dir, test);
+  const summaries = await getSummaries(codeBaseDirectory, test);
   const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
  
   let relevantFiles=[]
@@ -159,7 +159,7 @@ async function main(task, test=false) {
   if (autoApply){
     // Sends the saved output to GPT and ask for the necessary changes to do the TASK
     console.log(chalk.green("Solutions Auto applied:"));
-    printGitDiff(dir);
+    printGitDiff(codeBaseDirectory);
   }else{
     const solutionsPath = saveOutput(solutions);
     console.log(chalk.green("Solutions saved to:", solutionsPath));
