@@ -89,15 +89,13 @@ async function main(processAllFile, watchFileChanges) {
   const directoryPath = options.dir;
   const fullAnalysis = processAllFile || options.all;
   const model = options.model;
-  const watchChanges = watchFileChanges || options.watch
-
-  if (fullAnalysis) { await indexFullProject(directoryPath, model); }
+  const interactive = true;
 
   const { getCodeBaseAutopilotDirectory } = require('./modules/autopilotConfig');
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
     const { initCodeBase } = require('./modules/init');
-    initCodeBase(codeBaseDirectory);
+    initCodeBase(codeBaseDirectory, interactive);
   }
 
   if (options.all) { await indexFullProject(codeBaseDirectory, model); }
