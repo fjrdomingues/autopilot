@@ -2,6 +2,8 @@ const autopilotDirectoryName = '.autopilot';
 const path = require('path');
 const { loadFiles } = require('./files');
 const generateAndWriteFileSummary = require('./summaries').generateAndWriteFileSummary;
+const { calculateTokensCost } = require('./gpt');
+
 
 function getCodeBaseAutopilotDirectory(codeBaseDirectory){
     return path.posix.join(codeBaseDirectory, autopilotDirectoryName);
@@ -22,6 +24,38 @@ async function codeBaseFullIndex(codeBaseDirectory, model){
   
       await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
     }
-  };
+};
 
-module.exports = { getCodeBaseAutopilotDirectory, codeBaseFullIndex }
+
+// Calculate and display the project size and cost estimation
+function printCostEstimation(directoryPath, model){
+    const getDirectoryTokensCount = require('./modules/directoryHelper');
+    tokenCount = getDirectoryTokensCount(directoryPath)
+    cost = calculateTokensCost(model, tokenCount, null, tokenCount)
+    
+    console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
+  }
+  
+  async function approveIndexing(){
+    const prompts = require('prompts');
+  
+    const proceed = await prompts({
+      type: 'confirm',
+      name: 'value',
+      message: 'Proceed with summarizing the project?',
+    });
+    return proceed.value;
+  }
+  
+async function codeBaseFullIndexInteractive(codeBaseDirectory, model){
+    printCostEstimation(codeBaseDirectory, model);
+
+    if (await approveIndexing()) {
+        await codeBaseFullIndex(codeBaseDirectory, model);
+    } else {
+        console.log('Aborted summarizing the project.');
+    }
+}
+
+
+module.exports = { getCodeBaseAutopilotDirectory, codeBaseFullIndex, codeBaseFullIndexInteractive }

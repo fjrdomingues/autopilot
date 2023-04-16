@@ -1,14 +1,13 @@
 const path = require('path');
 const { createDB } = require('./db');
 const fs = require('fs');
-const { getCodeBaseAutopilotDirectory } = require('./codeBase');
-const { codeBaseFullIndex } = require('./codeBase');
+const { codeBaseFullIndex, getCodeBaseAutopilotDirectory, codeBaseFullIndexInteractive } = require('./codeBase');
 
 /**
  *
  * @param {string} codeBaseDirectory
  */
-function initCodeBase(codeBaseDirectory){
+function initCodeBase(codeBaseDirectory, interactive){
     // Create directory `__CODEBASE__/.autopilot`
     codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
     fs.mkdirSync(codeBaseAutopilotDirectory);
@@ -20,7 +19,11 @@ function initCodeBase(codeBaseDirectory){
     createDB(codeBaseDirectory);
 
     // Trigger codeBase indexing
-    codeBaseFullIndex(codeBaseDirectory, model);
+    if (interactive){
+        codeBaseFullIndexInteractive(codeBaseDirectory, model);
+    } else {
+        codeBaseFullIndex(codeBaseDirectory, model);
+    }
 }
 
 module.exports = { initCodeBase }

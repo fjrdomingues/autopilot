@@ -42,36 +42,6 @@ function getOptions(){
   return options;
 }
 
-// Calculate and display the project size and cost estimation
-function printCostEstimation(directoryPath, model){
-  const getDirectoryTokensCount = require('./modules/directoryHelper');
-  tokenCount = getDirectoryTokensCount(directoryPath)
-  cost = calculateTokensCost(model, tokenCount, null, tokenCount)
-  
-  console.log(`Project size: ~${tokenCount} tokens, estimated cost: $${chalk.yellow(cost.toFixed(4))}`);
-}
-
-async function approveIndexing(){
-  const prompts = require('prompts');
-
-  const proceed = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message: 'Proceed with summarizing the project?',
-  });
-  return proceed.value;
-}
-
-async function indexFullProject(codeBaseDirectory, model){
-  printCostEstimation(codeBaseDirectory, model);
-
-  if (await approveIndexing()) {
-    await codeBaseFullIndex(codeBaseDirectory, model);
-  } else {
-    console.log('Aborted summarizing the project.');
-  }
-}
-
 async function main() {
   const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
   const chokidar = require('chokidar');
