@@ -9,6 +9,7 @@ const { getCodeBaseAutopilotDirectory } = require('./autopilotConfig');
  * @param {string} codeBaseDirectory
  */
 function initCodeBase(codeBaseDirectory, interactive){
+    model = process.env.CHEAP_MODEL;
     // Create directory `__CODEBASE__/.autopilot`
     codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
     fs.mkdirSync(codeBaseAutopilotDirectory);
