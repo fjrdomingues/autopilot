@@ -93,28 +93,31 @@ async function main(processAllFile, watchFileChanges) {
   if (fullAnalysis) { await indexFullProject(directoryPath, model); }
 
   const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
-  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(directoryPath);
+  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   const initCodeBase = require('./modules/init').initCodeBase;
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
-    initCodeBase(directoryPath);
+    initCodeBase(codeBaseDirectory);
   }
 
-  if(watchChanges) {
-    // Watch for file changes in the directory
-    const watcher = chokidar.watch(directoryPath, {
-      ignored: /node_modules|helpers/,
-      persistent: true,
-      ignoreInitial: true,
-    });
-    // Process the modified file
-    watcher.on('change', async (filePath) => {
-      if (fileExtensionsToProcess.includes(path.extname(filePath))) {
-        console.log(`File modified: ${filePath}`);
-        await processFile(filePath, model);
-      }
-    });
-    console.log('Watching for file changes...');
-  }
+  if (options.all) { await indexFullProject(codeBaseDirectory, model); }
+  // Watch for file changes in the directory
+  const watcher = chokidar.watch(codeBaseDirectory, {
+    ignored: /node_modules|helpers/,
+    persistent: true,
+    ignoreInitial: true,
+  });
+  // Process the modified file
+  watcher.on('change', async (filePathFull) => {
+    if (fileExtensionsToProcess.includes(path.extname(filePathFull))) {
+      const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+      const filePathRelative = path.relative(codeBaseDirectory, filePathFull).replace(/\\/g, '/');
+      console.log(`File modified: ${filePathRelative}`);
+      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+    }
+  });
+
+  console.log('Watching for file changes...');
+  readline.close();
 }
 
 if (require.main === module) main();
