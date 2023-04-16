@@ -1,10 +1,7 @@
-const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-const { calculateTokensCost } = require('./modules/gpt');
 const { generateAndWriteFileSummary } = require('./modules/summaries');
-const { codeBaseFullIndex } = require('./modules/codeBase');
 
 require('dotenv').config();
 

@@ -3,6 +3,7 @@ const path = require('path');
 const { loadFiles } = require('./files');
 const generateAndWriteFileSummary = require('./summaries').generateAndWriteFileSummary;
 const { calculateTokensCost } = require('./gpt');
+const chalk = require('chalk');
 
 
 function getCodeBaseAutopilotDirectory(codeBaseDirectory){
