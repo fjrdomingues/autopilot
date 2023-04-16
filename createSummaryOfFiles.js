@@ -44,19 +44,19 @@ async function main() {
   const chokidar = require('chokidar');
 
   const options = getOptions();
-  const directoryPath = options.dir;
+  const codeBaseDirectory = options.dir;
   const model = options.model;
 
   const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
-  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(directoryPath);
+  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   const initCodeBase = require('./modules/init').initCodeBase;
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
-    initCodeBase(directoryPath);
+    initCodeBase(codeBaseDirectory);
   }
 
-  if (options.all) { await indexFullProject(directoryPath, model); }
+  if (options.all) { await indexFullProject(codeBaseDirectory, model); }
   // Watch for file changes in the directory
-  const watcher = chokidar.watch(directoryPath, {
+  const watcher = chokidar.watch(codeBaseDirectory, {
     ignored: /node_modules|helpers/,
     persistent: true,
     ignoreInitial: true,
@@ -65,9 +65,9 @@ async function main() {
   watcher.on('change', async (filePathFull) => {
     if (fileExtensionsToProcess.includes(path.extname(filePathFull))) {
       const fileContent = fs.readFileSync(filePathFull, 'utf-8');
-      const filePathRelative = path.relative(directoryPath, filePathFull).replace(/\\/g, '/');
+      const filePathRelative = path.relative(codeBaseDirectory, filePathFull).replace(/\\/g, '/');
       console.log(`File modified: ${filePathRelative}`);
-      await generateAndWriteFileSummary(directoryPath, filePathRelative, fileContent, model);
+      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
     }
   });
 
