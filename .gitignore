@@ -6,3 +6,4 @@ docs
 web
 logs
 *.ai.txt
+.DS_Store
