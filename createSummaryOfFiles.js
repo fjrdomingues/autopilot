@@ -4,6 +4,7 @@ const path = require('path');
 
 const { calculateTokensCost } = require('./modules/gpt');
 const { generateAndWriteFileSummary } = require('./modules/summaries');
+const { codeBaseFullIndex } = require('./modules/codeBase');
 
 require('dotenv').config();
 
@@ -72,11 +73,11 @@ async function approveIndexing(){
   return proceed.value;
 }
 
-async function indexFullProject(directoryPath, model){
-  printCostEstimation(directoryPath, model);
+async function indexFullProject(codeBaseDirectory, model){
+  printCostEstimation(codeBaseDirectory, model);
 
   if (await approveIndexing()) {
-    await processDirectory(directoryPath, model);
+    await codeBaseFullIndex(codeBaseDirectory, model);
   } else {
     console.log('Aborted summarizing the project.');
   }
