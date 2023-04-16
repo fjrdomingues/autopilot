@@ -4,8 +4,8 @@ const fs = require('fs');
 const { getCodeBaseAutopilotDirectory } = require('./codeBase');
 
 /**
- * 
- * @param {string} codeBaseDirectory 
+ *
+ * @param {string} codeBaseDirectory
  */
 function initCodeBase(codeBaseDirectory){
     // Create directory `__CODEBASE__/.autopilot`
@@ -14,7 +14,7 @@ function initCodeBase(codeBaseDirectory){
 
     // Create config file `__CODEBASE__/.autopilot/config.json`
     // TODO: Refactor include/exclude lists into codebase config file
-    
+
     // Bootstrap DB
     createDB(codeBaseDirectory);
 

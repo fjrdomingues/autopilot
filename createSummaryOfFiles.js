@@ -125,6 +125,13 @@ async function main(processAllFile, watchFileChanges) {
 
   if (fullAnalysis) { await indexFullProject(directoryPath, model); }
 
+  const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
+  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(directoryPath);
+  const initCodeBase = require('./modules/init').initCodeBase;
+  if (!fs.existsSync(codeBaseAutopilotDirectory)){
+    initCodeBase(directoryPath);
+  }
+
   if(watchChanges) {
     // Watch for file changes in the directory
     const watcher = chokidar.watch(directoryPath, {
