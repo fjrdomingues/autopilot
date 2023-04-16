@@ -9,7 +9,7 @@ function createFilesTable(db){
     const sql =```
 CREATE TABLE IF NOT EXISTS files (
     filePath TEXT PRIMARY KEY,
-    fileContent TEXT,
+    fileSummary TEXT,
     fileTokensCount INTEGER,
     fileHash TEXT,
     fileTimestamp INTEGER
@@ -49,12 +49,12 @@ function getDB(codeBaseDirectory){
  * @param {string} file.fileHash - The hash of the file content
  * @param {number} file.fileTimestamp - The timestamp when the file was last modified
  */
-function insertOrUpdateFile(codeBaseDirectory, file){
+function insertOrUpdateFile(codeBaseDirectory, file, summary){
     db = getDB(codeBaseDirectory);
     const sql = ```
 INSERT OR REPLACE INTO files (
     filePath, 
-    fileContent, 
+    fileSummary, 
     fileTokensCount, 
     fileHash,
     fileTimestamp)
@@ -62,7 +62,7 @@ VALUES (?, ?, ?, ?, ?)
 ```
     db.run(sql, [
         file.filePath, 
-        file.fileContent, 
+        summary, 
         file.fileTokensCount, 
         file.fileHash,
         file.fileTimestamp]);
