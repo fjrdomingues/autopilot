@@ -70,9 +70,9 @@ ${fileContent}
 
     if (output) {
         // Save new comment
-        const summaryPath = path.join(filePath + '.ai.txt');
+        const summaryPath = path.join(path.relative(process.env.CODE_DIR, filePath) + '.ai.txt');
         // adds filepath to top of summary
-        const contentToRight = `File Path: ${filePath}\nSummary:\n${output}`
+        const contentToRight = `File Path: ${path.relative(process.env.CODE_DIR, filePath)}\nSummary:\n${output}`
         fs.writeFileSync(summaryPath, contentToRight);
         const timestamp = new Date().toISOString();
         const hour = timestamp.match(/\d\d:\d\d/);
