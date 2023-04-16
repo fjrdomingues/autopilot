@@ -5,8 +5,7 @@
   "main": "ui.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/server",
-    "logs": "heroku logs --tail --app autopilot-ai"
+    "start": "pm2 start server/server.js --attach"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +22,7 @@
     "langchain": "^0.0.51",
     "line-diff": "^2.1.1",
     "openai": "^3.2.1",
+    "pm2": "^5.3.0",
     "prompts": "^2.4.2",
     "readline-sync": "^1.4.10",
     "simple-git": "^3.17.0",
