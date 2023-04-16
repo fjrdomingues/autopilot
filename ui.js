@@ -121,6 +121,13 @@ async function main(task, test=false) {
     autoApply = options.autoApply
   }
 
+  const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
+  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(dir);
+  const initCodeBase = require('./modules/init').initCodeBase;
+  if (!fs.existsSync(codeBaseAutopilotDirectory)){
+    initCodeBase(dir);
+  }
+
   // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
 
