@@ -10,6 +10,8 @@ const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
 const { printGitDiff } = require('./modules/gitHelper');
 const { getFiles } = require('./modules/fsInput');
 
+const testingDirectory = '/benchmarks';
+
 /**
 @description Asynchronous function that runs an agent function with given variables.
 @param {function} agentFunction - The agent function to be executed asynchronously.
@@ -115,7 +117,10 @@ async function getTask(task, options){
 async function main(task, test=false) {
   const options = getOptions(task, test);
   const interactive = options.interactive;
-  const codeBaseDirectory = options.dir;
+  let codeBaseDirectory = options.dir;
+  if (test){
+    codeBaseDirectory = codeBaseDirectory + testingDirectory
+  }
   const model = process.env.CHEAP_MODEL;
   let autoApply;
   if (interactive){
@@ -135,7 +140,7 @@ async function main(task, test=false) {
   task = await getTask(task, options);
 
   // Get the summaries of the files in the directory
-  const summaries = await getSummaries(codeBaseDirectory, test);
+  const summaries = await getSummaries(codeBaseDirectory);
   const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
  
   let relevantFiles=[]

@@ -59,43 +59,36 @@ function chunkSummaries(summaries, maxChunkLength) {
  * @param {boolean} test - If true, reads files only in the 'benchmarks' directory.
  * @returns {Promise<string>} A string containing all the summaries concatenated together.
  */
-async function readAllSummaries(dir, test) {
-  const pattern = !test ? '**/*.ai.txt' : 'benchmarks/**/*.ai.txt'
-  let files = [];
-  try {
-    console.log("Getting Summary");
-    files = await fg(path.posix.join(dir, pattern), { ignore: ignorePattern });
-  } catch (err) {
-    console.error("Error in fast-glob:", err);
-    throw err;
+async function readAllSummaries(codeBaseDirectory) {
+  const db = getDB(codeBaseDirectory);
+  const sql = `SELECT summary FROM files`;
+  const summaries = await db.all(sql);
+
+  if (summaries.length === 0) {
+    console.log("No matching files found in the database. Try running `node createSummaryOfFiles` first.");
+    throw new Error("Cannot run without summaries. Try running `node createSummaryOfFiles` first.");
   }
 
-  if (files.length === 0) {
-    console.log("No matching files found. Try running `node createSummaryOfFiles` first.");
-    throw new Error("Can not run without Summaries. Try running `node createSummaryOfFiles` first.");
-  }
-
-  let summaries = "";
-  console.log("Files found:", files);
-  for (const file of files) {
+  let summariesString = "";
+  console.log("Summaries found in the database:", summaries.length);
+  for (const summary of summaries) {
     try {
-      const summary = fs.readFileSync(file, 'utf-8');
-      summaries += summary + '\n\n';
+      summariesString += summary.summary + '\n\n';
     } catch (error) {
-      console.error("Error reading file:", file, error);
+      console.error("Error reading summary from database:", error);
     }
   }
-  return summaries;
+  return summariesString;
 }
 
 /**
  * Fetches and validates summaries for a given test.
  * @param {boolean} test - Setting for internal tests.
- * @param {string} dir - The directory to search for summaries.
+ * @param {string} codeBaseDirectory - The directory to search for summaries.
  * @returns {Promise<Array<Summary>>} A Promise that resolves to an array of summary objects.
  */
-async function getSummaries(dir, test){
-  const summaries = await readAllSummaries(dir, test);
+async function getSummaries(codeBaseDirectory){
+  const summaries = await readAllSummaries(codeBaseDirectory);
   const summariesTokenCount = countTokens(JSON.stringify(summaries))
   console.log(`Tokens in Summaries: ${chalk.yellow(summariesTokenCount)}`)
 
