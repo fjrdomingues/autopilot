@@ -8,7 +8,7 @@ const { getCodeBaseAutopilotDirectory } = require('./autopilotConfig');
  *
  * @param {string} codeBaseDirectory
  */
-function initCodeBase(codeBaseDirectory, interactive){
+async function initCodeBase(codeBaseDirectory, interactive){
     model = process.env.CHEAP_MODEL;
     // Create directory `__CODEBASE__/.autopilot`
     codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
@@ -22,7 +22,7 @@ function initCodeBase(codeBaseDirectory, interactive){
 
     // Trigger codeBase indexing
     if (interactive){
-        codeBaseFullIndexInteractive(codeBaseDirectory, model);
+        await codeBaseFullIndexInteractive(codeBaseDirectory, model);
     } else {
         codeBaseFullIndex(codeBaseDirectory, model);
     }
