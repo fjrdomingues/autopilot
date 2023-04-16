@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const fg = require('fast-glob');
 const path = require('path');
-const {parseFileContent} = require('./fsInput');
+const { parseFileContent } = require('./fsInput');
 const { insertOrUpdateFile } = require('./db');
 
 const ignorePattern = process.env.IGNORE_LIST.split(',');
