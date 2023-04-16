@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const { countTokens } = require('./tokenHelper');
 
 const { getCodeBaseAutopilotDirectory } = require('./autopilotConfig');
 
@@ -13,8 +14,9 @@ function createFilesTable(db){
     const sql =`
 CREATE TABLE IF NOT EXISTS files (
     path TEXT PRIMARY KEY,
-    summary TEXT,
     tokensCount INTEGER,
+    summary TEXT,
+    summaryTokensCount INTEGER,
     hash TEXT,
     timestamp INTEGER
 );
@@ -55,19 +57,22 @@ function getDB(codeBaseDirectory){
  */
 function insertOrUpdateFile(codeBaseDirectory, file, summary){
     db = getDB(codeBaseDirectory);
+    const summaryTokensCount = countTokens(summary);
     const sql = `
 INSERT OR REPLACE INTO files (
     path, 
+    tokensCount,
     summary, 
-    tokensCount, 
+    summaryTokensCount, 
     hash,
     timestamp)
-VALUES (?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?)
 `
     db.run(sql, [
         file.filePath, 
-        summary, 
         file.fileTokensCount, 
+        summary,
+        summaryTokensCount,
         file.fileHash,
         file.fileTimestamp]);
 }
