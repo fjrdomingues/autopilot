@@ -113,12 +113,13 @@ async function getTask(task, options){
 async function main(task, test=false) {
   const options = getOptions(task, test);
   const interactive = options.interactive;
-  const codeBaseDirectory = options.dir
+  const codeBaseDirectory = options.dir;
+  const model = process.env.CHEAP_MODEL;
   let autoApply;
   if (interactive){
-    autoApply = false
+    autoApply = false;
   } else {
-    autoApply = options.autoApply
+    autoApply = options.autoApply;
   }
 
   const getCodeBaseAutopilotDirectory = require('./modules/codeBase').getCodeBaseAutopilotDirectory;
@@ -153,6 +154,11 @@ async function main(task, test=false) {
     if (autoApply){
       // This actually applies the solution to the file
       updateFile(file.path, coderRes);
+      const filePathFull = file.path
+      const fileContent = coderRes
+      const filePathRelative = path.relative(codeBaseDirectory, filePathFull).replace(/\\/g, '/');
+      console.log(`File modified: ${filePathRelative}`);
+      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
     }
   }
 
