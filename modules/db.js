@@ -10,7 +10,7 @@ DB_FILE_NAME = 'autopilot.db'
  * @param {sqlite3.Database} db - The database to create the table in
  */
 function createFilesTable(db){
-    const sql =```
+    const sql =`
 CREATE TABLE IF NOT EXISTS files (
     path TEXT PRIMARY KEY,
     summary TEXT,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS files (
     hash TEXT,
     timestamp INTEGER
 );
-```
+`
     db.run(sql);
 }
 
@@ -55,7 +55,7 @@ function getDB(codeBaseDirectory){
  */
 function insertOrUpdateFile(codeBaseDirectory, file, summary){
     db = getDB(codeBaseDirectory);
-    const sql = ```
+    const sql = `
 INSERT OR REPLACE INTO files (
     path, 
     summary, 
@@ -63,7 +63,7 @@ INSERT OR REPLACE INTO files (
     hash,
     timestamp)
 VALUES (?, ?, ?, ?, ?)
-```
+`
     db.run(sql, [
         file.filePath, 
         summary, 
