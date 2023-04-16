@@ -4,9 +4,8 @@ const { jsonParseWithValidate } = require('../modules/jsonHelpers');
 const promptTemplate =
 ` 
 USER INPUT: {task}
-YOUR TASK: Identify the files in the codebase that are relevant to the USER INPUT. Don't include new files. Also explain why the file is relevant.
+YOUR TASK: Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
 OUTPUT: JSON - You must respond in JSON format as described below
-RESPONSE FORMAT: This is the format of your reply. Ensure the response can be parsed by JSON.parse. Must be valid JSON
 {{
     "thoughts":
     {{
@@ -17,8 +16,9 @@ RESPONSE FORMAT: This is the format of your reply. Ensure the response can be pa
     }},
     "output": {{
         "relevantFiles": [{{
-            "path": "path to relevant file",
-            "reason": "reason why the file was selected"
+            "path": "path to file",
+            "reason": "reason why the file was selected",
+            "task": "what we'll implement in this file"
         }}]
     }}
 }}  
@@ -29,7 +29,7 @@ CONTEXT:
 `
 async function getRelevantFiles(task, summaries) {
     const values = {task:task, summaries:summaries}
-    const reply = await callAgent(promptTemplate, values, process.env.CHEAP_MODEL);
+    const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
 
     const parsedReply = jsonParseWithValidate(reply)
     return parsedReply;
