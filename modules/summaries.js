@@ -62,7 +62,7 @@ async function readAllSummaries(codeBaseDirectory) {
   const sql = `SELECT summary FROM files`;
   const summaries = await db.all(sql);
 
-  if (summaries.length === 0) {
+  if (typeof myVar === 'undefined' || summaries.length === 0) {
     console.log("No matching files found in the database. Try running `node createSummaryOfFiles` first.");
     throw new Error("Cannot run without summaries. Try running `node createSummaryOfFiles` first.");
   }
