@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const agents = require('./agents');
 const yargs = require('yargs');
 const prompts = require('prompts');
+const fs = require('fs');
 
 const { getTaskInput } = require('./modules/userInputs');
 const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
