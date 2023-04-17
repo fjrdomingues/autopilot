@@ -69,7 +69,7 @@ INSERT OR REPLACE INTO files (
 VALUES (?, ?, ?, ?, ?, ?)
 `
     db.run(sql, [
-        path.posix.join(file.filePath), 
+        file.filePath.replace(/\\/g, '/'), 
         file.fileTokensCount, 
         summary,
         summaryTokensCount,
