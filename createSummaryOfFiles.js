@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { generateAndWriteFileSummary } = require('./modules/summaries');
+const { codeBaseFullIndex, codeBaseFullIndexInteractive } = require('./modules/codeBase');
 
 
 require('dotenv').config();
@@ -98,7 +99,13 @@ async function main(processAllFile, watchFileChanges) {
     await initCodeBase(codeBaseDirectory, interactive);
   }
 
-  if (options.all) { await indexFullProject(codeBaseDirectory, model); }
+  if (options.all) { 
+    if (interactive){
+      await codeBaseFullIndexInteractive(codeBaseDirectory, model);
+    } else {
+      await codeBaseFullIndex(codeBaseDirectory, model);
+    }
+  }
   // Watch for file changes in the directory
   const watcher = chokidar.watch(codeBaseDirectory, {
     ignored: /node_modules|helpers/,
