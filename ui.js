@@ -166,7 +166,7 @@ async function main(task, test=false) {
       updateFile(file.path, coderRes);
       const filePathFull = file.path
       const fileContent = coderRes
-      const filePathRelative = path.relative(codeBaseDirectory, filePathFull).replace(/\\/g, '/');
+      const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
       console.log(`File modified: ${filePathRelative}`);
       await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
     }

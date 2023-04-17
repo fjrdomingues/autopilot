@@ -50,7 +50,7 @@ function getFilePaths(dir) {
 function parseFileContent(dir, filePathFull, fileContent) {
 	const fileTokensCount = countTokens(fileContent);
 	const fileHash = hashFile(fileContent);
-	const relativePath = path.posix.relative(dir, filePathFull);
+	const relativePath = path.relative(dir, filePathFull).replace(/\\/g, '/');
 	const fileTimestamp = fs.statSync(filePathFull).mtimeMs; // Get the file modification timestamp
 	const parseFile = {
 		filePath: relativePath,
