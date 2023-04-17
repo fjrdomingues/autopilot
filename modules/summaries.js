@@ -70,8 +70,6 @@ async function readAllSummaries(codeBaseDirectory) {
     });
   });
   
-
-  console.log(summaries)
   if (typeof summaries === 'undefined' || summaries.length === 0) {
     console.log("No matching files found in the database. Try running `node createSummaryOfFiles` first.");
     throw new Error("Cannot run without summaries. Try running `node createSummaryOfFiles` first.");
