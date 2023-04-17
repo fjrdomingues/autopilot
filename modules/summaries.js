@@ -72,8 +72,8 @@ async function readAllSummaries(codeBaseDirectory) {
   });
   
   if (typeof summaries === 'undefined' || summaries.length === 0) {
-    console.log("No matching files found in the database. Try running `node createSummaryOfFiles` first.");
-    throw new Error("Cannot run without summaries. Try running `node createSummaryOfFiles` first.");
+    console.log("No matching files found in the database. Indexing is required.");
+    throw new Error("Cannot run without summaries. Indexing is required.");
   }
 
   let summariesString = "";
