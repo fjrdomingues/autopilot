@@ -92,11 +92,12 @@ function loadFiles(dir) {
  * @returns {FileObject[]} - An array of file objects,
  * each with a path property and a code property containing the file's contents.
  */
-function getFiles(files){
+function getFiles(codeBaseDirectory, files){
 	let retFiles=[]
 	for (const file of files) {
-	  const pathToFile = file.path;
-	  const fileContent = fs.readFileSync(pathToFile, 'utf8');
+	  const filePathRelative = file.path;
+	  const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative); 
+	  const fileContent = fs.readFileSync(filePathFull, 'utf8');
 	  file.code = fileContent
 	  retFiles.push(file)
 	}

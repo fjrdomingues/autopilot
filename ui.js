@@ -153,7 +153,7 @@ async function main(task, test=false) {
     relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
   }
   // Fetch code files the agent has deemed relevant
-  const files = getFiles(relevantFiles)
+  const files = getFiles(codeBaseDirectory, relevantFiles)
   if (files.length == 0) throw new Error("No relevant files found")
 
   // Ask an agent about each file
