@@ -77,8 +77,20 @@ function getOptions(task, test){
   })
   .option('auto-apply', {
     alias: 'a',
-    describe: 'The path to the directory containing the code files',
+    describe: 'Auto apply change suggestions',
     default: !test,
+    type: 'boolean'
+  })
+  .option('reindex', {
+    alias: 'r',
+    describe: 'Reindexes the entire codebase',
+    default: false,
+    type: 'boolean'
+  })
+  .option('index-gap-fill', {
+    alias: 'g',
+    describe: 'Checks for gaps between the DB and the codebase and reconciles them',
+    default: true,
     type: 'boolean'
   })
   .help()
@@ -118,12 +130,15 @@ async function getTask(task, options){
  * @returns {Array} - Array with file and code
  */
 async function main(task, test=false) {
-  const options = getOptions(task, test);
-  const interactive = options.interactive;
-  let codeBaseDirectory = options.dir;
+  // TODO: get rid of test parameter, should use normal functionality
   if (test){
     codeBaseDirectory = codeBaseDirectory + testingDirectory
   }
+  const options = getOptions(task, test);
+  const interactive = options.interactive;
+  const reindex = options.reindex;
+  const indexGapFill = options.indexGapFill;
+  let codeBaseDirectory = options.dir;
   const model = process.env.CHEAP_MODEL;
   let autoApply;
   if (interactive){
@@ -134,9 +149,19 @@ async function main(task, test=false) {
 
   const { getCodeBaseAutopilotDirectory} = require('./modules/autopilotConfig');
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
-  const initCodeBase = require('./modules/init').initCodeBase;
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
+    const { initCodeBase } = require('./modules/init');
     await initCodeBase(codeBaseDirectory, interactive);
+  } else {
+    if (reindex){
+      if (interactive){
+        const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
+        await codeBaseFullIndexInteractive(codeBaseDirectory, model);
+      } else {
+        const { codeBaseFullIndex } = require('./modules/codeBase');
+        await codeBaseFullIndex(codeBaseDirectory, model);
+      }
+    }
   }
 
   // Make sure we have a task, ask user if needed
