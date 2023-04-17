@@ -24,7 +24,7 @@ async function initCodeBase(codeBaseDirectory, interactive){
     if (interactive){
         await codeBaseFullIndexInteractive(codeBaseDirectory, model);
     } else {
-        codeBaseFullIndex(codeBaseDirectory, model);
+        await codeBaseFullIndex(codeBaseDirectory, model);
     }
 }
 
