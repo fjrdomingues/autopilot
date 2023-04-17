@@ -5,7 +5,7 @@ const path = require('path');
 const { parseFileContent } = require('./fsInput');
 const { getDB, insertOrUpdateFile } = require('./db');
 
-const ignorePattern = process.env.IGNORE_LIST.split(',');
+const summaryStringDelimiter = "\n---\n";
 const maxSummaryTokenCount = 3000;
 const maxTokenSingleFile = 3000;
 
@@ -24,14 +24,13 @@ Splits an array of summary strings into chunks up to a maximum size.
 @throws {Error} If a single summary string is longer than maxChunkLength.
 */
 function chunkSummaries(summaries, maxChunkLength) {
-  const delimiter = "\n\n";
   const summaryChunks = [];
   let currentChunk = "";
   let currentChunkLength = 0;
-  summariesArray = summaries.split(delimiter);
+  summariesArray = summaries.split(summaryStringDelimiter);
 
   for (const summary of summariesArray) {
-    const delimitedSummary = summary + delimiter;
+    const delimitedSummary = summary + summaryStringDelimiter;
     const currentSummaryLength = countTokens(delimitedSummary);
 
     if (currentSummaryLength > maxChunkLength) {
@@ -59,7 +58,9 @@ function chunkSummaries(summaries, maxChunkLength) {
  */
 async function readAllSummaries(codeBaseDirectory) {
   const db = getDB(codeBaseDirectory);
-  const sql = `SELECT summary FROM files`;
+  const sql = `
+  SELECT path, summary 
+  FROM files`;
   const summaries = await new Promise((resolve, reject) => {
     db.all(sql, (err, rows) => {
       if (err) {
@@ -79,7 +80,7 @@ async function readAllSummaries(codeBaseDirectory) {
   console.log("Summaries found in the database:", summaries.length);
   for (const summary of summaries) {
     try {
-      summariesString += summary.summary + '\n\n';
+      summariesString += `File Path: ${summary.path}\nSummary:\n${summary.summary}${summaryStringDelimiter}`;
     } catch (error) {
       console.error("Error reading summary from database:", error);
     }
