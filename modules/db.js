@@ -40,7 +40,7 @@ function createDB(codeBaseDirectory){
  */
 function getDB(codeBaseDirectory){
     codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
-    dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME)
+    dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME);
     const db = new sqlite3.Database(dbFilePath);
     return db;
 }
