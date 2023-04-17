@@ -60,9 +60,19 @@ function chunkSummaries(summaries, maxChunkLength) {
 async function readAllSummaries(codeBaseDirectory) {
   const db = getDB(codeBaseDirectory);
   const sql = `SELECT summary FROM files`;
-  const summaries = await db.all(sql);
+  const summaries = await new Promise((resolve, reject) => {
+    db.all(sql, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+  
 
-  if (typeof myVar === 'undefined' || summaries.length === 0) {
+  console.log(summaries)
+  if (typeof summaries === 'undefined' || summaries.length === 0) {
     console.log("No matching files found in the database. Try running `node createSummaryOfFiles` first.");
     throw new Error("Cannot run without summaries. Try running `node createSummaryOfFiles` first.");
   }
