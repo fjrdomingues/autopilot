@@ -104,13 +104,50 @@ async function getTask(task, options){
   return task
 }
 
+async function getRelevantFiles(task, chunkedSummaries, interactive) {
+  let relevantFiles=[]
+  for (const summaries of chunkedSummaries){
+    // Decide which files are relevant to the task
+    reply = await runAgent(agents.getFiles,task, summaries, interactive);
+    relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
+  }
+  const files = getFiles(relevantFiles)
+  if (files.length == 0) throw new Error("No relevant files found")
+  return files
+}
+
+async function getSolution(task, files, autoApply) {
+  let solutions = [];
+  for (const file of files) {
+    const coderRes = await runAgent(agents.coder, task, file, interactive);
+    solutions.push({file:file.path, code:coderRes})
+
+    if (autoApply){
+      // This actually applies the solution to the file
+      updateFile(file.path, coderRes);
+    }
+  }
+  return solutions
+}
+
+async function getAdvice(task, relevantFiles, interactive) {
+  const solutions = [];
+  for (const file of relevantFiles) {
+    const reply = await runAgent(agents.advisor, task, file, interactive);
+    solutions.push({file:file.path, code:reply})
+  }
+  return solutions
+}
+
+
+
 /**
  * 
  * @param {string} task - The task to be completed.
  * @param {boolean} test - Setting for internal tests.
  * @returns {Array} - Array with file and code
  */
-async function main(task, test=false) {
+async function main(task, test=false, suggestionMode=true) {
   const options = getOptions(task, test);
   const interactive = options.interactive;
   const dir = options.dir
@@ -125,28 +162,21 @@ async function main(task, test=false) {
   task = await getTask(task, options);
 
   // Get the summaries of the files in the directory
-  const summaries = await getSummaries(dir, test);
-  const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
+  const allSummaries = await getSummaries(dir, test);
+  // Separate summaries into chunks
+  const chunkedSummaries = chunkSummaries(allSummaries, maxSummaryTokenCount);
  
-  let relevantFiles=[]
-  for (const summaries of chunkedSummaries){
-    // Decide which files are relevant to the task
-    reply = await runAgent(agents.getFiles,task, summaries, interactive);
-    relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
-  }
-  const files = getFiles(relevantFiles)
-  if (files.length == 0) throw new Error("No relevant files found")
+  // Get relevant files (getFiles agent)
+  const relevantFiles = await getRelevantFiles(task, chunkedSummaries, interactive)
 
-  // Ask an agent about each file
-  let solutions = [];
-  for (const file of files) {
-    const coderRes = await runAgent(agents.coder, task, file, interactive);
-    solutions.push({file:file.path, code:coderRes})
-
-    if (autoApply){
-      // This actually applies the solution to the file
-      updateFile(file.path, coderRes);
-    }
+  // Work on solutions
+  let solutions
+  if (!suggestionMode) {
+    // Ask agent for code changes (coder agent)
+    solutions = await getSolution(relevantFiles, autoApply)
+  } else {
+    // Ask codeReader for relevant pieces of code
+    solutions = await getAdvice(task, relevantFiles, interactive) 
   }
 
   if (autoApply){
