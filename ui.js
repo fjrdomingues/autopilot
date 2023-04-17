@@ -147,7 +147,7 @@ async function getAdvice(task, relevantFiles, interactive) {
  * @param {boolean} test - Setting for internal tests.
  * @returns {Array} - Array with file and code
  */
-async function main(task, test=false, suggestionMode=true) {
+async function main(task, test=false, suggestionMode) {
   const options = getOptions(task, test);
   const interactive = options.interactive;
   const dir = options.dir
@@ -171,11 +171,13 @@ async function main(task, test=false, suggestionMode=true) {
 
   // Work on solutions
   let solutions
+
+  // Depending on Suggestion Mode call different agents
   if (!suggestionMode) {
     // Ask agent for code changes (coder agent)
     solutions = await getSolution(relevantFiles, autoApply)
   } else {
-    // Ask codeReader for relevant pieces of code
+    // Ask advice agent for a suggestion
     solutions = await getAdvice(task, relevantFiles, interactive) 
   }
 
