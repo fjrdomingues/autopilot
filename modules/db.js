@@ -46,6 +46,21 @@ function getDB(codeBaseDirectory){
 }
 
 /**
+ * Deletes the file at the specified file path from the "files" table in the SQLite database
+ * located in the code base directory specified by the codeBaseDirectory parameter.
+ * @param {string} codeBaseDirectory - The absolute path to the code base directory containing the SQLite database.
+ * @param {string} filePath - The absolute path to the file to be deleted.
+ */
+function deleteFile(codeBaseDirectory, filePath){
+    db = getDB(codeBaseDirectory);
+    const sql = `
+delete from files 
+where path = ?`
+    db.run(sql, [filePath]);
+}
+
+
+/**
  * @description Inserts or updates a file in the files table
  * @param {sqlite3.Database} db - The database to insert the file into
  * @param {object} file - The file to insert or update
@@ -77,6 +92,32 @@ VALUES (?, ?, ?, ?, ?, ?)
         file.fileTimestamp]);
 }
 
+/**
+ * @description Gets all files from the files table
+ * @param {string} codeBaseDirectory - The path to the codebase
+ * @returns {object[]} - An array of file objects, each with the following properties:
+ * path: The relative path of the file.
+ * timestamp: The timestamp when the file was last modified.
+ * hash: The hash of the file content.
+*/
+async function getDBFiles(codeBaseDirectory){
+    db = getDB(codeBaseDirectory);
+    const sql = `
+SELECT path, hash, timestamp 
+FROM files
+`
+    files = await new Promise((resolve, reject) => {
+        db.all(sql, (err, rows) => {
+            if (err) {
+            reject(err);
+            } else {
+            resolve(rows);
+            }
+        });
+    });
+    return files;
+}
+    
 
 
-module.exports = { createDB, createFilesTable, insertOrUpdateFile, getDB }
+module.exports = { createDB, createFilesTable, insertOrUpdateFile, getDB, getDBFiles, deleteFile }

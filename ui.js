@@ -147,6 +147,7 @@ async function main(task, test=false) {
     autoApply = options.autoApply;
   }
 
+  // init, reindex, or gap fill
   const { getCodeBaseAutopilotDirectory} = require('./modules/autopilotConfig');
   const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
   if (!fs.existsSync(codeBaseAutopilotDirectory)){
@@ -161,7 +162,28 @@ async function main(task, test=false) {
         const { codeBaseFullIndex } = require('./modules/codeBase');
         await codeBaseFullIndex(codeBaseDirectory, model);
       }
+    } else if (indexGapFill){
+      const { codeBaseGapFill } = require('./modules/codeBase');
+      const ret = await codeBaseGapFill(codeBaseDirectory);
+      const filesToDelete = ret.filesToDelete
+      const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex)
+      if (interactive){
+        // TODO: Print costs
+        // TODO: Ask for permission to execute
+        console.log(chalk.yellow('TODO: implement interactive gap fill ', filesToDelete.length+filesToIndex.length, ' gaps found'))
+      } else {
+        console.log(chalk.green('Gap fill: ', filesToDelete.length+filesToIndex.length, ' gaps found, fixing...'))
+        const { deleteFile } = require('./modules/db');
+        for (const file of filesToDelete){
+          await deleteFile(file);
+        }
+        const generateAndWriteFileSummary = require('./modules/generateAndWriteFileSummary');
+        for (const file of filesToIndex){
+          await generateAndWriteFileSummary(file, codeBaseDirectory, model);
+        }
+      }
     }
+
   }
 
   // Make sure we have a task, ask user if needed

@@ -52,6 +52,7 @@ function parseFileContent(dir, filePathFull, fileContent) {
 	const fileHash = hashFile(fileContent);
 	const relativePath = path.relative(dir, filePathFull).replace(/\\/g, '/');
 	const fileTimestamp = fs.statSync(filePathFull).mtimeMs; // Get the file modification timestamp
+	// TODO: cleanup file pre-fix from fields (need to match uses in other files)
 	const parseFile = {
 		filePath: relativePath,
 		fileContent: fileContent,
@@ -65,7 +66,12 @@ function parseFileContent(dir, filePathFull, fileContent) {
 /**
  * Loads and hashes all project files in the specified directory.
  * @param {string} dir - The directory to load and hash project files from.
- * @returns {object[]} An array of objects containing the file path, file content, file token count, and file hash.
+ * @returns {object[]} - An array of file objects, each with the following properties:
+	* filePath: The relative path of the file.
+	* fileContent: The content of the file.
+	* fileTokensCount: The count of tokens in the file.
+	* fileHash: The hash of the file content.
+	* fileTimestamp: The timestamp when the file was last modified.
  */
 function loadFiles(dir) {
 
