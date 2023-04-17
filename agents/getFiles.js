@@ -29,7 +29,7 @@ CONTEXT:
 `
 async function getRelevantFiles(task, summaries) {
     const values = {task:task, summaries:summaries}
-    const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
+    const reply = await callAgent(promptTemplate, values, process.env.CHEAP_MODEL);
 
     const parsedReply = jsonParseWithValidate(reply)
     return parsedReply;

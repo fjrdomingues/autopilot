@@ -59,7 +59,7 @@ function getFiles(files){
   let retFiles=[]
   for (const file of files) {
     const pathToFile = file.path;
-    const fileContent = fs.readFileSync(pathToFile, 'utf8');
+    const fileContent = fs.readFileSync(path.posix.join(process.env.CODE_DIR, pathToFile), 'utf8');
     file.code = fileContent
     retFiles.push(file)
   }
