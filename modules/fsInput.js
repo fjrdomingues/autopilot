@@ -66,12 +66,13 @@ function parseFileContent(dir, filePathFull, fileContent) {
 /**
  * Loads and hashes all project files in the specified directory.
  * @param {string} dir - The directory to load and hash project files from.
- * @returns {object[]} - An array of file objects, each with the following properties:
-	* filePath: The relative path of the file.
-	* fileContent: The content of the file.
-	* fileTokensCount: The count of tokens in the file.
-	* fileHash: The hash of the file content.
-	* fileTimestamp: The timestamp when the file was last modified.
+ * @returns {Array<{
+	* filePath: string, // The relative path of the file.
+	* fileContent: string, // The content of the file.
+	* fileTokensCount: number, // The count of tokens in the file.
+	* fileHash: string, // The hash of the file content.
+	* fileTimestamp: string // The timestamp when the file was last modified.
+ * }>} - An array of objects containing file details retrieved from the database.
  */
 function loadFiles(dir) {
 
