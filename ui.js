@@ -172,26 +172,30 @@ async function main(task, test=false) {
       const ret = await codeBaseGapFill(codeBaseDirectory);
       const filesToDelete = ret.filesToDelete
       const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex)
-      if (interactive){
-        // TODO: Print costs
-        // TODO: Ask for permission to execute
-        console.log(chalk.yellow('TODO: implement interactive gap fill ', filesToDelete.length+filesToIndex.length, ' gaps found'))
-      } else {
-        console.log(chalk.green('Gap fill: ', filesToDelete.length+filesToIndex.length, ' gaps found, fixing...'))
-        const { deleteFile } = require('./modules/db');
-        for (const filePathRelative of filesToDelete){
-          await deleteFile(codeBaseDirectory, filePathRelative);
-        }
-        const { generateAndWriteFileSummary } = require('./modules/summaries');
-        for (const filePathRelative of filesToIndex){
-          const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
-          const fileContent = fs.readFileSync(filePathFull, 'utf-8');
-          console.log(`File modified: ${filePathRelative}`);
-          await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+      const numberOfGaps = filesToDelete.length + filesToIndex.length;
+      if (numberOfGaps > 0){
+        if (interactive){
+          // TODO: Print costs
+          // TODO: Ask for permission to execute
+          console.log(chalk.yellow('TODO: implement interactive gap fill ', numberOfGaps, ' gaps found'))
+        } else {
+          console.log(chalk.green('Gap fill: ', numberOfGaps, ' gaps found, fixing...'))
+          const { deleteFile } = require('./modules/db');
+          for (const file of filesToDelete){
+            const filePathRelative = file.path;
+            await deleteFile(codeBaseDirectory, filePathRelative);
+          }
+          const { generateAndWriteFileSummary } = require('./modules/summaries');
+          for (const file of filesToIndex){
+            const filePathRelative = file.path;
+            const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
+            const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+            console.log(`File modified: ${filePathRelative}`);
+            await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+          }
         }
       }
     }
-
   }
 
   // Make sure we have a task, ask user if needed
