@@ -1,8 +1,7 @@
-<p align="center">
-  <img src="public/banner.png" alt="Autopilot Logo" width="200"/>
-</p>
+Note: This project is currently operating autonomously on a server. Whenever an issue is created, it will automatically generate a Pull Request using GPT-4. Please ensure that any issues created are clear and comprehensible for the autopilot system to process effectively. 🙇‍♂️
 
-<h1 align="center">Autopilot - Using GPT to Work on Entire Codebases</h1>
+
+<h1 align="center">Autopilot - An AI developer</h1>
 
 <p align="center">
   <strong>Autopilot</strong> is an AI tool that utilizes GPT to read a codebase, create context, and solve tasks that you request.
@@ -47,17 +46,11 @@ Task: Create a diagram explaining what this project and the process
 
 ## Features
 
-### CreateSummaries script:
-
-- 📚 Pre-processes all the relavent code base files.
-- 👀 A watcher continuously updates files that have been modified.
-
-### 🖥️ UI script:
-
-- 🧩 Desides what files to update for the given task.
+- 📚 Pre-processes all the relevant code base files and keep them in sync.
+- 🧩 Decides what files to update for the given task.
 - 🤖 Does code updates for you.
 - 📋 Shows you what was updated. Full process log with each AI interaction also produced.
-- 🔧 Optional interacrive mode to see the process and retry, continue, abort options.
+- 🔧 Optional interactive mode to see the process with retry, continue, abort options.
 
 ## 🛠️ Installation
 
@@ -71,10 +64,6 @@ Task: Create a diagram explaining what this project and the process
    5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
    
 ## Running
-### 1. The indexer
-* `node createSummaryOfFiles --all` - creates a summary of all files (required for first run) and starts the watcher.
-* `node createSummaryOfFiles` - starts the watcher for any code changes which would trigger a file re-index.
-### 2. The tasker
 * `node ui -t "YOUR_TASK"` - is the easiest way to start.
   * Solutions will be auto applied on your code and a git diff shown if possible. 
   * Alternatively you may specify `--auto-apply=false`.
@@ -85,9 +74,10 @@ This project is still in alpha stage. It's recommended that you use `node ui -i`
 
 ## Components
 
-- **createSummaryOfFiles.js**: Manages the code summarization process for JavaScript and TypeScript files.
 - **ui.js**: Handles the user interface (UI) interaction and utilizes the GPT-based summaries to complete tasks.
 
 ## 🤝 Contributing
+
+**We are running autopilot on a server connnected to the https://github.com/fjrdomingues/autopilot repository. New issues created will trigger autopilot and create a new Pull Request with a proposal. Running with gpt-4**
 
 We welcome contributions! Please submit pull requests to the repository, and ensure your changes align with the project's goals and guidelines. Together, we can make **Autopilot** an even more powerful and efficient tool for developers!

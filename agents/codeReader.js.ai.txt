@@ -1,6 +1,0 @@
-File Path: agents/codeReader.js
-Summary:
-- Function to extract relevant source code from a file for a given task
-- Returns JSON response with thoughts, output file path, and relevant code
-- Uses GPT to generate response from given prompt
-- Validates JSON response before returning

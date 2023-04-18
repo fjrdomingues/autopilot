@@ -13,4 +13,4 @@ function countTokens(input) {
 	return tokenCount;
 }
 
-module.exports = countTokens;
+module.exports = {countTokens};
