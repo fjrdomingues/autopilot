@@ -7,7 +7,28 @@ const chalk = require('chalk');
  * @description This function compares the files in a given codebase directory with the files in a database.
  * It identifies files that exist in the database but not on the filesystem, files that exist on the filesystem but not in the database, and files that have been modified on both the filesystem and in the database.
  * @param {string} codeBaseDirectory - The directory path of the codebase to be indexed.
- * @returns An object containing the following arrays: filesToDelete, filesToIndex, and filesToReindex.
+ * @returns {Promise<{
+* filesToDelete: Array<{
+  * path: string, // The path of the file to be deleted from the database.
+  * timestamp: string, // The timestamp of the file when it was last modified in the database.
+  * hash: string // The hash of the file content in the database.
+  * }>,
+  * filesToIndex: Array<{
+  * filePath: string, // The path of the file on the filesystem.
+  * fileTimestamp: string, // The timestamp of the file when it was last modified on the filesystem.
+  * fileContent: string // The content of the file on the filesystem.
+  * }>,
+  * filesToReindex: Array<{
+  * filePath: string, // The path of the file on the filesystem.
+  * fileTimestamp: string, // The timestamp of the file when it was last modified on the filesystem.
+  * fileContent: string, // The content of the file on the filesystem.
+  * dbTimestamp: string, // The timestamp of the file when it was last modified in the database.
+  * dbHash: string // The hash of the file content in the database.
+  * }>
+  * }>} - A Promise that resolves to an object containing the following arrays:
+ * filesToDelete: an array of objects representing the files that exist in the database but not on the filesystem.
+ * filesToIndex: an array of objects representing the files that exist on the filesystem but not in the database.
+ * filesToReindex: an array of objects representing the files that have been modified on both the filesystem and in the database.
 */
 async function codeBaseGapFill(codeBaseDirectory){
   const { getDBFiles } = require('./db');
