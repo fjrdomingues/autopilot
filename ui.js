@@ -135,15 +135,15 @@ async function getTask(task, options){
  * @returns {Array} - Array with file and code
  */
 async function main(task, test=false) {
+  const options = getOptions(task, test);
+  let codeBaseDirectory = options.dir;
   // TODO: get rid of test parameter, should use normal functionality
   if (test){
     codeBaseDirectory = codeBaseDirectory + testingDirectory
   }
-  const options = getOptions(task, test);
   const interactive = options.interactive;
   const reindex = options.reindex;
   const indexGapFill = options.indexGapFill;
-  let codeBaseDirectory = options.dir;
   const model = process.env.CHEAP_MODEL;
   let autoApply;
   if (interactive){
