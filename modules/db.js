@@ -95,10 +95,14 @@ VALUES (?, ?, ?, ?, ?, ?)
 /**
  * @description Gets all files from the files table
  * @param {string} codeBaseDirectory - The path to the codebase
- * @returns {object[]} - An array of file objects, each with the following properties:
- * path: The relative path of the file.
- * timestamp: The timestamp when the file was last modified.
- * hash: The hash of the file content.
+ * @returns {Array<{
+    * filePath: string, // The relative path of the file.
+    * fileContent: string, // The content of the file.
+    * fileTokensCount: number, // The count of tokens in the file.
+    * fileHash: string, // The hash of the file content.
+    * fileTimestamp: string // The timestamp when the file was last modified.
+ * }>} - An array of objects containing file details retrieved from the directory.
+ * @throws {Error} If an error occurs during the database query.
 */
 async function getDBFiles(codeBaseDirectory){
     db = getDB(codeBaseDirectory);
