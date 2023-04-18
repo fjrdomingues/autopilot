@@ -187,7 +187,7 @@ async function main(task, test=false) {
           }
           const { generateAndWriteFileSummary } = require('./modules/summaries');
           for (const file of filesToIndex){
-            const filePathRelative = file.path;
+            const filePathRelative = file.filePath;
             const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
             const fileContent = fs.readFileSync(filePathFull, 'utf-8');
             console.log(`File modified: ${filePathRelative}`);
