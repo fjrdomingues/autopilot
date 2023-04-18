@@ -47,12 +47,17 @@ async function runAgent(agentFunction, var1, var2, interactive=false){
 
 
 /**
-Returns an object containing the command line options parsed using the Yargs library.
-* @param {boolean} test - Whether or not to run in test mode.
+* Returns an object containing the command line options parsed using the Yargs library.
+* @param {boolean} test - A flag indicating whether or not to run in test mode.
+* @param {string} task - The task to be completed, or false if not provided.
 * @returns {{
-*   task: string, // The task to be completed, or false if not provided
-*   interactive: boolean // Whether to run in interactive mode
-*   }}
+  * task: string | false, // The task to be completed, or false if not provided.
+  * interactive: boolean, // A flag indicating whether to run in interactive mode.
+  * dir: string, // The path to the directory containing the code files.
+  * reindex: boolean, // A flag indicating whether to reindex the entire codebase.
+  * autoApply: boolean, // A flag indicating whether to auto apply change suggestions.
+  * indexGapFill: boolean // A flag indicating whether to check for gaps between the DB and the codebase and reconcile them.
+  * }}
 */
 function getOptions(task, test){
   const options = yargs
@@ -174,12 +179,15 @@ async function main(task, test=false) {
       } else {
         console.log(chalk.green('Gap fill: ', filesToDelete.length+filesToIndex.length, ' gaps found, fixing...'))
         const { deleteFile } = require('./modules/db');
-        for (const file of filesToDelete){
-          await deleteFile(file);
+        for (const filePathRelative of filesToDelete){
+          await deleteFile(codeBaseDirectory, filePathRelative);
         }
-        const generateAndWriteFileSummary = require('./modules/generateAndWriteFileSummary');
-        for (const file of filesToIndex){
-          await generateAndWriteFileSummary(file, codeBaseDirectory, model);
+        const { generateAndWriteFileSummary } = require('./modules/summaries');
+        for (const filePathRelative of filesToIndex){
+          const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
+          const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+          console.log(`File modified: ${filePathRelative}`);
+          await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
         }
       }
     }
