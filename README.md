@@ -1,4 +1,4 @@
-Note: This project is currently operating autonomously on a server. Whenever an issue is created, it will automatically generate a Pull Request using GPT-4. Please ensure that any issues created are clear and comprehensible for the autopilot system to process effectively. 🙇‍♂️
+Note: This project is currently operating autonomously on a server. Whenever an issue is created, it will automatically generate a comment reply suggesting how to fix the issue. Please ensure that any issues created are clear and comprehensible for the autopilot system to process effectively. 🙇‍♂️ Using gpt-4
 
 
 <h1 align="center">Autopilot - An AI developer</h1>
