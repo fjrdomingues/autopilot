@@ -1,12 +1,18 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
-const { getTaskInput } = require('./modules/userInputs');
-const { getSummaries, getFiles, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
-const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
 const agents = require('./agents');
 const yargs = require('yargs');
 const prompts = require('prompts');
-const {printGitDiff} = require('./modules/gitHelper');
+const fs = require('fs');
+const path = require('path');
+
+const { getTaskInput } = require('./modules/userInputs');
+const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
+const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
+const { printGitDiff } = require('./modules/gitHelper');
+const { getFiles } = require('./modules/fsInput');
+
+const testingDirectory = '/benchmarks';
 
 /**
 @description Asynchronous function that runs an agent function with given variables.
@@ -40,12 +46,17 @@ async function runAgent(agentFunction, var1, var2, interactive=false){
 
 
 /**
-Returns an object containing the command line options parsed using the Yargs library.
-* @param {boolean} test - Whether or not to run in test mode.
+* Returns an object containing the command line options parsed using the Yargs library.
+* @param {boolean} test - A flag indicating whether or not to run in test mode.
+* @param {string} task - The task to be completed, or false if not provided.
 * @returns {{
-*   task: string, // The task to be completed, or false if not provided
-*   interactive: boolean // Whether to run in interactive mode
-*   }}
+  * task: string | false, // The task to be completed, or false if not provided.
+  * interactive: boolean, // A flag indicating whether to run in interactive mode.
+  * dir: string, // The path to the directory containing the code files.
+  * reindex: boolean, // A flag indicating whether to reindex the entire codebase.
+  * autoApply: boolean, // A flag indicating whether to auto apply change suggestions.
+  * indexGapFill: boolean // A flag indicating whether to check for gaps between the DB and the codebase and reconcile them.
+  * }}
 */
 function getOptions(task, test){
   const options = yargs
@@ -70,8 +81,20 @@ function getOptions(task, test){
   })
   .option('auto-apply', {
     alias: 'a',
-    describe: 'The path to the directory containing the code files',
+    describe: 'Auto apply change suggestions',
     default: !test,
+    type: 'boolean'
+  })
+  .option('reindex', {
+    alias: 'r',
+    describe: 'Reindexes the entire codebase',
+    default: false,
+    type: 'boolean'
+  })
+  .option('index-gap-fill', {
+    alias: 'g',
+    describe: 'Checks for gaps between the DB and the codebase and reconciles them',
+    default: true,
     type: 'boolean'
   })
   .help()
@@ -104,41 +127,6 @@ async function getTask(task, options){
   return task
 }
 
-async function getRelevantFiles(task, chunkedSummaries, interactive) {
-  let relevantFiles=[]
-  for (const summaries of chunkedSummaries){
-    // Decide which files are relevant to the task
-    reply = await runAgent(agents.getFiles,task, summaries, interactive);
-    relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
-  }
-  const files = getFiles(relevantFiles)
-  if (files.length == 0) throw new Error("No relevant files found")
-  return files
-}
-
-async function getSolution(task, files, autoApply) {
-  let solutions = [];
-  for (const file of files) {
-    const coderRes = await runAgent(agents.coder, task, file, interactive);
-    solutions.push({file:file.path, code:coderRes})
-
-    if (autoApply){
-      // This actually applies the solution to the file
-      updateFile(file.path, coderRes);
-    }
-  }
-  return solutions
-}
-
-async function getAdvice(task, relevantFiles, interactive) {
-  const solutions = [];
-  for (const file of relevantFiles) {
-    const reply = await runAgent(agents.advisor, task, file, interactive);
-    solutions.push({file:file.path, code:reply})
-  }
-  return solutions
-}
-
 
 
 /**
@@ -149,42 +137,114 @@ async function getAdvice(task, relevantFiles, interactive) {
  */
 async function main(task, test=false, suggestionMode) {
   const options = getOptions(task, test);
+  let codeBaseDirectory = options.dir;
+  // TODO: get rid of test parameter, should use normal functionality
+  if (test){
+    codeBaseDirectory = codeBaseDirectory + testingDirectory
+  }
   const interactive = options.interactive;
-  const dir = options.dir
+  const reindex = options.reindex;
+  const indexGapFill = options.indexGapFill;
+  const model = process.env.CHEAP_MODEL;
   let autoApply;
   if (interactive){
-    autoApply = false
+    autoApply = false;
   } else {
-    autoApply = options.autoApply
+    autoApply = options.autoApply;
+  }
+
+  // init, reindex, or gap fill
+  const { getCodeBaseAutopilotDirectory} = require('./modules/autopilotConfig');
+  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
+  if (!fs.existsSync(codeBaseAutopilotDirectory)){
+    const { initCodeBase } = require('./modules/init');
+    await initCodeBase(codeBaseDirectory, interactive);
+  } else {
+    if (reindex){
+      if (interactive){
+        const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
+        await codeBaseFullIndexInteractive(codeBaseDirectory, model);
+      } else {
+        const { codeBaseFullIndex } = require('./modules/codeBase');
+        await codeBaseFullIndex(codeBaseDirectory, model);
+      }
+    } else if (indexGapFill){
+      const { codeBaseGapFill } = require('./modules/codeBase');
+      const ret = await codeBaseGapFill(codeBaseDirectory);
+      const filesToDelete = ret.filesToDelete
+      const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex)
+      const numberOfGaps = filesToDelete.length + filesToIndex.length;
+      if (numberOfGaps > 0){
+        if (interactive){
+          // TODO: Print costs
+          // TODO: Ask for permission to execute
+          console.log(chalk.yellow('TODO: implement interactive gap fill ', numberOfGaps, ' gaps found'))
+        } else {
+          console.log(chalk.green('Gap fill: ', numberOfGaps, ' gaps found, fixing...'))
+          const { deleteFile } = require('./modules/db');
+          for (const file of filesToDelete){
+            const filePathRelative = file.path;
+            await deleteFile(codeBaseDirectory, filePathRelative);
+          }
+          const { generateAndWriteFileSummary } = require('./modules/summaries');
+          for (const file of filesToIndex){
+            const filePathRelative = file.filePath;
+            const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
+            const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+            console.log(`File modified: ${filePathRelative}`);
+            await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+          }
+        }
+      }
+    }
   }
 
   // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
 
   // Get the summaries of the files in the directory
-  const allSummaries = await getSummaries(dir, test);
-  // Separate summaries into chunks
-  const chunkedSummaries = chunkSummaries(allSummaries, maxSummaryTokenCount);
+  const summaries = await getSummaries(codeBaseDirectory);
+  const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
  
-  // Get relevant files (getFiles agent)
-  const relevantFiles = await getRelevantFiles(task, chunkedSummaries, interactive)
-
-  // Work on solutions
-  let solutions
-
-  // Depending on Suggestion Mode call different agents
-  if (!suggestionMode) {
-    // Ask agent for code changes (coder agent)
-    solutions = await getSolution(relevantFiles, autoApply)
-  } else {
-    // Ask advice agent for a suggestion
-    solutions = await getAdvice(task, relevantFiles, interactive) 
+  let relevantFiles=[]
+  for (const summaries of chunkedSummaries){
+    // Decide which files are relevant to the task
+    reply = await runAgent(agents.getFiles,task, summaries, interactive);
+    relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
   }
+  // Fetch code files the agent has deemed relevant
+  const files = getFiles(codeBaseDirectory, relevantFiles)
+  if (files.length == 0) throw new Error("No relevant files found")
 
+  // Ask an agent about each file
+  let solutions = [];
+  for (const file of files) {
+
+    if (!suggestionMode) { 
+      const coderRes = await runAgent(agents.coder, task, file, interactive);
+      solutions.push({file:file.path, code:coderRes})
+
+      if (autoApply){
+        // This actually applies the solution to the file
+        updateFile(file.path, coderRes);
+        const filePathFull = file.path
+        const fileContent = coderRes
+        const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
+        console.log(`File modified: ${filePathRelative}`);
+        await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+      }
+    } else {
+      // Ask advice agent for a suggestion
+      const advice = await runAgent(agents.advisor, task, file, interactive);
+      solutions.push({file:file.path, code:advice})
+    }
+
+  }
+  
   if (autoApply){
     // Sends the saved output to GPT and ask for the necessary changes to do the TASK
     console.log(chalk.green("Solutions Auto applied:"));
-    printGitDiff(dir);
+    printGitDiff(codeBaseDirectory);
   }else{
     const solutionsPath = saveOutput(solutions);
     console.log(chalk.green("Solutions saved to:", solutionsPath));
