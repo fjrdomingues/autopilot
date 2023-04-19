@@ -35,7 +35,7 @@ function saveOutput(solutions) {
    
     const filePath = path.join(suggestionsDir, fileName)
     // Get solutions from array and format to save
-    let content 
+    let content = ''
     solutions.map(file => {
         content += "File: " + file.file
         content += "\n"
