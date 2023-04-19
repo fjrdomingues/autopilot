@@ -235,7 +235,7 @@ async function main(task, test=false, suggestionMode) {
       }
     } else {
       // Ask advice agent for a suggestion
-      const advice = await runAgent(agents.advisor, task, file, interactive);
+      const advice = await runAgent(agents.advisor, task, {relevantFiles, file}, interactive);
       solutions.push({file:file.path, code:advice})
     }
 

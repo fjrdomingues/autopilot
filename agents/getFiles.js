@@ -18,7 +18,7 @@ OUTPUT: JSON - You must respond in JSON format as described below
         "relevantFiles": [{{
             "path": "path to file",
             "reason": "reason why the file was selected",
-            "task": "what we'll implement in this file"
+            "task": "Detailed description of what needs to be implemented in this file"
         }}]
     }}
 }}  

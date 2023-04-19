@@ -1,24 +1,12 @@
 const { callAgent } = require('./genericAgent');
 
-// This will be an array of files with an array of relevant code
-function formatCode(files) {
-  let code = '';
-  let reason
-  let task
-  for (const file of files) {
-    code += `### ${file.path}`;
-    code += `\n`;
-
-    for (const code of file.relevantCode) {
-      code += '```';
-      code += `\n`;
-      code += `${code}`;
-      code += `\n`;
-      code += '```';
-      code += `\n`;
-    }
+function formatRelevantFiles(relevantFiles) {
+  let result = ''
+  for (const file of relevantFiles) {
+    result += '### ' + file.path + '\n'
+    result += file.task + '\n'
   }
-  return code
+  return result
 }
 
 const promptTemplate = 
@@ -26,11 +14,13 @@ const promptTemplate =
 # TASK
 ## Original user input
 {task}
-{reason}
+## Plan, per file, to solve the task
+{relevantFiles}
+## What needs to be implement on this file
 {fileTask}
 
 # YOUR ROLE
-Explain what needs to change in this file to implement the TASK
+Explain what needs to change in this file to implement the task.
 
 # SOURCE CODE 
 ## This is provided in a markdown format as follows:
@@ -39,6 +29,7 @@ Explain what needs to change in this file to implement the TASK
 code
 \`\`\`
 Here is the relevant file and code from the existing codebase:
+### {path}
 {code}
 ` 
 
@@ -48,9 +39,11 @@ Here is the relevant file and code from the existing codebase:
  * @param {} file - A file to apply code to.
  * @returns {Promise<string>} - A Promise that resolves with the suggested changes.
  */
-async function suggestChanges(task, file) {
-  const {code, task: fileTask, reason} = file
-  const values = {task, code, fileTask, reason}
+async function suggestChanges(task, payload) {
+  const relevantFiles = formatRelevantFiles(payload.relevantFiles)
+  const file = payload.file
+  const {code, task: fileTask, reason, path} = file
+  const values = {task, code, fileTask, reason, path, relevantFiles}
   const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
   return reply;
 }
