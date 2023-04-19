@@ -7,7 +7,7 @@ async function printGitDiff(dir) {
   try {
     const git = simpleGit(dir);
     const diff = await git.diff();
-    // console.log(`Git diff output:\n${diff}`);
+    console.log(`Git diff output:\n${diff}`);
   } catch (error) {
     console.error(`Error executing git diff: ${error}`);
   }
