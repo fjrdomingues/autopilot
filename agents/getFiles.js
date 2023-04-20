@@ -27,9 +27,16 @@ CONTEXT:
 {summaries}
 *** END REPOSITORY CONTEXT ***
 `
+/**
+ * Asynchronously calls an agent with specified inputs to obtain relevant files.
+ * @param {string} task - The task to be performed.
+ * @param {Array<string>} summaries - An array of summaries relevant to the task.
+ * @returns {Promise<Array<string>>} - A promise that resolves with an array of relevant file paths.
+ * @throws {Error} - If the agent reply cannot be parsed as valid JSON.
+ */
 async function getRelevantFiles(task, summaries) {
     const values = {task:task, summaries:summaries}
-    const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
+    const reply = await callAgent(promptTemplate, values, process.env.GET_FILES_MODEL);
 
     const parsedReply = jsonParseWithValidate(reply)
     return parsedReply;
