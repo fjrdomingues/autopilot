@@ -48,7 +48,7 @@ async function codeBaseGapFill(codeBaseDirectory){
   // Find files that have been modified on both the filesystem and in the DB
   const filesToReindex = fsFiles.filter(fsFile => {
     const dbFile = dbFiles.find(dbFile => dbFile.path === fsFile.filePath);
-    return dbFile && dbFile.timestamp !== fsFile.fileTimestamp;
+    return dbFile && dbFile.fileHash !== fsFile.fileHash;
   });
 
   return {
