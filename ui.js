@@ -144,7 +144,6 @@ async function main(task, test=false) {
   const interactive = options.interactive;
   const reindex = options.reindex;
   const indexGapFill = options.indexGapFill;
-  const model = process.env.CHEAP_MODEL;
   let autoApply;
   if (interactive){
     autoApply = false;
@@ -162,10 +161,10 @@ async function main(task, test=false) {
     if (reindex){
       if (interactive){
         const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
-        await codeBaseFullIndexInteractive(codeBaseDirectory, model);
+        await codeBaseFullIndexInteractive(codeBaseDirectory, process.env.INDEXER_MODEL);
       } else {
         const { codeBaseFullIndex } = require('./modules/codeBase');
-        await codeBaseFullIndex(codeBaseDirectory, model);
+        await codeBaseFullIndex(codeBaseDirectory);
       }
     } else if (indexGapFill){
       const { codeBaseGapFill } = require('./modules/codeBase');
@@ -191,7 +190,7 @@ async function main(task, test=false) {
             const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
             const fileContent = fs.readFileSync(filePathFull, 'utf-8');
             console.log(`File modified: ${filePathRelative}`);
-            await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+            await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
           }
         }
       }
@@ -228,7 +227,7 @@ async function main(task, test=false) {
       const fileContent = coderRes
       const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
       console.log(`File modified: ${filePathRelative}`);
-      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
     }
   }
 

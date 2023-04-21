@@ -28,9 +28,15 @@ RESPONSE FORMAT: This is the format of your reply. Ensure the response can be pa
 Ensure the response can be parsed by JSON.parse in nodejs
 `
 
+/**
+ * Calls an agent to determine the complexity of a task, given a set of summaries.
+ * @param {Array} summaries - An array of summaries related to the task.
+ * @param {Object} task - An object representing the task to be evaluated.
+ * @returns {Promise<Object>} - A Promise that resolves to the result of the agent call, parsed as a JSON object.
+ */
 async function taskComplexityAgent(summaries, task) {
     const values = {task, summaries}
-    const reply = await callAgent(promptTemplate, values, process.env.CHEAP_MODEL);
+    const reply = await callAgent(promptTemplate, values, process.env.TASK_COMPLEXITY_MODEL);
     return jsonParseWithValidate(reply)
 }
 
