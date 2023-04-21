@@ -204,7 +204,7 @@ async function main(task, test=false) {
             reindex_content += file.fileContent
           }
           tokenCount = countTokens(reindex_content)
-          cost = calculateTokensCost(model, tokenCount, null, tokenCount)
+          cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount)
 
           console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`))
           if (await approveGapFill()) {
