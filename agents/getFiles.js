@@ -1,45 +1,63 @@
-const { callAgent } = require('../agents/genericAgent');
-const { jsonParseWithValidate } = require('../modules/jsonHelpers');
+const { z } = require('zod');
+const { PromptTemplate } = require('langchain/prompts');
+const { StructuredOutputParser, OutputFixingParser } = require('langchain/output_parsers');
+const { getModel } = require('../modules/model');
 
-const promptTemplate =
-` 
-USER INPUT: {task}
+const promptTemplate = `USER INPUT: {task}
 YOUR TASK: Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
-OUTPUT: JSON - You must respond in JSON format as described below
-{{
-    "thoughts":
-    {{
-        "text": "thought",
-        "reasoning": "reasoning",
-        "criticism": "constructive self-criticism",
-        "speak": "thoughts summary to say to user"
-    }},
-    "output": {{
-        "relevantFiles": [{{
-            "path": "path to file",
-            "reason": "reason why the file was selected",
-            "task": "what we'll implement in this file"
-        }}]
-    }}
-}}  
+{format_instructions}
 CONTEXT:
 *** START REPOSITORY CONTEXT ***
 {summaries}
 *** END REPOSITORY CONTEXT ***
-`
-/**
- * Asynchronously calls an agent with specified inputs to obtain relevant files.
- * @param {string} task - The task to be performed.
- * @param {Array<string>} summaries - An array of summaries relevant to the task.
- * @returns {Promise<Array<string>>} - A promise that resolves with an array of relevant file paths.
- * @throws {Error} - If the agent reply cannot be parsed as valid JSON.
- */
-async function getRelevantFiles(task, summaries) {
-    const values = {task:task, summaries:summaries}
-    const reply = await callAgent(promptTemplate, values, process.env.GET_FILES_MODEL);
+`;
 
-    const parsedReply = jsonParseWithValidate(reply)
-    return parsedReply;
+const parser = StructuredOutputParser.fromZodSchema(
+  z.object({
+    thoughts: z.object({
+      text: z.string().describe('your thoughts'),
+      reasoning: z.string().describe('your reasoning'),
+      criticism: z.string().describe('constructive self-criticism'),
+      speak: z.string().describe('summary of your thoughts to say to user'),
+    }),
+    output: z.object({
+      relevantFiles: z.array(
+        z.object({
+          path: z.string().describe('path to file'),
+          reason: z.string().describe('reason why the file was selected'),
+          task: z.string().describe('what will be implemented in this file'),
+        })
+      ).describe('relevant files to implement the user input'),
+    }),
+  })
+);
+
+const formatInstructions = parser.getFormatInstructions();
+
+const prompt = new PromptTemplate({
+  template: promptTemplate,
+  inputVariables: ['task', 'summaries'],
+  partialVariables: { format_instructions: formatInstructions },
+});
+
+
+async function getRelevantFiles(task, summaries) {
+	const model = getModel(process.env.GET_FILES_MODEL);
+
+	const input = await prompt.format({ task, summaries });
+	const response = await model.call(input);
+
+	let parsedResponse
+	try {
+		parsedResponse = await parser.parse(response);
+	} catch (e){
+		const fixParser = OutputFixingParser.fromLLM(
+			model,
+			parser
+		);
+		parsedResponse = await fixParser.parse(response);
+	}
+	return parsedResponse.output.relevantFiles;
 }
 
-module.exports = getRelevantFiles
+module.exports = getRelevantFiles;

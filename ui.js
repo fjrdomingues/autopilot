@@ -228,8 +228,8 @@ async function main(task, test=false) {
   let relevantFiles=[]
   for (const summaries of chunkedSummaries){
     // Decide which files are relevant to the task
-    reply = await runAgent(agents.getFiles,task, summaries, interactive);
-    relevantFiles = relevantFiles.concat(reply.output.relevantFiles)
+    relevantFilesChunk = await runAgent(agents.getFiles, task, summaries, interactive);
+    relevantFiles = relevantFiles.concat(relevantFilesChunk)
   }
   // Fetch code files the agent has deemed relevant
   const files = getFiles(codeBaseDirectory, relevantFiles)
