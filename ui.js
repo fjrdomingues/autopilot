@@ -114,6 +114,24 @@ function getOptions(task, test){
 
 
 /**
+ * Asynchronously reindexes the codebase located at the specified directory, using the specified model for indexing.
+ * @param {string} codeBaseDirectory - The path to the codebase directory.
+ * @param {Object} model - The model used for indexing the codebase.
+ * @param {boolean} interactive - A flag indicating whether to use interactive indexing or not.
+ * @returns {Promise} A promise that resolves when the indexing process is complete.
+ */
+async function reindexCodeBase(codeBaseDirectory, model, interactive) {
+  if (interactive) {
+    const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
+    await codeBaseFullIndexInteractive(codeBaseDirectory, model);
+  } else {
+    const { codeBaseFullIndex } = require('./modules/codeBase');
+    await codeBaseFullIndex(codeBaseDirectory, model);
+  }
+}
+
+
+/**
  * 
  * @param {string} task
  * @returns {string}
@@ -159,13 +177,7 @@ async function main(task, test=false) {
     await initCodeBase(codeBaseDirectory, interactive);
   } else {
     if (reindex){
-      if (interactive){
-        const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
-        await codeBaseFullIndexInteractive(codeBaseDirectory, process.env.INDEXER_MODEL);
-      } else {
-        const { codeBaseFullIndex } = require('./modules/codeBase');
-        await codeBaseFullIndex(codeBaseDirectory);
-      }
+      await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
     } else if (indexGapFill){
       const { codeBaseGapFill } = require('./modules/codeBase');
       const ret = await codeBaseGapFill(codeBaseDirectory);
@@ -174,24 +186,33 @@ async function main(task, test=false) {
       const numberOfGaps = filesToDelete.length + filesToIndex.length;
       if (numberOfGaps > 0){
         if (interactive){
-          // TODO: Print costs
-          // TODO: Ask for permission to execute
-          console.log(chalk.yellow('TODO: implement interactive gap fill ', numberOfGaps, ' gaps found'))
+          const { countTokens } = require('./modules/tokenHelper'); 
+          const { calculateTokensCost } = require('./modules/gpt');
+          async function approveGapFill(){
+            const prompts = require('prompts');
+        
+            const proceed = await prompts({
+              type: 'confirm',
+              name: 'value',
+              message: 'Proceed with fixing the gap in summarizing?',
+            });
+            return proceed.value;
+          }
+          let reindex_content
+          for(const file of filesToIndex){
+            // TODO: for more accuracy need to add the agent prompt
+            reindex_content += file.fileContent
+          }
+          tokenCount = countTokens(reindex_content)
+          cost = calculateTokensCost(model, tokenCount, null, tokenCount)
+
+          console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`))
+          if (await approveGapFill()) {
+            await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
+          }
         } else {
-          console.log(chalk.green('Gap fill: ', numberOfGaps, ' gaps found, fixing...'))
-          const { deleteFile } = require('./modules/db');
-          for (const file of filesToDelete){
-            const filePathRelative = file.path;
-            await deleteFile(codeBaseDirectory, filePathRelative);
-          }
-          const { generateAndWriteFileSummary } = require('./modules/summaries');
-          for (const file of filesToIndex){
-            const filePathRelative = file.filePath;
-            const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
-            const fileContent = fs.readFileSync(filePathFull, 'utf-8');
-            console.log(`File modified: ${filePathRelative}`);
-            await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
-          }
+          console.log(chalk.green(`Gap fill: ${numberOfGaps} gaps found, fixing...`))
+          await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
         }
       }
     }
@@ -249,3 +270,21 @@ if (require.main === module) main();
 
 
 module.exports = { main }
+
+async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
+  const { deleteFile } = require('./modules/db');
+  const { generateAndWriteFileSummary } = require('./modules/summaries');
+
+  for (const file of filesToDelete) {
+    const filePathRelative = file.path;
+    await deleteFile(codeBaseDirectory, filePathRelative);
+  }
+  for (const file of filesToIndex) {
+    const filePathRelative = file.filePath;
+    const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
+    const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+    console.log(`File modified: ${filePathRelative}`);
+    await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
+  }
+}
+
