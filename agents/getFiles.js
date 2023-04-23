@@ -5,7 +5,9 @@ const { getModel } = require('../modules/model');
 
 const promptTemplate = `USER INPUT: {task}
 YOUR TASK: Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
+
 {format_instructions}
+
 CONTEXT:
 *** START REPOSITORY CONTEXT ***
 {summaries}
