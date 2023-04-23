@@ -232,8 +232,18 @@ async function main(task, test=false) {
     relevantFiles = relevantFiles.concat(relevantFilesChunk)
   }
   // Fetch code files the agent has deemed relevant
-  const files = getFiles(codeBaseDirectory, relevantFiles)
-  if (files.length == 0) throw new Error("No relevant files found")
+  let files;
+  try {
+    files = getFiles(codeBaseDirectory, relevantFiles);
+  } catch (err) {
+    console.log(chalk.red(`The agent has identified files to fetch we couldn't find, please try again with a different task.`));
+    console.log(relevantFiles);
+    process.exit(1);
+  }
+  if (files.length == 0) {
+    console.log(`The agent has not identified any relevant files for the task: ${task}.\nPlease try again with a different task.`);
+    process.exit(1);
+  }
 
   // Ask an agent about each file
   let solutions = [];
