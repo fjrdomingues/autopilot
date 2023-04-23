@@ -4,15 +4,21 @@ const { StructuredOutputParser, OutputFixingParser } = require('langchain/output
 const { getModel } = require('../modules/model');
 const { saveLog } = require('../modules/fsOutput');
 
-const promptTemplate = `USER INPUT: {task}
-YOUR TASK: Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
+const promptTemplate = 
+`
+# USER INPUT
+## This is what the user requested
+{task}
+
+# YOUR TASK 
+## This is your task
+Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
 
 {format_instructions}
 
-CONTEXT:
-*** START REPOSITORY CONTEXT ***
+# CONTEXT
+## This is the context of the project
 {summaries}
-*** END REPOSITORY CONTEXT ***
 `;
 
 const parser = StructuredOutputParser.fromZodSchema(
