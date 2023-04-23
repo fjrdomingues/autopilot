@@ -128,9 +128,16 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   }
 
   try {
-    const summary = await fileSummary(fileContent);
+    const output = await fileSummary(filePathRelative, fileContent);
 
-    if (summary) {
+    if (output) {
+      let keywordsString = "";
+      keywords = output.keywords;
+      for (const keyword of keywords){
+        keywordsString += `${keyword.term} - ${keyword.definition}\n`;
+      }
+      let functionsString = `functions: ${output.functions}`;
+      const summary = output.summary + "\n" + functionsString + "\n" + keywordsString;
       insertOrUpdateFile(codeBaseDirectory, parsedFile, summary);
 
       // TODO: Use logging library that already adds timestamps
