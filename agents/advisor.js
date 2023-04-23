@@ -44,7 +44,7 @@ async function suggestChanges(task, payload) {
   const file = payload.file
   const {code, task: fileTask, reason, path} = file
   const values = {task, code, fileTask, reason, path, relevantFiles}
-  const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
+  const reply = await callAgent(promptTemplate, values, process.env.CODER_MODEL);
   return reply;
 }
 
