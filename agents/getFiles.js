@@ -2,6 +2,7 @@ const { z } = require('zod');
 const { PromptTemplate } = require('langchain/prompts');
 const { StructuredOutputParser, OutputFixingParser } = require('langchain/output_parsers');
 const { getModel } = require('../modules/model');
+const { saveLog } = require('../modules/fsOutput');
 
 const promptTemplate = `USER INPUT: {task}
 YOUR TASK: Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
@@ -47,7 +48,11 @@ async function getRelevantFiles(task, summaries) {
 	const model = getModel(process.env.GET_FILES_MODEL);
 
 	const input = await prompt.format({ task, summaries });
+  console.log(input)
+  saveLog(`getFiles agent INPUT:\n${input}`)
+
 	const response = await model.call(input);
+  saveLog(`getFiles agent OUTPUT:\n${response}`)
 
 	let parsedResponse
 	try {
