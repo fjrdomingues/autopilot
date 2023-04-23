@@ -213,7 +213,10 @@ async function main(task, test=false) {
   }
   // Fetch code files the agent has deemed relevant
   const files = getFiles(codeBaseDirectory, relevantFiles)
-  if (files.length == 0) throw new Error("No relevant files found")
+  if (files.length == 0) {
+    console.log(`The agent has not identified any relevant files for the task: ${task}, please try again with a different task.`);
+    exit(0);
+  }
 
   // Ask an agent about each file
   let solutions = [];
