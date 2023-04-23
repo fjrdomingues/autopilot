@@ -146,13 +146,15 @@ async function getTask(task, options){
   return task
 }
 
+
+
 /**
  * 
  * @param {string} task - The task to be completed.
  * @param {boolean} test - Setting for internal tests.
  * @returns {Array} - Array with file and code
  */
-async function main(task, test=false) {
+async function main(task, test=false, suggestionMode) {
   const options = getOptions(task, test);
   let codeBaseDirectory = options.dir;
   // TODO: get rid of test parameter, should use normal functionality
@@ -232,26 +234,44 @@ async function main(task, test=false) {
     relevantFiles = relevantFiles.concat(relevantFilesChunk)
   }
   // Fetch code files the agent has deemed relevant
-  const files = getFiles(codeBaseDirectory, relevantFiles)
-  if (files.length == 0) throw new Error("No relevant files found")
+  let files;
+  try {
+    files = getFiles(codeBaseDirectory, relevantFiles);
+  } catch (err) {
+    console.log(chalk.red(`The agent has identified files to fetch we couldn't find, please try again with a different task.`));
+    console.log(relevantFiles);
+    process.exit(1);
+  }
+  if (files.length == 0) {
+    console.log(`The agent has not identified any relevant files for the task: ${task}.\nPlease try again with a different task.`);
+    process.exit(1);
+  }
 
   // Ask an agent about each file
   let solutions = [];
   for (const file of files) {
-    const coderRes = await runAgent(agents.coder, task, file, interactive);
-    solutions.push({file:file.path, code:coderRes})
 
-    if (autoApply){
-      // This actually applies the solution to the file
-      updateFile(file.path, coderRes);
-      const filePathFull = file.path
-      const fileContent = coderRes
-      const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
-      console.log(`File modified: ${filePathRelative}`);
-      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
+    if (!suggestionMode) { 
+      const coderRes = await runAgent(agents.coder, task, file, interactive);
+      solutions.push({file:file.path, code:coderRes})
+
+      if (autoApply){
+        // This actually applies the solution to the file
+        updateFile(file.path, coderRes);
+        const filePathFull = file.path
+        const fileContent = coderRes
+        const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
+        console.log(`File modified: ${filePathRelative}`);
+        await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
+      }
+    } else {
+      // Ask advice agent for a suggestion
+      const advice = await runAgent(agents.advisor, task, {relevantFiles, file}, interactive);
+      solutions.push({file:file.path, code:advice})
     }
-  }
 
+  }
+  
   if (autoApply){
     // Sends the saved output to GPT and ask for the necessary changes to do the TASK
     console.log(chalk.green("Solutions Auto applied:"));
