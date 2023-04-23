@@ -6,8 +6,8 @@ const { parseFileContent } = require('./fsInput');
 const { getDB, insertOrUpdateFile } = require('./db');
 
 const summaryStringDelimiter = "\n---\n";
-const maxSummaryTokenCount = 3000;
-const maxTokenSingleFile = 3000;
+const maxTokenSingleFile = process.env.MAX_TOKEN_COUNT_SINGLE_FILE;
+const maxSummaryTokenCount = process.env.MAX_TOKEN_COUNT_SUMMARIES_CHUNK;
 
 const types = {
   FileObject: {
