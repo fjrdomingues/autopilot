@@ -2,10 +2,16 @@ const { callAgent } = require('../agents/genericAgent');
 
 const promptTemplate = 
 `
-TASK: Create a summary of the file below. Use as few words as possible while keeping the details. Use bullet points
-*** FILE CONTENT START ***
+# Your Role
+Create a representation of the file below
+
+# Output
+## Reply with the following format
+[A summary of the file]
+[functionName(params)] - [Description of business logic]
+
+# File
 {fileContent}
-*** FILE CONTENT END ***
 `
 
 async function fileSummary(fileContent, model) {

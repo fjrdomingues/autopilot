@@ -20,12 +20,12 @@ const promptTemplate =
 {fileTask}
 
 # YOUR ROLE
-Explain what needs to change in this file to implement the task.
+Explain what needs to change in this file to implement the task. Include code snippets if you have them.
 
 # SOURCE CODE 
 ## This is provided in a markdown format as follows:
 ### /path/filename
-\`\`\`
+\`\`\`language
 code
 \`\`\`
 Here is the relevant file and code from the existing codebase:
