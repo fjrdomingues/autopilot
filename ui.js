@@ -272,7 +272,7 @@ async function main(task, test=false, suggestionMode) {
 
   }
   
-  if (autoApply){
+  if (autoApply && !suggestionMode){
     // Sends the saved output to GPT and ask for the necessary changes to do the TASK
     console.log(chalk.green("Solutions Auto applied:"));
     printGitDiff(codeBaseDirectory);
