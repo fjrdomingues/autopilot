@@ -128,10 +128,25 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   }
 
   try {
-    const summary = await fileSummary(fileContent);
+    const output = await fileSummary(filePathRelative, fileContent);
 
-    if (summary) {
-      insertOrUpdateFile(codeBaseDirectory, parsedFile, summary);
+    if (output) {
+      // Keywords
+      let keywordsString = "";
+      keywords = output.keywords;
+      for (const keyword of keywords){
+        keywordsString += `${keyword.term} - ${keyword.definition}\n`;
+      }
+      // functions
+      let functionsString = `functions: ${output.functions}`;
+      const summary = output.summary + "\n" + functionsString + "\n" + keywordsString;
+      // dependenciesLibs
+      let dependenciesLibsString = "";
+      for (const dependenciesLib of output.dependenciesLibs){
+        dependenciesLibsString += `${dependenciesLib}, `;
+      }
+      // Save to DB
+      insertOrUpdateFile(codeBaseDirectory, parsedFile, summary, dependenciesLibsString);
 
       // TODO: Use logging library that already adds timestamps
       const timestamp = new Date().toISOString();
