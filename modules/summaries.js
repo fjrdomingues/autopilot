@@ -6,8 +6,8 @@ const { parseFileContent } = require('./fsInput');
 const { getDB, insertOrUpdateFile } = require('./db');
 
 const summaryStringDelimiter = "\n---\n";
-const maxSummaryTokenCount = 3000;
-const maxTokenSingleFile = 3000;
+const maxTokenSingleFile = process.env.MAX_TOKEN_COUNT_SINGLE_FILE;
+const maxSummaryTokenCount = process.env.MAX_TOKEN_COUNT_SUMMARIES_CHUNK;
 
 const types = {
   FileObject: {
@@ -104,14 +104,13 @@ async function getSummaries(codeBaseDirectory){
 
 
 /**
- * Processes a file by generating a summary using the specified machine learning model
+ * Processes a file by generating a summary
  * and writing the summary to a new file.
  * @param {string} codeBaseDirectory - The directory of the file being processed.
  * @param {string} filePathRelative - The relative path of the file being processed.
  * @param {string} fileContent - The content of the file being processed.
- * @param {object} model - The machine learning model used to generate the summary.
  */
-async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model) {
+async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent) {
   const fileSummary = require('../agents/indexer');
 
   const filePathFull = path.join(codeBaseDirectory, filePathRelative);
@@ -129,7 +128,7 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   }
 
   try {
-    const summary = await fileSummary(fileContent, model);
+    const summary = await fileSummary(fileContent);
 
     if (summary) {
       insertOrUpdateFile(codeBaseDirectory, parsedFile, summary);

@@ -1,7 +1,14 @@
 const { callGPT } = require('../modules/gpt');
 const { jsonParseWithValidate } = require('../modules/jsonHelpers');
 
-
+// TODO: convert to generic agent
+/**
+ * Performs a code review based on a given task and patch diff, according to the specified evaluation criteria.
+ * @param {string} task - The user input task to be solved by the patch diff.
+ * @param {string} diff - The suggested patch diff to be reviewed.
+ * @param {string[]} criteria - The evaluation criteria to be taken into account during the review.
+ * @returns {Object} - A response object containing the reviewer's thoughts and evaluation of the patch diff in a valid JSON format.
+ */
 async function review(task, diff, criteria) {
     const prompt = 
 ` 
@@ -34,7 +41,7 @@ RESPONSE FORMAT - This is the format of your reply. Ensure the response can be p
 }
 `
 
-    const reply = await callGPT(prompt, process.env.ADVANCED_MODEL);
+    const reply = await callGPT(prompt, process.env.REVIEWER_MODEL);
     return jsonParseWithValidate(reply);
   }
 

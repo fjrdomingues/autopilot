@@ -48,7 +48,7 @@ async function codeBaseGapFill(codeBaseDirectory){
   // Find files that have been modified on both the filesystem and in the DB
   const filesToReindex = fsFiles.filter(fsFile => {
     const dbFile = dbFiles.find(dbFile => dbFile.path === fsFile.filePath);
-    return dbFile && dbFile.timestamp !== fsFile.fileTimestamp;
+    return dbFile && dbFile.hash !== fsFile.fileHash;
   });
 
   return {
@@ -61,17 +61,16 @@ async function codeBaseGapFill(codeBaseDirectory){
 /**
  * Calculates the cost of a project by summing the cost of all files in the specified directory.
  * @param {string} codeBaseDirectory - The directory to calculate the project cost for.
- * @param {string} model - The model to use for the cost calculation.
  * @returns {number} - The cost of the project in tokens.
  */
-async function codeBaseFullIndex(codeBaseDirectory, model){
+async function codeBaseFullIndex(codeBaseDirectory){
     const files = loadFiles(codeBaseDirectory);
   
     for (const file of files) {
       const fileContent = file.fileContent;
       const filePathRelative = file.filePath;
   
-      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent, model);
+      await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
     }
 };
 
@@ -115,7 +114,7 @@ async function codeBaseFullIndexInteractive(codeBaseDirectory, model){
     printCostEstimation(codeBaseDirectory, model);
 
     if (await approveIndexing()) {
-        await codeBaseFullIndex(codeBaseDirectory, model);
+        await codeBaseFullIndex(codeBaseDirectory);
     } else {
         console.log('Aborted summarizing the project.');
     }

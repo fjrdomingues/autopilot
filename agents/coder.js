@@ -71,7 +71,7 @@ Here is the relevant file and code from the existing codebase:
 async function suggestChanges(task, file) {
     const code = formatCode(file)
     const values = {task, code}
-    const reply = await callAgent(promptTemplate, values, process.env.ADVANCED_MODEL);
+    const reply = await callAgent(promptTemplate, values, process.env.CODER_MODEL);
     const cleanedReply = cleanRes(reply);
 
     return cleanedReply;
