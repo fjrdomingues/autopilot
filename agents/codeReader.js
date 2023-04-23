@@ -3,9 +3,15 @@ const { jsonParseWithValidate } = require('../modules/jsonHelpers');
 
 const promptTemplate =
 ` 
-USER INPUT: {task}
-YOUR TASK: Find and extract the relevant source code on this file to solve the USER INPUT. Don't modify the code. Extract only if the code is relevant, otherwise ignore.
-RESPONSE FORMAT: This is the format of your reply. Ensure the response can be parsed by JSON.parse. Must be valid JSON
+# USER INPUT - User Request
+{task}
+
+# YOUR TASK - What you need to do
+Your task is to find relevant code from the source code. 
+Replace the irrelevant code with "..." and reply with the rest
+
+# RESPONSE FORMAT 
+## This is the format of your reply. Ensure the response can be parsed by JSON.parse. Must be valid JSON
 {{
     "thoughts":
     {{
@@ -15,18 +21,16 @@ RESPONSE FORMAT: This is the format of your reply. Ensure the response can be pa
         "speak": "thoughts summary to say to user"
     }},
     "output": {{
-        "relevantCode": [{{
-            "sourceCode": "extract code from the file in string format",
-            "reason": "reason this code was selected"
-        }}]
+        "code": {{
+            "copiedSourceCode": "extracted code from the file in string format",
+            "reasoning": "reason this code was copied"
+        }}
     }}
 }}
-CONTEXT SOURCE CODE: 
-*** CONTEXT SOURCE CODE START ***
-// {filePath}
-{fileCode}
-*** CONTEXT SOURCE CODE END ***
 
+# SOURCE CODE
+## {filePath}
+{fileCode}
 `
 /**
  * This function takes a task and a file object as input, and returns a relevant context
