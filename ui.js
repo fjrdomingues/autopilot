@@ -187,6 +187,7 @@ async function main(task, test=false, suggestionMode) {
     await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
   } 
   if (indexGapFillOption && !reindex) {
+    console.log(chalk.yellow(`Checking for gaps between the DB and the codebase and reconciling them.`));
     await indexGapFill(codeBaseDirectory, interactive);
   }
 
