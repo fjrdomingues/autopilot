@@ -210,6 +210,7 @@ async function main(task, test=false, suggestionMode) {
   } catch (err) {
     console.log(chalk.red(`The agent has identified files to fetch we couldn't find, please try again with a different task.`));
     console.log(relevantFiles);
+    console.log(`Codebase directory: ${codeBaseDirectory}`)
     process.exit(1);
   }
   if (files.length == 0) {
@@ -223,7 +224,7 @@ async function main(task, test=false, suggestionMode) {
 
     if (!suggestionMode) { 
       const coderRes = await runAgent(agents.coder, task, file, interactive);
-      for (const file of codeRes){
+      for (const file of coderRes){
         const filePathRelative = file.fileToUpdate;
         const fileContent = file.content; 
         solutions.push({file:filePathRelative, code:fileContent})
