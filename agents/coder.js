@@ -1,18 +1,8 @@
-const { callAgent } = require('../agents/genericAgent');
+const { z } = require('zod');
+const { PromptTemplate } = require('langchain/prompts');
+const { StructuredOutputParser, OutputFixingParser } = require('langchain/output_parsers');
+const { getModel } = require('../modules/model');
 
-function formatCode(file) {
-  // format code for prompt
-  let code = '';
-  code += `### ${file.path}`;
-  code += `\n`;
-  code += '```';
-  code += `\n`;
-  code += `${file.code}`;
-  code += `\n`;
-  code += '```';
-  code += `\n`;
-  return code
-}
 
 
 /**
@@ -76,5 +66,29 @@ async function suggestChanges(task, file) {
 
     return cleanedReply;
 }
+
+
+/**
+ * Formats the code from the given file object into a Markdown code block.
+ * 
+ * @param {Object} file - The file object containing the code to format.
+ * @param {string} file.path - The path to the file.
+ * @param {string} file.code - The code to format.
+ * @returns {string} The formatted code as a Markdown code block.
+ */
+function formatCode(file) {
+  // format code for prompt
+  let code = '';
+  code += `### ${file.path}`;
+  code += `\n`;
+  code += '```';
+  code += `\n`;
+  code += `${file.code}`;
+  code += `\n`;
+  code += '```';
+  code += `\n`;
+  return code
+}
+
 
 module.exports = suggestChanges
