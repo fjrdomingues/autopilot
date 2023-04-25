@@ -223,17 +223,21 @@ async function main(task, test=false, suggestionMode) {
 
     if (!suggestionMode) { 
       const coderRes = await runAgent(agents.coder, task, file, interactive);
-      solutions.push({file:file.path, code:coderRes})
+      for (const file of codeRes){
+        const filePathRelative = file.fileToUpdate;
+        const fileContent = file.content; 
+        solutions.push({file:filePathRelative, code:fileContent})
 
-      if (autoApply){
-        // This actually applies the solution to the file
-        updateFile(file.path, coderRes);
-        const filePathFull = file.path
-        const fileContent = coderRes
-        const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
-        console.log(`File modified: ${filePathRelative}`);
-        await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
-      }
+        if (autoApply){
+          // This actually applies the solution to the file
+          const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
+          updateFile(filePathFull, fileContent);
+          console.log(`File modified: ${filePathRelative}`);
+          await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
+        }
+      }      
+
+
     } else {
       // Ask advice agent for a suggestion
       const advice = await runAgent(agents.advisor, task, {relevantFiles, file}, interactive);
