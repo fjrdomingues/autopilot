@@ -20,14 +20,16 @@ async function initCodeBase(codeBaseDirectory, interactive){
     // Create config file `__CODEBASE__/.autopilot/config.json`
     // TODO: Refactor include/exclude lists into codebase config file
 
+    const { getDBFilePath } = require('./db');
     // Bootstrap DB
-    createDB(codeBaseDirectory);
-
-    // Trigger codeBase indexing
-    if (interactive){
-        await codeBaseFullIndexInteractive(codeBaseDirectory, model);
-    } else {
-        await codeBaseFullIndex(codeBaseDirectory);
+    if (!fs.existsSync(getDBFilePath(codeBaseDirectory))){
+        createDB(codeBaseDirectory);
+        // Trigger codeBase indexing
+        if (interactive){
+            await codeBaseFullIndexInteractive(codeBaseDirectory, model);
+        } else {
+            await codeBaseFullIndex(codeBaseDirectory);
+        }
     }
 }
 

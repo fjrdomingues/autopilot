@@ -33,14 +33,19 @@ function createDB(codeBaseDirectory){
     createFilesTable(db);
 }
 
+function getDBFilePath(codeBaseDirectory){
+    codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
+    dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME);
+    return dbFilePath;
+}
+
 /**
  * @description Creates the files table
  * @param {string} codeBaseAutopilotDirectory
  * @returns {sqlite3.Database} db
  */
 function getDB(codeBaseDirectory){
-    codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
-    dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME);
+    dbFilePath = getDBFilePath(codeBaseDirectory);
     const db = new sqlite3.Database(dbFilePath);
     return db;
 }
@@ -122,4 +127,4 @@ FROM files
     
 
 
-module.exports = { createDB, createFilesTable, insertOrUpdateFile, getDB, getDBFiles, deleteFile }
+module.exports = { createDB, createFilesTable, insertOrUpdateFile, getDB, getDBFiles, deleteFile, getDBFilePath }
