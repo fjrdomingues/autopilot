@@ -181,6 +181,7 @@ async function main(task, test=false, suggestionMode) {
   }
 
   // init, reindex, or gap fill
+  const { initCodeBase } = require('./modules/init');
   await initCodeBase(codeBaseDirectory, interactive);
   if (reindex){
     await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
