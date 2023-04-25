@@ -13,10 +13,10 @@ function getModel(modelType){
     if (['gpt-3.5-turbo', 'gpt-4'].includes(modelType)) {
         model = new OpenAI({ 
             modelName: modelType,
-            max_tokens: 999999,
+            maxTokens: parseInt(process.env.OPENAI_MAX_TOKEN_REPLY),
             temperature: parseFloat(process.env.MODEL_TEMPERATURE),
-            presence_penalty: parseFloat(process.env.MODEL_PRESENCE_PENALTY),
-            frequency_penalty: parseFloat(process.env.MODEL_FREQUENCY_PENALTY),
+            presencePenalty: parseFloat(process.env.MODEL_PRESENCE_PENALTY),
+            frequencyPenalty: parseFloat(process.env.MODEL_FREQUENCY_PENALTY),
             user: process.env.MODEL_USER,
             openAIApiKey: process.env.OPENAI_API_KEY,
         })
