@@ -146,7 +146,16 @@ async function getTask(task, options){
   return task
 }
 
+async function approveGapFill(){
+  const prompts = require('prompts');
 
+  const proceed = await prompts({
+    type: 'confirm',
+    name: 'value',
+    message: 'Proceed with fixing the gap in summarizing?',
+  });
+  return proceed.value;
+}
 
 /**
  * 
@@ -172,48 +181,34 @@ async function main(task, test=false, suggestionMode) {
   }
 
   // init, reindex, or gap fill
-  const { getCodeBaseAutopilotDirectory} = require('./modules/autopilotConfig');
-  const codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
-  if (!fs.existsSync(codeBaseAutopilotDirectory)){
-    const { initCodeBase } = require('./modules/init');
-    await initCodeBase(codeBaseDirectory, interactive);
-  } else {
-    if (reindex){
-      await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
-    } else if (indexGapFill){
-      const { codeBaseGapFill } = require('./modules/codeBase');
-      const ret = await codeBaseGapFill(codeBaseDirectory);
-      const filesToDelete = ret.filesToDelete
-      const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex)
-      const numberOfGaps = filesToDelete.length + filesToIndex.length;
-      if (numberOfGaps > 0){
-        if (interactive){
-          const { countTokens } = require('./modules/tokenHelper'); 
-          const { calculateTokensCost } = require('./modules/gpt');
-          async function approveGapFill(){
-            const prompts = require('prompts');
-        
-            const proceed = await prompts({
-              type: 'confirm',
-              name: 'value',
-              message: 'Proceed with fixing the gap in summarizing?',
-            });
-            return proceed.value;
-          }
-          let reindex_content
-          for(const file of filesToIndex){
-            // TODO: for more accuracy need to add the agent prompt
-            reindex_content += file.fileContent
-          }
-          tokenCount = countTokens(reindex_content)
-          cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount)
+  await initCodeBase(codeBaseDirectory, interactive);
+  if (reindex){
+    await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
+  } 
+  if (indexGapFill && !reindex) {
+    const { codeBaseGapFill } = require('./modules/codeBase');
+    const ret = await codeBaseGapFill(codeBaseDirectory);
+    const filesToDelete = ret.filesToDelete
+    const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex)
+    const numberOfGaps = filesToDelete.length + filesToIndex.length;
+    if (numberOfGaps > 0){
+      if (!interactive){
+        console.log(chalk.green(`Gap fill: ${numberOfGaps} gaps found, fixing...`))
+        await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
+      } else {
+        const { countTokens } = require('./modules/tokenHelper'); 
+        const { calculateTokensCost } = require('./modules/gpt');
 
-          console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`))
-          if (await approveGapFill()) {
-            await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
-          }
-        } else {
-          console.log(chalk.green(`Gap fill: ${numberOfGaps} gaps found, fixing...`))
+        let reindex_content
+        for(const file of filesToIndex){
+          // TODO: for more accuracy need to add the agent prompt
+          reindex_content += file.fileContent
+        }
+        tokenCount = countTokens(reindex_content)
+        cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount)
+
+        console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`))
+        if (await approveGapFill()) {
           await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
         }
       }
