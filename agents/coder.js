@@ -2,6 +2,7 @@ const { z } = require('zod');
 const { PromptTemplate } = require('langchain/prompts');
 const { StructuredOutputParser, OutputFixingParser } = require('langchain/output_parsers');
 const { getModel } = require('../modules/model');
+const { saveLog } = require('../modules/fsOutput');
 
 const promptTemplate = 
 ` 
@@ -10,6 +11,7 @@ const promptTemplate =
 
 # YOUR TASK
 As a senior software developer, make the requested changes from the USER INPUT.
+Write out new code before deleting old code.
 
 {format_instructions}
 
@@ -26,9 +28,8 @@ const parser = StructuredOutputParser.fromZodSchema(
     }),
     output: z.array(
       z.object({
-        fileToUpdate: z.string().describe('file to update. (can be the current file or a new file)'),
+        fileToUpdate: z.string().describe('File to write. (can be the current file or a new file)'),
         content: z.string().describe('Full content for that file'),
-        updateDependentFiles: z.boolean().describe('Will making the above change possibly require changes to other files?'),
       }),
     ),
   })
@@ -73,6 +74,8 @@ async function suggestChanges(task, file) {
     parsedResponse = await fixParser.parse(response);
   }
 
+  saveLog(`coder agent INPUT:\n${input}`)
+  saveLog(`coder agent OUTPUT:\n${response}`)
   return parsedResponse.output;
 }
 

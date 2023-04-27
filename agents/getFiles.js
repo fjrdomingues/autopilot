@@ -5,7 +5,9 @@ const { getModel } = require('../modules/model');
 const { saveLog } = require('../modules/fsOutput');
 
 const promptTemplate = `USER INPUT: {task}
-YOUR TASK: Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
+YOUR TASK: 
+Identify existing files, from the provided context bellow, to read based on the USER INPUT. 
+Also explain why the file was selected.
 
 {format_instructions}
 
