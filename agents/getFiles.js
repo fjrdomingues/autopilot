@@ -6,7 +6,7 @@ const { saveLog } = require('../modules/fsOutput');
 
 const promptTemplate = `USER INPUT: {task}
 YOUR TASK: 
-Identify existing files, from the provided context bellow, to read based on the USER INPUT. 
+Identify the minimal set of existing files, from the provided context bellow, to read based on the USER INPUT. 
 Also explain why the file was selected.
 
 {format_instructions}
