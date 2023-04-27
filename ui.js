@@ -237,9 +237,8 @@ async function main(task, test=false, suggestionMode) {
           console.log(`File modified: ${filePathRelative}`);
           await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
         }
-      }      
-
-
+        // TODO: get current diff and feed it back to the next agent
+      }
     } else {
       // Ask advice agent for a suggestion
       const advice = await runAgent(agents.advisor, task, {relevantFiles, file}, interactive);
