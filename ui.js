@@ -187,6 +187,7 @@ async function main(task, test=false, suggestionMode) {
     await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
   } 
   if (indexGapFillOption && !reindex) {
+    console.log(chalk.yellow(`Checking for gaps between the DB and the codebase and reconciling them.`));
     await indexGapFill(codeBaseDirectory, interactive);
   }
 
@@ -210,6 +211,7 @@ async function main(task, test=false, suggestionMode) {
   } catch (err) {
     console.log(chalk.red(`The agent has identified files to fetch we couldn't find, please try again with a different task.`));
     console.log(relevantFiles);
+    console.log(`Codebase directory: ${codeBaseDirectory}`)
     process.exit(1);
   }
   if (files.length == 0) {
@@ -223,16 +225,19 @@ async function main(task, test=false, suggestionMode) {
 
     if (!suggestionMode) { 
       const coderRes = await runAgent(agents.coder, task, file, interactive);
-      solutions.push({file:file.path, code:coderRes})
+      for (const file of coderRes){
+        const filePathRelative = file.fileToUpdate;
+        const fileContent = file.content; 
+        solutions.push({file:filePathRelative, code:fileContent})
 
-      if (autoApply){
-        // This actually applies the solution to the file
-        updateFile(file.path, coderRes);
-        const filePathFull = file.path
-        const fileContent = coderRes
-        const filePathRelative = path.relative(codeBaseDirectory, filePathFull);
-        console.log(`File modified: ${filePathRelative}`);
-        await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
+        if (autoApply){
+          // This actually applies the solution to the file
+          const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
+          updateFile(filePathFull, fileContent);
+          console.log(`File modified: ${filePathRelative}`);
+          await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
+        }
+        // TODO: get current diff and feed it back to the next agent
       }
     } else {
       // Ask advice agent for a suggestion
