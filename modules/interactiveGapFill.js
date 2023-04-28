@@ -7,7 +7,7 @@ const chalk = require('chalk');
  * @returns {Promise<void>} - A promise that resolves when the gap fill is complete.
  */
 async function indexGapFill(codeBaseDirectory, interactive) {
-  const { codeBaseGapFill } = require('./modules/codeBase');
+  const { codeBaseGapFill } = require('./codeBase');
   const ret = await codeBaseGapFill(codeBaseDirectory);
   const filesToDelete = ret.filesToDelete;
   const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex);
