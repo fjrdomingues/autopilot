@@ -1,5 +1,93 @@
-const { callAgent } = require('../agents/genericAgent');
+const { z } = require('zod');
+const { PromptTemplate } = require('langchain/prompts');
+const { StructuredOutputParser, OutputFixingParser } = require('langchain/output_parsers');
+const { getModel } = require('../modules/model');
+const { saveLog } = require('../modules/fsOutput');
 
+const promptTemplate = 
+` 
+# USER INPUT
+{task}
+
+# YOUR TASK
+As a senior software developer, make the requested changes from the USER INPUT.
+Write out new code before deleting old code.
+
+{format_instructions}
+
+# SOURCE CODE
+{code}
+` 
+
+const parser = StructuredOutputParser.fromZodSchema(
+  z.object({
+    thoughts: z.object({
+      text: z.string().describe('your thoughts'),
+      reasoning: z.string().describe('your reasoning'),
+      criticism: z.string().describe('constructive self-criticism'),
+    }),
+    output: z.array(
+      z.object({
+        fileToUpdate: z.string().describe('File to write. (can be the current file or a new file)'),
+        content: z.string().describe('Full content for that file'),
+      }),
+    ),
+  })
+);
+
+const formatInstructions = parser.getFormatInstructions();
+
+const prompt = new PromptTemplate({
+  template: promptTemplate,
+  inputVariables: ['task', 'code'],
+  partialVariables: { format_instructions: formatInstructions },
+});
+
+/**
+ * Asynchronously suggests changes to a task's source code using an advanced model.
+ * @param {string} task - The task to suggest changes for.
+ * @param {Object} file - The file object containing the code to format.
+ * @param {string} file.path - The path to the file.
+ * @param {string} file.code - The code to format.
+ * @returns {Promise<Array<{
+ * fileToUpdate: string,
+ * content: string,
+ * updateDependentFiles: boolean
+ * }>>} - A Promise that resolves with an array of objects representing the suggested changes.
+ */
+async function suggestChanges(task, file) {
+  const code = formatCode(file)
+
+  const model = getModel(process.env.INDEXER_MODEL);
+
+  const input = await prompt.format({ task, code });
+  const response = await model.call(input);
+
+  let parsedResponse
+  try {
+    parsedResponse = await parser.parse(response);
+  } catch (e){
+    const fixParser = OutputFixingParser.fromLLM(
+      model,
+      parser
+    );
+    parsedResponse = await fixParser.parse(response);
+  }
+
+  saveLog(`coder agent INPUT:\n${input}`)
+  saveLog(`coder agent OUTPUT:\n${response}`)
+  return parsedResponse.output;
+}
+
+
+/**
+ * Formats the code from the given file object into a Markdown code block.
+ * 
+ * @param {Object} file - The file object containing the code to format.
+ * @param {string} file.path - The path to the file.
+ * @param {string} file.code - The code to format.
+ * @returns {string} The formatted code as a Markdown code block.
+ */
 function formatCode(file) {
   // format code for prompt
   let code = '';
@@ -14,67 +102,5 @@ function formatCode(file) {
   return code
 }
 
-
-/**
- * Currently the output of the agent is a string with the following format:
- * ## filename
- * ```
- * code
- * ```
- * This function removes the filename and the code block markers.
- * @param {string} res
- * @returns {string}
- * @description Removes the filename and the code block markers from the output of the agent.
- */
-function cleanRes(res){
-  let lines = res.split("\n");
-  lines.shift(); // ## filename
-  if (lines[0] === '' || lines[0] === '```') {
-    lines.shift();
-  }
-  if (lines[lines.length - 1] === '' || lines[lines.length - 1] === '```') {
-    lines.pop();
-  }
-  const resCleaned = lines.join("\n")
-  return resCleaned
-}
-
-const promptTemplate = 
-` 
-# USER INPUT
-{task}
-
-# YOUR TASK
-As a senior software developer, make the requested changes from the USER INPUT.
-
-# RESPONSE FORMAT 
-## This is the format of your reply. 
-Provide a new version of the source code with the task complete.
-Code only. No comments or other text. 
-
-# SOURCE CODE 
-## This is provided in a markdown format as follows:
-### /path/filename
-\`\`\`
-code
-\`\`\`
-Here is the relevant file and code from the existing codebase:
-{code}
-` 
-
-/**
- * Asynchronously suggests changes to a task's source code using an advanced model.
- * @param {string} task - The task to suggest changes for.
- * @param {} file - A file to apply code to.
- * @returns {Promise<string>} - A Promise that resolves with the suggested changes.
- */
-async function suggestChanges(task, file) {
-    const code = formatCode(file)
-    const values = {task, code}
-    const reply = await callAgent(promptTemplate, values, process.env.CODER_MODEL);
-    const cleanedReply = cleanRes(reply);
-
-    return cleanedReply;
-}
 
 module.exports = suggestChanges
