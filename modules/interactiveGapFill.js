@@ -18,7 +18,7 @@ async function indexGapFill(codeBaseDirectory, interactive) {
       await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
     } else {
       tokenCount = countTokensOfFilesToIndex(filesToIndex);
-      const { calculateTokensCost } = require('./modules/gpt');
+      const { calculateTokensCost } = require('./gpt');
       cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount);
 
       console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`));
@@ -37,7 +37,7 @@ async function indexGapFill(codeBaseDirectory, interactive) {
  * @returns {number} - The total number of tokens in all the files.
  */
 function countTokensOfFilesToIndex(filesToIndex) {
-  const { countTokens } = require('./modules/tokenHelper');
+  const { countTokens } = require('./tokenHelper');
 
   let reindex_content;
   for (const file of filesToIndex) {
@@ -77,7 +77,7 @@ async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
   const path = require('path');
 
   const { deleteFile } = require('./db');
-  const { generateAndWriteFileSummary } = require('./modules/summaries');
+  const { generateAndWriteFileSummary } = require('./summaries');
 
   for (const file of filesToDelete) {
     const filePathRelative = file.path;

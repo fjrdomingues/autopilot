@@ -8,10 +8,10 @@
  */
 async function reindexCodeBase(codeBaseDirectory, model, interactive) {
   if (interactive) {
-    const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
+    const { codeBaseFullIndexInteractive } = require('./codeBase');
     await codeBaseFullIndexInteractive(codeBaseDirectory, model);
   } else {
-    const { codeBaseFullIndex } = require('./modules/codeBase');
+    const { codeBaseFullIndex } = require('./codeBase');
     await codeBaseFullIndex(codeBaseDirectory, model);
   }
 }
