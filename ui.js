@@ -12,25 +12,9 @@ const { getOptions } = require('./modules/cliOptions');
 const { runAgent } = require('./modules/interactiveAgent');
 const { getTask } = require('./modules/interactiveTask');
 const { indexGapFill } = require('./modules/interactiveGapFill');
+const { reindexCodeBase } = require('./modules/interactiveReindexCodeBase');
 
 const testingDirectory = '/benchmarks';
-
-/**
- * Asynchronously reindexes the codebase located at the specified directory, using the specified model for indexing.
- * @param {string} codeBaseDirectory - The path to the codebase directory.
- * @param {Object} model - The model used for indexing the codebase.
- * @param {boolean} interactive - A flag indicating whether to use interactive indexing or not.
- * @returns {Promise} A promise that resolves when the indexing process is complete.
- */
-async function reindexCodeBase(codeBaseDirectory, model, interactive) {
-  if (interactive) {
-    const { codeBaseFullIndexInteractive } = require('./modules/codeBase');
-    await codeBaseFullIndexInteractive(codeBaseDirectory, model);
-  } else {
-    const { codeBaseFullIndex } = require('./modules/codeBase');
-    await codeBaseFullIndex(codeBaseDirectory, model);
-  }
-}
 
 /**
  * 
