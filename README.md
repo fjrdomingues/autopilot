@@ -78,7 +78,7 @@ This project is still in alpha stage. It's recommended that you use `node ui -i`
 
 ## 🤝 Contributing
 
-**We are running autopilot on a server connnected to the https://github.com/fjrdomingues/autopilot repository. New issues created will trigger autopilot and create a new Pull Request with a proposal. Running with gpt-4**
+**We are running autopilot on a server connected to the https://github.com/fjrdomingues/autopilot repository. New issues created will trigger autopilot and create a new Pull Request with a proposal. Running with gpt-4**
 
 We welcome contributions! Please submit pull requests to the repository, and ensure your changes align with the project's goals and guidelines. Together, we can make **Autopilot** an even more powerful and efficient tool for developers!
 
