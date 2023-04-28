@@ -76,7 +76,7 @@ async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
   const fs = require('fs');
   const path = require('path');
 
-  const { deleteFile } = require('./modules/db');
+  const { deleteFile } = require('./db');
   const { generateAndWriteFileSummary } = require('./modules/summaries');
 
   for (const file of filesToDelete) {
