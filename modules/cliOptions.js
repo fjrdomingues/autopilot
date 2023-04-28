@@ -1,5 +1,3 @@
-const yargs = require('yargs');
-
 /**
 * Returns an object containing the command line options parsed using the Yargs library.
 * @param {boolean} test - A flag indicating whether or not to run in test mode.
@@ -14,6 +12,8 @@ const yargs = require('yargs');
   * }}
 */
 function getOptions(task, test){
+  const yargs = require('yargs');
+
   const options = yargs
   .option('interactive', {
     alias: 'i',

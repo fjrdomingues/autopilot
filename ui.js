@@ -1,7 +1,6 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
 const agents = require('./agents');
-const fs = require('fs');
 const path = require('path');
 
 const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
@@ -12,6 +11,7 @@ const { generateAndWriteFileSummary } = require('./modules/summaries');
 const { getOptions } = require('./modules/cliOptions');
 const { runAgent } = require('./modules/interactiveAgent');
 const { getTask } = require('./modules/interactiveTask');
+const { indexGapFill } = require('./modules/interactiveGapFill');
 
 const testingDirectory = '/benchmarks';
 
@@ -30,17 +30,6 @@ async function reindexCodeBase(codeBaseDirectory, model, interactive) {
     const { codeBaseFullIndex } = require('./modules/codeBase');
     await codeBaseFullIndex(codeBaseDirectory, model);
   }
-}
-
-async function approveGapFill(){
-  const prompts = require('prompts');
-
-  const proceed = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message: 'Proceed with fixing the gap in summarizing?',
-  });
-  return proceed.value;
 }
 
 /**
@@ -149,71 +138,4 @@ async function main(task, test=false, suggestionMode) {
 
 if (require.main === module) main();
 
-
 module.exports = { main }
-
-/**
- * Searches for gaps in the code base and fills them by deleting unnecessary files and indexing new or modified files.
- * @param {string} codeBaseDirectory - The directory path of the code base to gap fill.
- * @param {boolean} interactive - A flag indicating whether the function should prompt the user for approval before performing the gap fill.
- * @returns {Promise<void>} - A promise that resolves when the gap fill is complete.
- */
-async function indexGapFill(codeBaseDirectory, interactive) {
-  const { codeBaseGapFill } = require('./modules/codeBase');
-  const ret = await codeBaseGapFill(codeBaseDirectory);
-  const filesToDelete = ret.filesToDelete;
-  const filesToIndex = ret.filesToIndex.concat(ret.filesToReindex);
-  const numberOfGaps = filesToDelete.length + filesToIndex.length;
-  if (numberOfGaps > 0) {
-    if (!interactive) {
-      console.log(chalk.green(`Gap fill: ${numberOfGaps} gaps found, fixing...`));
-      await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
-    } else {
-      tokenCount = countTokensOfFilesToIndex(filesToIndex);
-      const { calculateTokensCost } = require('./modules/gpt');
-      cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount);
-
-      console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`));
-      if (await approveGapFill()) {
-        await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
-      }
-    }
-  }
-}
-
-/**
- * Counts the number of tokens in the given array of files.
- * @param {Array} filesToIndex - An array of objects representing files to index.
- * @param {string} filesToIndex[].fileName - The name of the file.
- * @param {string} filesToIndex[].fileContent - The content of the file.
- * @returns {number} - The total number of tokens in all the files.
- */
-function countTokensOfFilesToIndex(filesToIndex) {
-  const { countTokens } = require('./modules/tokenHelper');
-
-  let reindex_content;
-  for (const file of filesToIndex) {
-    // TODO: for more accuracy need to add the agent prompt
-    reindex_content += file.fileContent;
-  }
-  const tokenCount = countTokens(reindex_content);
-  return tokenCount;
-}
-
-async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
-  const { deleteFile } = require('./modules/db');
-  const { generateAndWriteFileSummary } = require('./modules/summaries');
-
-  for (const file of filesToDelete) {
-    const filePathRelative = file.path;
-    await deleteFile(codeBaseDirectory, filePathRelative);
-  }
-  for (const file of filesToIndex) {
-    const filePathRelative = file.filePath;
-    const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
-    const fileContent = fs.readFileSync(filePathFull, 'utf-8');
-    console.log(`File modified: ${filePathRelative}`);
-    await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
-  }
-}
-

@@ -1,4 +1,3 @@
-const prompts = require('prompts');
 const chalk = require('chalk');
 
 /**
@@ -27,6 +26,8 @@ async function getTask(task, options){
  * @description Asks the user to enter a task using the prompts library. The user's entered task is returned as a string. The function validates that the user entered a non-empty string; if not, the user is prompted to enter a task again.
  */
 async function getTaskInput() {
+  const prompts = require('prompts');
+
   const response = await prompts({
      type: 'text',
      name: 'task',
