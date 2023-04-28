@@ -4,7 +4,7 @@ const agents = require('./agents');
 const path = require('path');
 
 const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
-const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
+const { saveOutput, logPath, updateFile, newLog } = require('./modules/fsOutput');
 const { printGitDiff } = require('./modules/gitHelper');
 const { getFiles } = require('./modules/fsInput');
 const { generateAndWriteFileSummary } = require('./modules/summaries');
@@ -23,6 +23,7 @@ const testingDirectory = '/benchmarks';
  * @returns {Array} - Array with file and code
  */
 async function main(task, test=false, suggestionMode) {
+  newLog();
   const options = getOptions(task, test);
   let codeBaseDirectory = options.dir;
   // TODO: get rid of test parameter, should use normal functionality
