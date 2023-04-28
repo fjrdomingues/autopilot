@@ -4,7 +4,6 @@ const agents = require('./agents');
 const fs = require('fs');
 const path = require('path');
 
-const { getTaskInput } = require('./modules/userInputs');
 const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
 const { saveOutput, logPath, updateFile } = require('./modules/fsOutput');
 const { printGitDiff } = require('./modules/gitHelper');
@@ -12,6 +11,7 @@ const { getFiles } = require('./modules/fsInput');
 const { generateAndWriteFileSummary } = require('./modules/summaries');
 const { getOptions } = require('./modules/cliOptions');
 const { runAgent } = require('./modules/interactiveAgent');
+const { getTask } = require('./modules/interactiveTask');
 
 const testingDirectory = '/benchmarks';
 
@@ -30,22 +30,6 @@ async function reindexCodeBase(codeBaseDirectory, model, interactive) {
     const { codeBaseFullIndex } = require('./modules/codeBase');
     await codeBaseFullIndex(codeBaseDirectory, model);
   }
-}
-
-
-/**
- * 
- * @param {string} task
- * @returns {string}
- * @throws {Error}
- * @description Returns the task to be completed. If the task is not provided as a command line argument, the user is prompted to enter a task.
-*/
-async function getTask(task, options){
-  if (!task) task = options.task
-  if (!task && options.interactive) task = await getTaskInput()
-  if (!task || task =='') throw new Error("No task provided")
-  console.log(`Task: ${task}`)
-  return task
 }
 
 async function approveGapFill(){
