@@ -111,7 +111,7 @@ async function getSummaries(codeBaseDirectory){
  * @param {string} fileContent - The content of the file being processed.
  */
 async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent) {
-  const fileSummary = require('../agents/indexer');
+  const { fileSummary } = require('../agents/indexer');
 
   const filePathFull = path.join(codeBaseDirectory, filePathRelative);
   const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);

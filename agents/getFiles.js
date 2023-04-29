@@ -80,4 +80,4 @@ async function getRelevantFiles(task, summaries) {
 	return parsedResponse.output.relevantFiles;
 }
 
-module.exports = getRelevantFiles;
+module.exports = { getRelevantFiles };

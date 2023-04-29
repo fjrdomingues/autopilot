@@ -45,4 +45,4 @@ RESPONSE FORMAT - This is the format of your reply. Ensure the response can be p
     return jsonParseWithValidate(reply);
   }
 
-module.exports = review
+module.exports = { review }
