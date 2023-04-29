@@ -26,28 +26,33 @@ Splits an array of summary strings into chunks up to a maximum size.
 function chunkSummaries(summaries, maxChunkLength) {
   const summaryChunks = [];
   let currentChunk = "";
-  let currentChunkLength = 0;
   summariesArray = summaries.split(summaryStringDelimiter);
 
   for (const summary of summariesArray) {
     const delimitedSummary = summary + summaryStringDelimiter;
-    const currentSummaryLength = countTokens(delimitedSummary);
+    const currentSummaryTokens = countTokens(summary);
 
-    if (currentSummaryLength > maxChunkLength) {
+    if (currentSummaryTokens > maxChunkLength) {
       throw new Error('Single summary is too big');
     }
 
-    if (currentChunkLength + currentSummaryLength > maxChunkLength) {
+    const currentChunkTokens = countTokens(currentChunk);
+    console.log("Current Chunk Tokens:", currentChunkTokens, "Current Summary Tokens:", currentSummaryTokens, "Max Chunk Length:", maxChunkLength)
+    if (currentChunkTokens + currentSummaryTokens > maxChunkLength) {
+      console.log("Chunking summary:", currentChunkTokens, currentSummaryTokens, maxChunkLength)
+      // remove last delimiter summaryStringDelimiter from currentChunk
+      currentChunk = currentChunk.slice(0, -summaryStringDelimiter.length);
       summaryChunks.push(currentChunk);
-      currentChunk = summary;
-      currentChunkLength = currentSummaryLength;
+      // new summary chunk
+      currentChunk = delimitedSummary;
     } else {
-      currentChunkLength += currentSummaryLength;
       currentChunk += delimitedSummary;
     }
   }
 
+  currentChunk = currentChunk.slice(0, -summaryStringDelimiter.length);
   summaryChunks.push(currentChunk); // Push last chunk
+  console.log(summaryChunks)
   return summaryChunks;
 }
 
