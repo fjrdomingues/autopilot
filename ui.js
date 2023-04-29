@@ -1,6 +1,5 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
-const agents = require('./agents');
 const path = require('path');
 
 const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
@@ -13,6 +12,8 @@ const { runAgent } = require('./modules/interactiveAgent');
 const { getTask } = require('./modules/interactiveTask');
 const { indexGapFill } = require('./modules/interactiveGapFill');
 const { reindexCodeBase } = require('./modules/interactiveReindexCodeBase');
+const { suggestChanges } = require('./agents/coder');
+const { ChangesAdvice } = require('./agents/advisor');
 
 const testingDirectory = '/benchmarks';
 
@@ -61,7 +62,7 @@ async function main(task, test=false, suggestionMode) {
   let relevantFiles=[]
   for (const summaries of chunkedSummaries){
     // Decide which files are relevant to the task
-    relevantFilesChunk = await runAgent(agents.getFiles, task, summaries, interactive);
+    relevantFilesChunk = await runAgent(getFiles, task, summaries, interactive);
     relevantFiles = relevantFiles.concat(relevantFilesChunk)
   }
   // Fetch code files the agent has deemed relevant
@@ -84,7 +85,7 @@ async function main(task, test=false, suggestionMode) {
   for (const file of files) {
 
     if (!suggestionMode) { 
-      const coderRes = await runAgent(agents.coder, task, file, interactive);
+      const coderRes = await runAgent(suggestChanges, task, file, interactive);
       for (const file of coderRes){
         const filePathRelative = file.fileToUpdate;
         const fileContent = file.content; 
@@ -101,7 +102,7 @@ async function main(task, test=false, suggestionMode) {
       }
     } else {
       // Ask advice agent for a suggestion
-      const advice = await runAgent(agents.advisor, task, {relevantFiles, file}, interactive);
+      const advice = await runAgent(ChangesAdvice, task, {relevantFiles, file}, interactive);
       solutions.push({file:file.path, code:advice})
     }
 

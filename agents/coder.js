@@ -103,4 +103,4 @@ function formatCode(file) {
 }
 
 
-module.exports = suggestChanges
+module.exports = { suggestChanges }

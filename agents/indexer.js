@@ -70,4 +70,4 @@ async function fileSummary(filePathRelative, fileContent) {
   return parsedResponse.output;
 }
 
-module.exports = fileSummary
+module.exports = { fileSummary };

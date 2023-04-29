@@ -39,7 +39,7 @@ Here is the relevant file and code from the existing codebase:
  * @param {} file - A file to apply code to.
  * @returns {Promise<string>} - A Promise that resolves with the suggested changes.
  */
-async function suggestChanges(task, payload) {
+async function ChangesAdvice(task, payload) {
   const relevantFiles = formatRelevantFiles(payload.relevantFiles)
   const file = payload.file
   const {code, task: fileTask, reason, path} = file
@@ -48,4 +48,4 @@ async function suggestChanges(task, payload) {
   return reply;
 }
 
-module.exports = suggestChanges
+module.exports = { ChangesAdvice }

@@ -4,7 +4,6 @@ const { countTokens } = require('./modules/tokenHelper');
 const { getTaskInput } = require('./modules/userInputs');
 const { readAllSummaries, getFiles } = require('./modules/summaries');
 const { saveOutput } = require('./modules/fsOutput');
-const agents = require('./agents');
 const maxSummaryTokenCount = 3000;
 const yargs = require('yargs');
 const prompts = require('prompts');
@@ -71,21 +70,21 @@ async function main(task) {
   console.log(`Task: ${task}`)
 
   // Get files by agent decision
-  relevantFiles = await runAgent(agents.getFiles,task, summaries);
+  relevantFiles = await runAgent(getFiles,task, summaries);
 
   files = getFiles(relevantFiles.output.relevantFiles)
 
   // Ask an agent about each file
   let relevantCode = [];
   for (const file of files) {
-    const res = await runAgent(agents.codeReader, task, file) ;
+    const res = await runAgent(codeReader, task, file) ;
     relevantCode.push({path: file.path, code: res.output.relevantCode})
   }
   console.log("Extracted code:")
   console.dir(relevantCode, { depth: null })
 
   //Sends the saved output to GPT and ask for the necessary changes to do the TASK
-  const solution = await runAgent(agents.coder, task, relevantCode);
+  const solution = await runAgent(coder, task, relevantCode);
   const solutionPath = saveOutput(task, solution);
   
   console.log(chalk.green("Solution Ready:", solutionPath));
