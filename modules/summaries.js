@@ -37,9 +37,7 @@ function chunkSummaries(summaries, maxChunkLength) {
     }
 
     const currentChunkTokens = countTokens(currentChunk);
-    console.log("Current Chunk Tokens:", currentChunkTokens, "Current Summary Tokens:", currentSummaryTokens, "Max Chunk Length:", maxChunkLength)
     if (currentChunkTokens + currentSummaryTokens > maxChunkLength) {
-      console.log("Chunking summary:", currentChunkTokens, currentSummaryTokens, maxChunkLength)
       // remove last delimiter summaryStringDelimiter from currentChunk
       currentChunk = currentChunk.slice(0, -summaryStringDelimiter.length);
       summaryChunks.push(currentChunk);
@@ -52,7 +50,6 @@ function chunkSummaries(summaries, maxChunkLength) {
 
   currentChunk = currentChunk.slice(0, -summaryStringDelimiter.length);
   summaryChunks.push(currentChunk); // Push last chunk
-  console.log(summaryChunks)
   return summaryChunks;
 }
 
