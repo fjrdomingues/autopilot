@@ -14,6 +14,7 @@ const { indexGapFill } = require('./modules/interactiveGapFill');
 const { reindexCodeBase } = require('./modules/interactiveReindexCodeBase');
 const { suggestChanges } = require('./agents/coder');
 const { ChangesAdvice } = require('./agents/advisor');
+const { getRelevantFiles } = require('./agents/getFiles');
 
 const testingDirectory = '/benchmarks';
 
@@ -62,7 +63,7 @@ async function main(task, test=false, suggestionMode) {
   let relevantFiles=[]
   for (const summaries of chunkedSummaries){
     // Decide which files are relevant to the task
-    relevantFilesChunk = await runAgent(getFiles, task, summaries, interactive);
+    relevantFilesChunk = await runAgent(getRelevantFiles, task, summaries, interactive);
     relevantFiles = relevantFiles.concat(relevantFilesChunk)
   }
   // Fetch code files the agent has deemed relevant
