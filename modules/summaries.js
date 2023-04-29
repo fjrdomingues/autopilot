@@ -24,6 +24,7 @@ Splits an array of summary strings into chunks up to a maximum size.
 @throws {Error} If a single summary string is longer than maxChunkLength.
 */
 function chunkSummaries(summaries, maxChunkLength) {
+  maxChunkLength = parseInt(maxChunkLength);
   const summaryChunks = [];
   let currentChunk = "";
   summariesArray = summaries.split(summaryStringDelimiter);
