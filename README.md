@@ -15,15 +15,16 @@ Note: This project is currently operating autonomously on a server. Whenever an 
 
 1. You point AutoPilot at a codebase with a task.
 1. AutoPilot generates and upkeeps a DB with metadata on the codebase files. (within the codebase directory)
-1. AutoPilot decides which exisiting files it needs for the task by using the metadata DB.
-1. AutoPilot tries to implement the requested task on each relavent file.
+1. AutoPilot decides which existing files it needs for the task by using the metadata DB.
+1. AutoPilot tries to implement the requested task on each relevant file.
 
 ## Features
 
-- 📚 Pre-processes codebase files.
-- 🤖 Does code updates for you.
-- 📋 Shows you what was updated. (Full process log with each AI interaction also produced.)
-- 🔧 Interactive mode - see the process with retry, continue, abort options.
+- 📚 - Pre-processes codebase files.
+- 🤖 - Implements code changes for you.
+- 🚀 - Parallel calls to agents where possible.
+- 📝 - Shows you what was updated. (Full process log with each AI interaction also produced)
+- 🕹️ - Interactive mode - see the process with retry, continue, abort options.
 
 ### Tasks expectations
 - Referencing current code:
@@ -34,7 +35,8 @@ Note: This project is currently operating autonomously on a server. Whenever an 
   - ✅ Referencing all project files.
   - 🤔 General logical requests. Your milage would differ by model, codebase and task. Some work. (Should introduce task scoring)
 - Changes executed:
-  - ✅Create a new file.
+  - ✅Create a new file based on an existing file.
+  - ❌Start a new file from scratch.
   - ✅Update an existing file.
   - ✅Update multiple existing files.
   - ❌Delete existing files. (It might empty them out, but not delete them currently)

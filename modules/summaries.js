@@ -80,7 +80,6 @@ async function readAllSummaries(codeBaseDirectory) {
   }
 
   let summariesString = "";
-  console.log("Summaries found in the database:", summaries.length);
   for (const summary of summaries) {
     try {
       summariesString += `File Path: ${summary.path}\nSummary:\n${summary.summary}${summaryStringDelimiter}`;
@@ -120,7 +119,7 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
   const fileTokensCount = parsedFile.fileTokensCount;
 
-  console.log(`Processing file: ${filePathRelative}`);
+  console.log(`Processing file: ${chalk.yellow(filePathRelative)}`);
   if (fileTokensCount > maxTokenSingleFile) {
     console.log(chalk.red('File too BIG'));
     return;
@@ -150,11 +149,8 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
       }
       // Save to DB
       insertOrUpdateFile(codeBaseDirectory, parsedFile, summary, dependenciesLibsString);
-
-      // TODO: Use logging library that already adds timestamps
-      const timestamp = new Date().toISOString();
-      const hour = timestamp.match(/\d\d:\d\d/);
-      console.log(`${hour}: Updated summary for ${filePathRelative}`);
+    
+      console.log(`${chalk.green(`Updated summary for `)}${chalk.yellow(filePathRelative)}`);
     }
   } catch (error) {
     console.error(`Error processing file: ${filePathRelative}`, error);

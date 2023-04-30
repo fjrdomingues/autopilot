@@ -14,14 +14,14 @@ async function indexGapFill(codeBaseDirectory, interactive) {
   const numberOfGaps = filesToDelete.length + filesToIndex.length;
   if (numberOfGaps > 0) {
     if (!interactive) {
-      console.log(chalk.green(`Gap fill: ${numberOfGaps} gaps found, fixing...`));
+      console.log(chalk.green(`Gap fill: ${chalk.yellow(numberOfGaps)} gaps found, fixing...`));
       await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
     } else {
       tokenCount = countTokensOfFilesToIndex(filesToIndex);
       const { calculateTokensCost } = require('./gpt');
       cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount);
 
-      console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`));
+      console.log(chalk.yellow(`Gap fill: ${chalk.yellow(numberOfGaps)} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`));
       if (await approveGapFill()) {
         await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
       }
@@ -83,13 +83,14 @@ async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
     const filePathRelative = file.path;
     await deleteFile(codeBaseDirectory, filePathRelative);
   }
-  for (const file of filesToIndex) {
+  const promises = filesToIndex.map(async (file) => {
     const filePathRelative = file.filePath;
     const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
-    const fileContent = fs.readFileSync(filePathFull, 'utf-8');
-    console.log(`File modified: ${filePathRelative}`);
+    const fileContent = await fs.promises.readFile(filePathFull, 'utf-8');
     await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
-  }
+  });
+  
+  await Promise.all(promises);  
 }
 
 module.exports = { indexGapFill };

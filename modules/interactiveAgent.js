@@ -1,4 +1,5 @@
 const prompts = require('prompts');
+const chalk = require('chalk');
 
 /**
  * @description Asynchronous function that runs an agent function with given variables.
@@ -9,7 +10,7 @@ const prompts = require('prompts');
  * @returns {Promise<any>} A Promise that resolves with the return value of the agent function if not in interactive mode, otherwise resolves or rejects based on user input.
 */
 async function runAgent(agentFunction, var1, var2, interactive=false){
-  console.log("(agent)", agentFunction.name);
+  console.log(`Agent ${chalk.yellow(agentFunction.name)} is running.`);
   if (!interactive){
     return await agentFunction(var1, var2);
   }
