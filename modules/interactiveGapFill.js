@@ -14,14 +14,14 @@ async function indexGapFill(codeBaseDirectory, interactive) {
   const numberOfGaps = filesToDelete.length + filesToIndex.length;
   if (numberOfGaps > 0) {
     if (!interactive) {
-      console.log(chalk.green(`Gap fill: ${numberOfGaps} gaps found, fixing...`));
+      console.log(chalk.green(`Gap fill: ${chalk.yellow(numberOfGaps)} gaps found, fixing...`));
       await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
     } else {
       tokenCount = countTokensOfFilesToIndex(filesToIndex);
       const { calculateTokensCost } = require('./gpt');
       cost = calculateTokensCost(process.env.INDEXER_MODEL, tokenCount, null, tokenCount);
 
-      console.log(chalk.yellow(`Gap fill: ${numberOfGaps} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`));
+      console.log(chalk.yellow(`Gap fill: ${chalk.yellow(numberOfGaps)} gaps found, estimated cost: $${chalk.yellow(cost.toFixed(4))}`));
       if (await approveGapFill()) {
         await gapFill(filesToDelete, codeBaseDirectory, filesToIndex);
       }

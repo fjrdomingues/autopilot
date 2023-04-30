@@ -61,7 +61,6 @@ async function getRelevantFiles(task, summaries) {
 	const model = getModel(process.env.GET_FILES_MODEL);
 
 	const input = await prompt.format({ task, summaries });
-  console.log(input)
   saveLog(`getFiles agent INPUT:\n${input}`)
 
 	const response = await model.call(input);
