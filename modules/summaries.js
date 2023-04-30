@@ -80,7 +80,6 @@ async function readAllSummaries(codeBaseDirectory) {
   }
 
   let summariesString = "";
-  console.log("Summaries found in the database:", summaries.length);
   for (const summary of summaries) {
     try {
       summariesString += `File Path: ${summary.path}\nSummary:\n${summary.summary}${summaryStringDelimiter}`;
