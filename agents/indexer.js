@@ -5,16 +5,14 @@ const { getModel } = require('../modules/model');
 
 const promptTemplate = 
 `
-# Your Role
-Create a representation of the file below
+TASK: Create a summary of the file below. Use as few words as possible while keeping the details. Use bullet points.
 
-# Output
-## Reply with the following format
-[A summary of the file]
-[functionName(params)] - [Description of business logic]
+{format_instructions}
 
-# File
+{filePathRelative}
+\`\`\`
 {fileContent}
+\`\`\`
 `
 
 const parser = StructuredOutputParser.fromZodSchema(
