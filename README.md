@@ -15,8 +15,8 @@ Note: This project is currently operating autonomously on a server. Whenever an 
 
 1. You point AutoPilot at a codebase with a task.
 1. AutoPilot generates and upkeeps a DB with metadata on the codebase files. (within the codebase directory)
-1. AutoPilot decides which exisiting files it needs for the task by using the metadata DB.
-1. AutoPilot tries to implement the requested task on each relavent file.
+1. AutoPilot decides which existing files it needs for the task by using the metadata DB.
+1. AutoPilot tries to implement the requested task on each relevant file.
 
 ## Features
 
