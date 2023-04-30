@@ -72,8 +72,10 @@ async function main(task, test=false, suggestionMode) {
   });
 
   const filePaths = relevantFiles.map(file => file.path).join(', ');
-  console.log(`${chalk.yellow(relevantFiles.length)} relevant files were identified by the agent:\n${chalk.yellow(filePaths)}`);
-  
+  console.log(`${chalk.yellow(relevantFiles.length)} relevant files were identified by the agent:`);
+  const fileReasons = relevantFiles.map(file => `${chalk.yellow(file.path)}: ${file.reason}`).join('\n');
+  console.log(fileReasons+'\n');
+
   // Fetch code files the agent has deemed relevant
   let files;
   try {
