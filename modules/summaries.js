@@ -119,7 +119,7 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
   const fileTokensCount = parsedFile.fileTokensCount;
 
-  console.log(`Processing file: ${filePathRelative}`);
+  console.log(`Processing file: ${chalk.yellow(filePathRelative)}`);
   if (fileTokensCount > maxTokenSingleFile) {
     console.log(chalk.red('File too BIG'));
     return;
@@ -150,7 +150,7 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
       // Save to DB
       insertOrUpdateFile(codeBaseDirectory, parsedFile, summary, dependenciesLibsString);
     
-      console.log(`Updated summary for ${filePathRelative}`);
+      console.log(`${chalk.green(`Updated summary for `)}${chalk.yellow(filePathRelative)}`);
     }
   } catch (error) {
     console.error(`Error processing file: ${filePathRelative}`, error);
