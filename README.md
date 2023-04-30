@@ -55,7 +55,7 @@ Task: Create a diagram explaining what this project and the process
 ## 🛠️ Installation
 
 1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git`
-2. Do `cd autopilot` to install dependencies: `npm install`
+2. Do `cd autopilot` to install dependencies: `npm ci`
 3. Create the `.env` file and set up the environment variables:
    1. Copy the .env.template file to .env: `cp .env.template .env`
    2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`. [Create openAI API key](https://platform.openai.com/account/api-keys)
