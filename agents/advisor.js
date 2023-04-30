@@ -11,26 +11,24 @@ function formatRelevantFiles(relevantFiles) {
 
 const promptTemplate = 
 ` 
-# TASK
+# YOUR ROLE
+Explain how to solve the task. A person will read your output and act based on your suggestions.
+Take into consideration that user inputs can be questions, code changes, reports of bugs or others. Reply accordingly.
+Another agent will look into the other files, your answer should focus on this file only. If there's nothing important to do on this file, keep your answer short or skip it.
+
+# Task
 ## Original user input
 {task}
-## Plan, per file, to solve the task
+## Relevant files - Plan, per file, to solve the task
 {relevantFiles}
-## What needs to be implement on this file
+## Plan for this file
 {fileTask}
 
-# YOUR ROLE
-Explain what needs to change in this file to implement the task. Include code snippets if you have them.
-
-# SOURCE CODE 
-## This is provided in a markdown format as follows:
-### /path/filename
-\`\`\`language
-code
-\`\`\`
-Here is the relevant file and code from the existing codebase:
+# Source code of this file
 ### {path}
+\`\`\`
 {code}
+\`\`\`
 ` 
 
 /**

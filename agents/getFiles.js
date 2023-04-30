@@ -6,13 +6,14 @@ const { saveLog } = require('../modules/fsOutput');
 
 const promptTemplate = 
 `
-# USER INPUT
+# User Input
 ## This is what the user requested
 {task}
 
-# YOUR TASK 
-## This is your task
-Identify the files where we are going to implement the USER INPUT. Don't include new files. Also explain why the file was selected.
+# Your Role
+## This is your role
+Identify the files needed for the user input. Don't include new files. Also explain why the file was selected.
+Take into consideration that "user inputs" can be questions, code changes, reports of bugs or others. Reply accordingly.
 
 {format_instructions}
 
@@ -35,6 +36,7 @@ const parser = StructuredOutputParser.fromZodSchema(
           path: z.string().describe('path to file'),
           reason: z.string().describe('reason why the file was selected'),
           task: z.string().describe('what will be implemented in this file'),
+          exists: z.boolean().describe('true if the file already exists or false if the file needs to be created'),
         })
       ).describe('relevant files to implement the user input'),
     }),
