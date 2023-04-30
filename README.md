@@ -20,10 +20,11 @@ Note: This project is currently operating autonomously on a server. Whenever an 
 
 ## Features
 
-- 📚 Pre-processes codebase files.
-- 🤖 Does code updates for you.
-- 📋 Shows you what was updated. (Full process log with each AI interaction also produced.)
-- 🔧 Interactive mode - see the process with retry, continue, abort options.
+- 📚 - Pre-processes codebase files.
+- 🤖 - Implements code changes for you.
+- 🚀 - Parallel calls to agents where possible.
+- 📝 - Shows you what was updated. (Full process log with each AI interaction also produced)
+- 🕹️ - Interactive mode - see the process with retry, continue, abort options.
 
 ### Tasks expectations
 - Referencing current code:
