@@ -34,7 +34,8 @@ Note: This project is currently operating autonomously on a server. Whenever an 
   - ✅ Referencing all project files.
   - 🤔 General logical requests. Your milage would differ by model, codebase and task. Some work. (Should introduce task scoring)
 - Changes executed:
-  - ✅Create a new file.
+  - ✅Create a new file based on an existing file.
+  - ❌Start a new file from scratch.
   - ✅Update an existing file.
   - ✅Update multiple existing files.
   - ❌Delete existing files. (It might empty them out, but not delete them currently)
