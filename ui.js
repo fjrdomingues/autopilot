@@ -16,8 +16,6 @@ const { suggestChanges } = require('./agents/coder');
 const { ChangesAdvice } = require('./agents/advisor');
 const { getRelevantFiles } = require('./agents/getFiles');
 
-const testingDirectory = '/benchmarks';
-
 /**
  * 
  * @param {string} task - The task to be completed.
@@ -30,6 +28,7 @@ async function main(task, test=false, suggestionMode) {
   let codeBaseDirectory = options.dir;
   // TODO: get rid of test parameter, should use normal functionality
   if (test){
+    const testingDirectory = '/benchmarks';
     codeBaseDirectory = codeBaseDirectory + testingDirectory
   }
   const interactive = options.interactive;
