@@ -58,6 +58,7 @@ async function main(task, test=false, suggestionMode) {
   // Get the summaries of the files in the directory
   const summaries = await getSummaries(codeBaseDirectory);
   const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
+  console.log(`Split summaries into ${chunkedSummaries.length} chunks of ${maxSummaryTokenCount} tokens each.`)
  
   let relevantFiles=[]
   for (const summaries of chunkedSummaries){
