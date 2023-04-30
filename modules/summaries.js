@@ -24,29 +24,32 @@ Splits an array of summary strings into chunks up to a maximum size.
 @throws {Error} If a single summary string is longer than maxChunkLength.
 */
 function chunkSummaries(summaries, maxChunkLength) {
+  maxChunkLength = parseInt(maxChunkLength);
   const summaryChunks = [];
   let currentChunk = "";
-  let currentChunkLength = 0;
   summariesArray = summaries.split(summaryStringDelimiter);
 
   for (const summary of summariesArray) {
     const delimitedSummary = summary + summaryStringDelimiter;
-    const currentSummaryLength = countTokens(delimitedSummary);
+    const currentSummaryTokens = countTokens(summary);
 
-    if (currentSummaryLength > maxChunkLength) {
+    if (currentSummaryTokens > maxChunkLength) {
       throw new Error('Single summary is too big');
     }
 
-    if (currentChunkLength + currentSummaryLength > maxChunkLength) {
+    const currentChunkTokens = countTokens(currentChunk);
+    if (currentChunkTokens + currentSummaryTokens > maxChunkLength) {
+      // remove last delimiter summaryStringDelimiter from currentChunk
+      currentChunk = currentChunk.slice(0, -summaryStringDelimiter.length);
       summaryChunks.push(currentChunk);
-      currentChunk = summary;
-      currentChunkLength = currentSummaryLength;
+      // new summary chunk
+      currentChunk = delimitedSummary;
     } else {
-      currentChunkLength += currentSummaryLength;
       currentChunk += delimitedSummary;
     }
   }
 
+  currentChunk = currentChunk.slice(0, -summaryStringDelimiter.length);
   summaryChunks.push(currentChunk); // Push last chunk
   return summaryChunks;
 }
@@ -77,7 +80,6 @@ async function readAllSummaries(codeBaseDirectory) {
   }
 
   let summariesString = "";
-  console.log("Summaries found in the database:", summaries.length);
   for (const summary of summaries) {
     try {
       summariesString += `File Path: ${summary.path}\nSummary:\n${summary.summary}${summaryStringDelimiter}`;
@@ -111,13 +113,13 @@ async function getSummaries(codeBaseDirectory){
  * @param {string} fileContent - The content of the file being processed.
  */
 async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent) {
-  const fileSummary = require('../agents/indexer');
+  const { fileSummary } = require('../agents/indexer');
 
   const filePathFull = path.join(codeBaseDirectory, filePathRelative);
   const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
   const fileTokensCount = parsedFile.fileTokensCount;
 
-  console.log(`Processing file: ${filePathRelative}`);
+  console.log(`Processing file: ${chalk.yellow(filePathRelative)}`);
   if (fileTokensCount > maxTokenSingleFile) {
     console.log(chalk.red('File too BIG'));
     return;
@@ -128,15 +130,27 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
   }
 
   try {
-    const summary = await fileSummary(fileContent);
+    const output = await fileSummary(filePathRelative, fileContent);
 
-    if (summary) {
-      insertOrUpdateFile(codeBaseDirectory, parsedFile, summary);
-
-      // TODO: Use logging library that already adds timestamps
-      const timestamp = new Date().toISOString();
-      const hour = timestamp.match(/\d\d:\d\d/);
-      console.log(`${hour}: Updated summary for ${filePathRelative}`);
+    if (output) {
+      // Keywords
+      let keywordsString = "";
+      keywords = output.keywords;
+      for (const keyword of keywords){
+        keywordsString += `${keyword.term} - ${keyword.definition}\n`;
+      }
+      // functions
+      let functionsString = `functions: ${output.functions}`;
+      const summary = output.summary + "\n" + functionsString + "\n" + keywordsString;
+      // dependenciesLibs
+      let dependenciesLibsString = "";
+      for (const dependenciesLib of output.dependenciesLibs){
+        dependenciesLibsString += `${dependenciesLib}, `;
+      }
+      // Save to DB
+      insertOrUpdateFile(codeBaseDirectory, parsedFile, summary, dependenciesLibsString);
+    
+      console.log(`${chalk.green(`Updated summary for `)}${chalk.yellow(filePathRelative)}`);
     }
   } catch (error) {
     console.error(`Error processing file: ${filePathRelative}`, error);

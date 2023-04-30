@@ -3,7 +3,11 @@ const path = require('path');
 const outputFolder = 'suggestions';
 const logsDirectory = 'logs';
 const logsExtension = '.txt';
-const logsFilename = new Date().toISOString().replace(/:/g, '-')
+let logsFilename;
+
+function newLog(){
+    logsFilename = new Date().toISOString().replace(/:/g, '-');
+}
 
 /**
  * Returns the path of the log file.
@@ -66,5 +70,6 @@ module.exports= {
     saveOutput,
     saveLog,
     logPath,
-    updateFile
+    updateFile,
+    newLog
 }

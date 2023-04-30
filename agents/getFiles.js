@@ -52,6 +52,17 @@ const prompt = new PromptTemplate({
 });
 
 
+/**
+ * Given a task and some summaries, returns a list of relevant files along with reasons why they were selected.
+ * 
+ * @param task - The task to be performed
+ * @param summaries - A summary of the relevant context
+ * @returns {Promise<Array<{
+ *   path: string,      // The path to the relevant file.
+ *   reason: string,    // The reason why the file was selected.
+ *   task: string,      // The task that will be implemented in this file.
+ * }>>>}                // An array of relevant files for the given task.
+ */
 async function getRelevantFiles(task, summaries) {
 	const model = getModel(process.env.GET_FILES_MODEL);
 
@@ -74,4 +85,4 @@ async function getRelevantFiles(task, summaries) {
 	return parsedResponse.output.relevantFiles;
 }
 
-module.exports = getRelevantFiles;
+module.exports = { getRelevantFiles };

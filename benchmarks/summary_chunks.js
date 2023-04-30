@@ -1,8 +1,8 @@
 const { main: doTask } = require('../ui')
-const agents = require('../agents');
 const fs = require('fs');
 const path = require('path');
 const LineDiff = require("line-diff")
+const { review } = require('../agents/reviewer')
 
 let score = 0
 const loops = 1
@@ -20,9 +20,9 @@ async function main(){
             const newFile = solution[0].code
             const diff = new LineDiff(oldFile,newFile).toString()
             console.log(diff)
-            const review = await agents.reviewer(task, diff, criteria)
-            console.dir(review, { depth: null })
-            score += Number(review.output.evaluation.rating)
+            const reviewRes = await review(task, diff, criteria)
+            console.dir(reviewRes, { depth: null })
+            score += Number(reviewRes.output.evaluation.rating)
         } catch (error){
             console.log(error)
             score += 0

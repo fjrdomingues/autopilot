@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS files (
     summary TEXT,
     summaryTokensCount INTEGER,
     hash TEXT,
-    timestamp INTEGER
+    timestamp INTEGER,
+    dependenciesLibs TEXT
 );
 `
     db.run(sql);
@@ -33,14 +34,19 @@ function createDB(codeBaseDirectory){
     createFilesTable(db);
 }
 
+function getDBFilePath(codeBaseDirectory){
+    codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
+    dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME);
+    return dbFilePath;
+}
+
 /**
  * @description Creates the files table
  * @param {string} codeBaseAutopilotDirectory
  * @returns {sqlite3.Database} db
  */
 function getDB(codeBaseDirectory){
-    codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
-    dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME);
+    dbFilePath = getDBFilePath(codeBaseDirectory);
     const db = new sqlite3.Database(dbFilePath);
     return db;
 }
@@ -69,8 +75,10 @@ where path = ?`
  * @param {number} file.fileTokensCount - The count of tokens in the file
  * @param {string} file.fileHash - The hash of the file content
  * @param {number} file.fileTimestamp - The timestamp when the file was last modified
+ * @param {string} summary - The summary of the file
+ * @param {string} dependenciesLibs - The dependencies of the file
  */
-function insertOrUpdateFile(codeBaseDirectory, file, summary){
+function insertOrUpdateFile(codeBaseDirectory, file, summary, dependenciesLibs){
     db = getDB(codeBaseDirectory);
     const summaryTokensCount = countTokens(summary);
     const sql = `
@@ -80,8 +88,9 @@ INSERT OR REPLACE INTO files (
     summary, 
     summaryTokensCount, 
     hash,
-    timestamp)
-VALUES (?, ?, ?, ?, ?, ?)
+    timestamp,
+    dependenciesLibs)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 `
     db.run(sql, [
         file.filePath, 
@@ -89,7 +98,9 @@ VALUES (?, ?, ?, ?, ?, ?)
         summary,
         summaryTokensCount,
         file.fileHash,
-        file.fileTimestamp]);
+        file.fileTimestamp,
+        dependenciesLibs
+    ]);
 }
 
 /**
@@ -122,4 +133,4 @@ FROM files
     
 
 
-module.exports = { createDB, createFilesTable, insertOrUpdateFile, getDB, getDBFiles, deleteFile }
+module.exports = { createDB, createFilesTable, insertOrUpdateFile, getDB, getDBFiles, deleteFile, getDBFilePath }
