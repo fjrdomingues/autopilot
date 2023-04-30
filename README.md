@@ -52,6 +52,23 @@ Task: Create a diagram explaining what this project and the process
 - 📋 Shows you what was updated. Full process log with each AI interaction also produced.
 - 🔧 Optional interactive mode to see the process with retry, continue, abort options.
 
+### Tasks expectations
+* Referencing current code:
+✅ Referencing a specific file by project relative path.
+✅ Referencing a specific file by file name only, ignoring the subdirectories path.
+? Referencing a specific file by file name only, ignoring the subdirectories path with filename duplication.
+✅ Referencing a specific function within a file without the filename.
+✅ Referencing a major business concept that is exclusively used in one file.
+🤔 Referencing a major business concept that is exclusively used in multiple files.
+🤔 General logical requests. Your milage would differ by model, codebase and task. Some work. (Should introduce task scoring)
+* Actions executed:
+✅Create a new file.
+✅Update an existing file.
+✅Update multiple existing files.
+❌Cascade updating related files like tests.
+❌Delete existing files. (It might empty them out, but not delete them currently)
+❌Start using new libraries. (Needs arbitrary code execution to install the library)
+
 ## 🛠️ Installation
 
 1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git`
