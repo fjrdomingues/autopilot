@@ -106,7 +106,6 @@ async function main(task, test=false, suggestionMode) {
           // This actually applies the solution to the file
           const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
           updateFile(filePathFull, fileContent);
-          console.log(`File modified: ${filePathRelative}`);
           await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
         }
         // TODO: get current diff and feed it back to the next agent
