@@ -61,11 +61,16 @@ async function main(task, test=false, suggestionMode) {
   console.log(`Split summaries into ${chalk.yellow(chunkedSummaries.length)} chunks of ${chalk.yellow(maxSummaryTokenCount)} tokens each. (an agent would run for each)`)
  
   let relevantFiles=[]
-  for (const summaries of chunkedSummaries){
+  const promises = chunkedSummaries.map(async (summaries) => {
     // Decide which files are relevant to the task
-    relevantFilesChunk = await runAgent(getRelevantFiles, task, summaries, interactive);
-    relevantFiles = relevantFiles.concat(relevantFilesChunk)
-  }
+    const relevantFilesChunk = await runAgent(getRelevantFiles, task, summaries, interactive);
+    return relevantFilesChunk;
+  });
+  relevantFiles = await Promise.all(promises).then((results) => {
+    // Combine all the results into a single array
+    return results.flat();
+  });
+  
   // Fetch code files the agent has deemed relevant
   let files;
   try {
