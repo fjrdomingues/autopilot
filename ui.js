@@ -91,17 +91,16 @@ async function main(task, test=false, suggestionMode) {
     process.exit(1);
   }
 
-  // Ask an agent about each file
   let solutions = [];
-  for (const file of files) {
-
+  await Promise.all(files.map(async (file) => {
+    // For each file, ask the coder agent for a solution
     if (!suggestionMode) { 
       const coderRes = await runAgent(suggestChanges, task, file, interactive);
       for (const file of coderRes){
         const filePathRelative = file.fileToUpdate;
         const fileContent = file.content; 
         solutions.push({file:filePathRelative, code:fileContent})
-
+  
         if (autoApply){
           // This actually applies the solution to the file
           const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
@@ -115,8 +114,8 @@ async function main(task, test=false, suggestionMode) {
       const advice = await runAgent(ChangesAdvice, task, {relevantFiles, file}, interactive);
       solutions.push({file:file.path, code:advice})
     }
-
-  }
+  }));
+  
   
   if (autoApply){
     // Sends the saved output to GPT and ask for the necessary changes to do the TASK
