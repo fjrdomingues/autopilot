@@ -83,12 +83,14 @@ async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
     const filePathRelative = file.path;
     await deleteFile(codeBaseDirectory, filePathRelative);
   }
-  for (const file of filesToIndex) {
+  const promises = filesToIndex.map(async (file) => {
     const filePathRelative = file.filePath;
     const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
-    const fileContent = fs.readFileSync(filePathFull, 'utf-8');
+    const fileContent = await fs.promises.readFile(filePathFull, 'utf-8');
     await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
-  }
+  });
+  
+  await Promise.all(promises);  
 }
 
 module.exports = { indexGapFill };
