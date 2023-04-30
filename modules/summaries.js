@@ -150,11 +150,8 @@ async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, 
       }
       // Save to DB
       insertOrUpdateFile(codeBaseDirectory, parsedFile, summary, dependenciesLibsString);
-
-      // TODO: Use logging library that already adds timestamps
-      const timestamp = new Date().toISOString();
-      const hour = timestamp.match(/\d\d:\d\d/);
-      console.log(`${hour}: Updated summary for ${filePathRelative}`);
+    
+      console.log(`Updated summary for ${filePathRelative}`);
     }
   } catch (error) {
     console.error(`Error processing file: ${filePathRelative}`, error);

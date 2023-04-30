@@ -87,7 +87,6 @@ async function gapFill(filesToDelete, codeBaseDirectory, filesToIndex) {
     const filePathRelative = file.filePath;
     const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative);
     const fileContent = fs.readFileSync(filePathFull, 'utf-8');
-    console.log(`File modified: ${filePathRelative}`);
     await generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent);
   }
 }
