@@ -70,6 +70,9 @@ async function main(task, test=false, suggestionMode) {
     // Combine all the results into a single array
     return results.flat();
   });
+
+  const filePaths = relevantFiles.map(file => file.path).join(', ');
+  console.log(`${chalk.yellow(relevantFiles.length)} relevant files were identified by the agent:\n${chalk.yellow(filePaths)}`);
   
   // Fetch code files the agent has deemed relevant
   let files;
