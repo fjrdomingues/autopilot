@@ -58,7 +58,7 @@ async function main(task, test=false, suggestionMode) {
   // Get the summaries of the files in the directory
   const summaries = await getSummaries(codeBaseDirectory);
   const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
-  console.log(`Split summaries into ${chalk.yellow(chunkedSummaries.length)} chunks of ${chalk.yellow(maxSummaryTokenCount)} tokens each. (an agent would run for each)`)
+  console.log(`Split summaries into ${chalk.yellow(chunkedSummaries.length)} chunks of up to ${chalk.yellow(maxSummaryTokenCount)} tokens each. (an agent would run for each)`)
  
   let relevantFiles=[]
   const promises = chunkedSummaries.map(async (summaries) => {
