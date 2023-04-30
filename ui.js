@@ -80,12 +80,14 @@ async function main(task, test=false, suggestionMode) {
     files = getFiles(codeBaseDirectory, relevantFiles);
   } catch (err) {
     console.log(chalk.red(`The agent has identified files to fetch we couldn't find, please try again with a different task.`));
-    console.log(relevantFiles);
+    // TODO: find which files are the broken ones and only print them.
+    const fileReasons = relevantFiles.map(file => `${chalk.yellow(file.path)}: ${file.reason}`).join('\n');
+    console.log(fileReasons);
     console.log(`Codebase directory: ${codeBaseDirectory}`)
     process.exit(1);
   }
   if (files.length == 0) {
-    console.log(`The agent has not identified any relevant files for the task: ${task}.\nPlease try again with a different task.`);
+    console.log(chalk.red(`The agent has not identified any relevant files for the task: ${task}.\nPlease try again with a different task.`));
     process.exit(1);
   }
 
