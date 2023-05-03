@@ -1,6 +1,7 @@
 // This file is the UI for the user. It accepts a TASK from the user and uses AI to complete the task. Tasks are related with code.
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
 const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
 const { saveOutput, logPath, updateFile, newLog } = require('./modules/fsOutput');
@@ -71,19 +72,36 @@ async function main(task, test=false, suggestionMode) {
     return results.flat();
   });
 
-  const filePaths = relevantFiles.map(file => file.path).join(', ');
-  console.log(`${chalk.yellow(relevantFiles.length)} relevant files were identified by the agent:`);
-  const fileReasons = relevantFiles.map(file => `${chalk.yellow(file.path)}: ${file.reason}`).join('\n');
+  const uniqueRelevantFiles = relevantFiles.reduce((acc, current) => {
+    const isDuplicate = acc.find(file => file.path === current.path);
+    if (!isDuplicate) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+
+  console.log(`${chalk.yellow(uniqueRelevantFiles.length)} relevant files were identified by the agent:`);
+  const existingUniqueRelevantFiles = uniqueRelevantFiles.filter(file => {
+    filePathFull = path.posix.join(codeBaseDirectory, file.path);
+    fileFound = fs.existsSync(filePathFull);
+    if (!fileFound) {
+      console.log(`${chalk.red(file.path)}: ${file.reason}`);
+    }
+    return fileFound;
+  });
+  
+  const fileReasons = existingUniqueRelevantFiles.map(file => `${chalk.yellow(file.path)}: ${file.reason}`).join('\n');
   console.log(fileReasons+'\n');
 
   // Fetch code files the agent has deemed relevant
   let files;
   try {
-    files = getFiles(codeBaseDirectory, relevantFiles);
+    files = getFiles(codeBaseDirectory, existingUniqueRelevantFiles);
   } catch (err) {
     console.log(chalk.red(`The agent has identified files to fetch we couldn't find, please try again with a different task.`));
     // TODO: find which files are the broken ones and only print them.
-    const fileReasons = relevantFiles.map(file => `${chalk.yellow(file.path)}: ${file.reason}`).join('\n');
+    const fileReasons = existingUniqueRelevantFiles.map(file => `${chalk.yellow(file.path)}: ${file.reason}`).join('\n');
     console.log(fileReasons);
     console.log(`Codebase directory: ${codeBaseDirectory}`)
     process.exit(1);
