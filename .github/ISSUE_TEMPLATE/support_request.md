@@ -13,7 +13,7 @@ A clear and concise description of what the bug is.
 **Version details**
 AutoPilot version tested: (`git rev-parse HEAD`)
 
-Node version: (`node --version`)
+Node version: (`node --version`) (node 18 and above are supported)
 vxx.xx.xx
 
 **Task input**
