@@ -104,7 +104,12 @@ function getFiles(codeBaseDirectory, files){
 	for (const file of files) {
 	  const filePathRelative = file.path;
 	  const filePathFull = path.posix.join(codeBaseDirectory, filePathRelative); 
-	  const fileContent = fs.readFileSync(filePathFull, 'utf8');
+		let fileContent
+		if (file.exists) {
+			fileContent = fs.readFileSync(filePathFull, 'utf8');
+		} else {
+			fileContent = "// This is a new file"
+		}
 	  file.code = fileContent
 	  retFiles.push(file)
 	}
