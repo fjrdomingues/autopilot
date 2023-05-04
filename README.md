@@ -44,6 +44,9 @@ Note: This project is currently operating autonomously on a server. Whenever an 
   - ❌Cascade updating related files like tests. (Coming soon)
   - ❌Test the code it wrote and self fix.
 
+## Prerequisites 
+nodejs v18 or above.
+
 ## 🛠️ Installation
 
 1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git`
