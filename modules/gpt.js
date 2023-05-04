@@ -67,8 +67,20 @@ function calculateTokensCost(model, promptTokens, completionTokens, totalTokensU
   }
 }
 
+function resetTokens() {
+  totalTokensUsed = 0
+  completionTokens = 0
+  promptTokens = 0
+  cost = 0
+}
+
+function tokensUsage() {
+  return {totalTokensUsed, completionTokens, promptTokens, cost}
+}
 
 module.exports= {
   callGPT,
-  calculateTokensCost
+  calculateTokensCost,
+  tokensUsage,
+  resetTokens
 }

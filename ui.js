@@ -16,6 +16,7 @@ const { reindexCodeBase } = require('./modules/interactiveReindexCodeBase');
 const { suggestChanges } = require('./agents/coder');
 const { ChangesAdvice } = require('./agents/advisor');
 const { getRelevantFiles } = require('./agents/getFiles');
+const { tokensUsage,resetTokens } = require('./modules/gpt')
 
 /**
  * 
@@ -55,6 +56,9 @@ async function main(task, test=false, suggestionMode) {
 
   // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
+
+  // reset tokens counter for this new task
+  resetTokens()
 
   // Get the summaries of the files in the directory
   const summaries = await getSummaries(codeBaseDirectory);
@@ -148,7 +152,7 @@ async function main(task, test=false, suggestionMode) {
 
   console.log(chalk.green("Process Log:", logPath()));
 
-  return solutions
+  return {solutions, tokensUsage}
 }
 
 if (require.main === module) main();
