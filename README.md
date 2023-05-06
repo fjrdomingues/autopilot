@@ -50,10 +50,9 @@ Note: This project is currently operating autonomously on a server. Whenever an 
 2. Do `cd autopilot` to install dependencies: `npm ci`
 3. Create the `.env` file and set up the environment variables:
    1. Copy the .env.template file to .env: `cp .env.template .env`
-   2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`. [Create openAI API key](https://platform.openai.com/account/api-keys)
-   3. Set the path to your code `CODE_DIR=<path-to-your-code>` (or use `-d path-to-your-code` later)
-   4. Update `IGNORE_LIST=node_modules,coverage,public,__tests__`
-   5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
+   2. Set the path to your code `CODE_DIR=<path-to-your-code>` (or use `-d path-to-your-code` later)
+   3. Update `IGNORE_LIST=node_modules,coverage,public,__tests__`
+   4. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
    
 ## Running
 * `node ui -t "YOUR_TASK"` - is the easiest way to start.

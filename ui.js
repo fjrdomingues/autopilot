@@ -2,8 +2,10 @@
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
+const dotenv = require('dotenv');
+const os = require('os');
 
-const { getSummaries, chunkSummaries, maxSummaryTokenCount } = require('./modules/summaries');
+const { getSummaries, chunkSummaries, getMaxSummaryTokenCount } = require('./modules/summaries');
 const { saveOutput, logPath, updateFile, newLog } = require('./modules/fsOutput');
 const { printGitDiff } = require('./modules/gitHelper');
 const { getFiles } = require('./modules/fsInput');
@@ -24,6 +26,8 @@ const { getRelevantFiles } = require('./agents/getFiles');
  * @returns {Array} - Array with file and code
  */
 async function main(task, test=false, suggestionMode) {
+  dotenv.config();
+  dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });
   newLog();
   const options = getOptions(task, test);
   let codeBaseDirectory = options.dir;
@@ -45,6 +49,7 @@ async function main(task, test=false, suggestionMode) {
   // init, reindex, or gap fill
   const { initCodeBase } = require('./modules/init');
   await initCodeBase(codeBaseDirectory, interactive);
+  dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });    
   if (reindex){
     await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
   } 
@@ -57,6 +62,7 @@ async function main(task, test=false, suggestionMode) {
   task = await getTask(task, options);
 
   // Get the summaries of the files in the directory
+  const maxSummaryTokenCount = getMaxSummaryTokenCount();
   const summaries = await getSummaries(codeBaseDirectory);
   const chunkedSummaries = chunkSummaries(summaries, maxSummaryTokenCount);
   console.log(`Split summaries into ${chalk.yellow(chunkedSummaries.length)} chunks of up to ${chalk.yellow(maxSummaryTokenCount)} tokens each. (an agent would run for each)`)

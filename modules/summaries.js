@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { countTokens } = require('./tokenHelper')
 const chalk = require('chalk');
 const path = require('path');
@@ -6,8 +5,14 @@ const { parseFileContent } = require('./fsInput');
 const { getDB, insertOrUpdateFile } = require('./db');
 
 const summaryStringDelimiter = "\n---\n";
-const maxTokenSingleFile = process.env.MAX_TOKEN_COUNT_SINGLE_FILE;
-const maxSummaryTokenCount = process.env.MAX_TOKEN_COUNT_SUMMARIES_CHUNK;
+
+function getMaxTokenSingleFile(){
+  return process.env.MAX_TOKEN_COUNT_SINGLE_FILE;
+}
+
+function getMaxSummaryTokenCount(){
+  return process.env.MAX_TOKEN_COUNT_SUMMARIES_CHUNK;
+}
 
 const types = {
   FileObject: {
@@ -113,7 +118,9 @@ async function getSummaries(codeBaseDirectory){
  * @param {string} fileContent - The content of the file being processed.
  */
 async function generateAndWriteFileSummary(codeBaseDirectory, filePathRelative, fileContent) {
+  const maxTokenSingleFile = getMaxTokenSingleFile();
   const { fileSummary } = require('../agents/indexer');
+  
 
   const filePathFull = path.join(codeBaseDirectory, filePathRelative);
   const parsedFile = parseFileContent(codeBaseDirectory, filePathFull, fileContent);
@@ -162,6 +169,6 @@ module.exports = {
     types,
     getSummaries,
     chunkSummaries,
-    maxSummaryTokenCount,
+    getMaxSummaryTokenCount,
     generateAndWriteFileSummary
 }
