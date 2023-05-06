@@ -36,7 +36,7 @@ Based on Solutions below, write an answer to send to the user. Include:
 async function finalAdvisor(task, payload) {
   const analysis = formatSolutions(payload.solutions)
   const values = {task, analysis}
-  const reply = await callAgent(promptTemplate, values, process.env.CODER_MODEL);
+  const reply = await callAgent(promptTemplate, values, process.env.FINALADVISOR_MODEL);
   return reply;
 }
 

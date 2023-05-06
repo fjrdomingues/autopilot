@@ -42,7 +42,7 @@ async function ChangesAdvice(task, payload) {
   const file = payload.file
   const {code, task: fileTask, reason, path} = file
   const values = {task, code, fileTask, reason, path, relevantFiles}
-  const reply = await callAgent(promptTemplate, values, process.env.CODER_MODEL);
+  const reply = await callAgent(promptTemplate, values, process.env.ADVISOR_MODEL);
   return reply;
 }
 

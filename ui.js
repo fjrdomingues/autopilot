@@ -144,7 +144,7 @@ async function main(task, test=false, suggestionMode) {
   // Call final advisor agent to product final answer based on solutions
   if (suggestionMode) {
     const finalAdvice = await runAgent(finalAdvisor, task, {solutions}, interactive);
-    return finalAdvice
+    return { solution: finalAdvice, tokensUsage: tokensUsage() }
   }
   
   
@@ -159,7 +159,7 @@ async function main(task, test=false, suggestionMode) {
 
   console.log(chalk.green("Process Log:", logPath()));
 
-  return {solutions, tokensUsage}
+  return solutions
 }
 
 if (require.main === module) main();
