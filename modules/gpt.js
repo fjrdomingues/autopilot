@@ -1,5 +1,4 @@
 const chalk = require('chalk');
-require('dotenv').config()
 const { Configuration, OpenAIApi } = require("openai");
 const {saveLog} = require('./fsOutput');
 

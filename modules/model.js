@@ -11,6 +11,9 @@ const { OpenAI } = require('langchain/llms');
 function getModel(modelType){
     let model
     if (['gpt-3.5-turbo', 'gpt-4'].includes(modelType)) {
+        if (!process.env.OPENAI_API_KEY) {
+            throw new Error('OPENAI_API_KEY not found.');
+        }
         model = new OpenAI({ 
             modelName: modelType,
             maxTokens: parseInt(process.env.OPENAI_MAX_TOKEN_REPLY),
@@ -26,4 +29,4 @@ function getModel(modelType){
     return model
 }
 
-module.exports = { getModel }
+module.exports = { getModel };
