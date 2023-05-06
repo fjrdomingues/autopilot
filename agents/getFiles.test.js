@@ -1,4 +1,4 @@
-const getRelevantFiles = require('./getFiles');
+const { getRelevantFiles } = require('./getFiles');
 
 require('dotenv').config();
 
