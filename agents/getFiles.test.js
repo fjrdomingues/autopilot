@@ -1,6 +1,8 @@
 const getRelevantFiles = require('./getFiles');
+const dotenv = require('dotenv');
 
-require('dotenv').config();
+dotenv.config();
+dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });
 
 describe('getRelevantFiles', () => {
   const summaries = `

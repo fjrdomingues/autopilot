@@ -29,12 +29,12 @@ async function getTaskInput() {
   const prompts = require('prompts');
 
   const response = await prompts({
-     type: 'text',
-     name: 'task',
-     message: 'Please enter your TASK (multiline supported):',
-     multiline: true,
-       validate: value => value.length > 0 ? true : 'Please enter a task'
-   });
+    type: 'text',
+    name: 'task',
+    message: 'Please enter your TASK (multiline supported):',
+    multiline: true,
+    validate: value => value.length > 0 ? true : 'Please enter a task'
+  });
 
   return response.task;
 }

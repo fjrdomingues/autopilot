@@ -1,11 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
 const hashFile = require('./hashing');
 const { countTokens } = require('./tokenHelper');
 
-const ignoreList = process.env.IGNORE_LIST.split(',');
-const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
 
 /**
  * Recursively scans the directory specified by 'dir', searching for project files.
@@ -17,6 +14,9 @@ const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(','
  * @returns {string[]} An array of absolute file paths for all project files found.
 */
 function getFilePaths(dir) {
+	const ignoreList = process.env.IGNORE_LIST.split(',');
+	const fileExtensionsToProcess = process.env.FILE_EXTENSIONS_TO_PROCESS.split(',');
+
 	const files = fs.readdirSync(dir);
 	const projectFiles = [];
 
