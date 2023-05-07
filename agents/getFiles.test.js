@@ -2,7 +2,7 @@ const getRelevantFiles = require('./getFiles');
 const dotenv = require('dotenv');
 
 dotenv.config();
-dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });
+dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env'), overrideProcessEnv: true });
 
 describe('getRelevantFiles', () => {
   const summaries = `

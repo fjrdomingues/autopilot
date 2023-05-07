@@ -44,7 +44,7 @@ async function initCodeBase(codeBaseDirectory, interactive){
     }
 
     const dotenv = require('dotenv');
-    dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });    
+    dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env'), overrideProcessEnv: true });    
   }
 
   model = process.env.INDEXER_MODEL;
@@ -55,6 +55,7 @@ async function initCodeBase(codeBaseDirectory, interactive){
     fs.mkdirSync(codeBaseAutopilotDirectory);
   }
 
+  
   // Create config file `__CODEBASE__/.autopilot/config.json`
   // TODO: Refactor include/exclude lists into codebase config file
 

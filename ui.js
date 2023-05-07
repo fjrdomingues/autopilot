@@ -2,7 +2,7 @@
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv-extended');
 const os = require('os');
 
 const { getSummaries, chunkSummaries, getMaxSummaryTokenCount } = require('./modules/summaries');
@@ -26,8 +26,8 @@ const { getRelevantFiles } = require('./agents/getFiles');
  * @returns {Array} - Array with file and code
  */
 async function main(task, test=false, suggestionMode) {
-  dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });
-  dotenv.config();
+  dotenv.config({ path: '.env'});
+  dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env'), overrideProcessEnv: true });
   newLog();
   const options = getOptions(task, test);
   let codeBaseDirectory = options.dir;
@@ -49,7 +49,7 @@ async function main(task, test=false, suggestionMode) {
   // init, reindex, or gap fill
   const { initCodeBase } = require('./modules/init');
   await initCodeBase(codeBaseDirectory, interactive);
-  dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });    
+  dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env'), overrideProcessEnv: true });    
   if (reindex){
     await reindexCodeBase(codeBaseDirectory, process.env.INDEXER_MODEL, interactive);
   } 
