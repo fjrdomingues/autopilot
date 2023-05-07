@@ -15,7 +15,9 @@ const { indexGapFill } = require('./modules/interactiveGapFill');
 const { reindexCodeBase } = require('./modules/interactiveReindexCodeBase');
 const { suggestChanges } = require('./agents/coder');
 const { ChangesAdvice } = require('./agents/advisor');
+const { finalAdvisor } = require('./agents/finalAdvisor');
 const { getRelevantFiles } = require('./agents/getFiles');
+const { tokensUsage,resetTokens } = require('./modules/gpt')
 
 /**
  * 
@@ -55,6 +57,9 @@ async function main(task, test=false, suggestionMode) {
 
   // Make sure we have a task, ask user if needed
   task = await getTask(task, options);
+
+  // reset tokens counter for this new task
+  resetTokens()
 
   // Get the summaries of the files in the directory
   const summaries = await getSummaries(codeBaseDirectory);
@@ -135,13 +140,19 @@ async function main(task, test=false, suggestionMode) {
       solutions.push({file:file.path, code:advice})
     }
   }));
+
+  // Call final advisor agent to product final answer based on solutions
+  if (suggestionMode) {
+    const finalAdvice = await runAgent(finalAdvisor, task, {solutions}, interactive);
+    return { solution: finalAdvice, tokensUsage: tokensUsage() }
+  }
   
   
-  if (autoApply){
+  if (autoApply && !suggestionMode){
     // Sends the saved output to GPT and ask for the necessary changes to do the TASK
     console.log(chalk.green("Solutions Auto applied:"));
     printGitDiff(codeBaseDirectory);
-  }else{
+  } else {
     const solutionsPath = saveOutput(solutions);
     console.log(chalk.green("Solutions saved to:", solutionsPath));
   }
