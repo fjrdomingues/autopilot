@@ -26,8 +26,8 @@ const { getRelevantFiles } = require('./agents/getFiles');
  * @returns {Array} - Array with file and code
  */
 async function main(task, test=false, suggestionMode) {
-  dotenv.config();
   dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });
+  dotenv.config();
   newLog();
   const options = getOptions(task, test);
   let codeBaseDirectory = options.dir;
