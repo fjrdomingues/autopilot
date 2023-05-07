@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const { countTokens } = require('./tokenHelper');
 
-const { getCodeBaseAutopilotDirectory } = require('./autopilotConfig');
+const { getCodeBaseAutopilotDirectory } = require('./configCodeBase');
 
 DB_FILE_NAME = 'autopilot.db'
 
@@ -27,13 +27,17 @@ CREATE TABLE IF NOT EXISTS files (
 
 /**
  * @description Creates the files table
- * @param {string} codeBaseAutopilotDirectory - The path to the .autopilot directory of the codebase
+ * @param {string} codeBaseDirectory - The path to the code base directory.
 */
 function createDB(codeBaseDirectory){
     const db = getDB(codeBaseDirectory)
     createFilesTable(db);
 }
 
+/**
+ * @description Gets the path to the SQLite database file in the code base directory specified by the codeBaseDirectory parameter.
+ * @param {string} codeBaseDirectory - The path to the code base directory.
+*/
 function getDBFilePath(codeBaseDirectory){
     codeBaseAutopilotDirectory = getCodeBaseAutopilotDirectory(codeBaseDirectory);
     dbFilePath = path.posix.join(codeBaseAutopilotDirectory, DB_FILE_NAME);
@@ -41,8 +45,8 @@ function getDBFilePath(codeBaseDirectory){
 }
 
 /**
- * @description Creates the files table
- * @param {string} codeBaseAutopilotDirectory
+ * @description Creates the files table.
+ * @param {string} codeBaseDirectory - The path to the code base directory.
  * @returns {sqlite3.Database} db
  */
 function getDB(codeBaseDirectory){

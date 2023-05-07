@@ -1,10 +1,9 @@
 const getRelevantFiles = require('./getFiles');
-const dotenv = require('dotenv');
-
-dotenv.config();
-dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env'), overrideProcessEnv: true });
 
 describe('getRelevantFiles', () => {
+  const { loadBaseConfig }=require('../modules/config');
+  loadBaseConfig();
+
   const summaries = `
 File Path: modules/gpt.js
 Summary:
