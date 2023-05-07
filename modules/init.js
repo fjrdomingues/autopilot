@@ -38,8 +38,10 @@ async function initCodeBase(codeBaseDirectory, interactive){
     const homeEnvPath = path.join(homeAutopilotDirectory, '.env');
     const homeEnvContent = `OPENAI_API_KEY=${openAIApiKey}`;
     
-    fs.writeFileSync(homeEnvPath, homeEnvContent);
-    console.log(chalk.green(`OpenAIKey saved to ${homeEnvPath}`));
+    if (openAIApiKey){
+      fs.writeFileSync(homeEnvPath, homeEnvContent);
+      console.log(chalk.green(`OpenAIKey saved to ${homeEnvPath}`));
+    }
 
     const dotenv = require('dotenv');
     dotenv.config({ path: path.posix.join(os.homedir(), '.autopilot', '.env') });    
