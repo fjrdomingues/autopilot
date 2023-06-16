@@ -1,4 +1,4 @@
-Note: This project is currently operating autonomously on a server. Whenever an issue is created, it will automatically generate a comment reply suggesting how to fix the issue. Please ensure that any issues created are clear and comprehensible for the autopilot system to process effectively. 🙇‍♂️
+To simplify the installation process, you can utilize this project by installing the GitHub app available at https://github.com/marketplace/code-autopilot-ai-coder. This app uses autopilot to automatically resolve issues that you open on GitHub. It provides an easy interface to use it and it’s how I have been using it personally.
 
 
 <h1 align="center">Autopilot - An AI developer</h1>
