@@ -1,8 +1,9 @@
 const { getRelevantFiles } = require('./getFiles');
 
-require('dotenv').config();
-
 describe('getRelevantFiles', () => {
+  const { loadBaseConfig }=require('../modules/config');
+  loadBaseConfig();
+
   const summaries = `
 File Path: modules/gpt.js
 Summary:

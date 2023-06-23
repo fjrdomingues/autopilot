@@ -50,22 +50,23 @@ nodejs v18 or above.
 ## 🛠️ Installation
 
 1. Clone the repository: `git clone https://github.com/fjrdomingues/autopilot.git`
-2. Do `cd autopilot` to install dependencies: `npm ci`
-3. Create the `.env` file and set up the environment variables:
-   1. Copy the .env.template file to .env: `cp .env.template .env`
-   2. Set up an OpenAI API key and file with the key: `OPENAI_API_KEY=<your-api-key>`. [Create openAI API key](https://platform.openai.com/account/api-keys)
-   3. Set the path to your code `CODE_DIR=<path-to-your-code>` (or use `-d path-to-your-code` later)
-   4. Update `IGNORE_LIST=node_modules,coverage,public,__tests__`
-   5. Update `FILE_EXTENSIONS_TO_PROCESS=.js,.tsx,.ts,.jsx`
+2. Move to autopilot directory `cd autopilot` 
+3. Install dependencies: `npm ci`
    
 ## Running
-* `node ui -t "YOUR_TASK"` - is the easiest way to start.
+* `node ui -d "/CODE_DIRECTORY" -t "YOUR_TASK"` - is the easiest way to start.
+  * First run will ask you for needed parameters. (OpenAI API key, include and exclude file lists)
   * Solutions will be auto applied on your code and a git diff shown if possible. 
-  * Alternatively you may specify `--auto-apply=false`.
+    * Alternatively you may specify `--auto-apply=false`.
 * `node ui -h` - will show you all the options.
 
 ## Interactive mode
 Use `node ui -i` for an interactive mode, here you can review the output of each step before proceeding.
+
+## Advance config
+If you are only working on one project, you might want to setup CODE_DIR in your personal config file.
+Take a look at the `.env.default` file for more options.
+You can see any of them in either your personal config file or the codebase config file. (codebase config file takes precedence)
 
 ## 🤝 Contributing
 
