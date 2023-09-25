@@ -1,6 +1,3 @@
-To simplify the installation process, you can utilize this project by installing the GitHub app available at https://github.com/marketplace/code-autopilot-ai-coder. This app uses autopilot to automatically resolve issues that you open on GitHub. It provides an easy interface to use it and it’s how I have been using it personally.
-
-
 <h1 align="center">Autopilot - An AI developer</h1>
 
 <p align="center">
@@ -11,12 +8,19 @@ To simplify the installation process, you can utilize this project by installing
   <img src="public/demo.gif" alt="Autopilot Demo" width="800"/>
 </p>
 
+# Join our discord
+Join the conversation at https://discord.gg/r72ykfvyx7
+
 # How it works 
 
-1. You point AutoPilot at a codebase with a task.
-1. AutoPilot generates and upkeeps a DB with metadata on the codebase files. (within the codebase directory)
-1. AutoPilot decides which existing files it needs for the task by using the metadata DB.
-1. AutoPilot tries to implement the requested task on each relevant file.
+1. You point Autopilot at a codebase with a task.
+2. AutoPilot generates and upkeeps a DB with metadata on the codebase files. (within the codebase directory)
+3. AutoPilot decides which existing files it needs for the task by using the metadata DB.
+4. AutoPilot tries to implement the requested task on each relevant file.
+
+## Autopilot as a GitHub app
+You can use this project by installing the GitHub app available at https://github.com/marketplace/code-autopilot-ai-coder. This app uses autopilot to automatically resolve issues that you open on GitHub and also has features for Pull Request. It provides an easy interface to use and direct integration with Github.
+
 
 ## Features
 
