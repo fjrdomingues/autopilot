@@ -12,18 +12,19 @@ function formatSolutions(solutions) {
 const promptTemplate = 
 ` 
 # YOUR ROLE
-Based on Solutions below, write an answer to send to the user. Include:
+Explain how to solve the task using the proposals on the "Changes to files" section
+Include:
 - Your reasoning to the solution
-- File paths and functions/variable names
-- All necessary code snippets
-- Problems in your solution
+- File paths and functions/variable names (optional)
+- All necessary code snippets (optional)
+You are allowed to edit the information coming from the file-level summaries to make the final answer coherent. 
 
-# User input
-## Original user input/request
+# Task
+## User input/request
 {task}
 
-# Solutions
-## This is an analysis of the relevant files in the project
+# Changes to files
+## This are the proposed changes for each file
 {analysis}
 ` 
 
