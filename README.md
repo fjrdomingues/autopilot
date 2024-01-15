@@ -19,7 +19,7 @@ Join the conversation at https://discord.gg/r72ykfvyx7
 4. AutoPilot tries to implement the requested task on each relevant file.
 
 ## Autopilot as a GitHub app
-You can use this project by installing the GitHub app available at https://github.com/marketplace/code-autopilot-ai-coder. This app uses autopilot to automatically resolve issues that you open on GitHub and also has features for Pull Request. It provides an easy interface to use and direct integration with Github.
+You can use this project by installing the GitHub app available at [Code Autopilot website](https://www.codeautopilot.com/?utm_source=github&utm_medium=oss&utm_campaign=fjrdomingues). This app uses autopilot to automatically resolve issues that you open on GitHub and also has features for Pull Request. It provides an easy interface to use and direct integration with Github.
 
 
 ## Features
